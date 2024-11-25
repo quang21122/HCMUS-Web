@@ -21,6 +21,9 @@ const app = express();
 // Set EJS as the view engine
 app.set("view engine", "ejs");
 
+// Set the views directory
+app.set("views", path.join(__dirname, "views"));
+
 // Serve static files
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -59,7 +62,7 @@ const getCategory = () => {
 
 app.get("/", (req, res) => {
   const categories = getCategory();
-  res.render("HomePage", {
+  res.render("pages/HomePage", {
     title: "Trang chủ",
     categories,
   });
