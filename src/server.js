@@ -1,5 +1,5 @@
-const express = require('express');
-const ejs = require('ejs');
+import express from 'express';
+import ejs from 'ejs';
 
 const app = express();
 
