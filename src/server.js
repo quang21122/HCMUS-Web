@@ -4,7 +4,7 @@ import livereload from "livereload";
 import connectLiveReload from "connect-livereload";
 import path from "path";
 import { fileURLToPath } from "url";
-import fs from "fs";
+import { getArticles } from "./getArticles.js";
 
 // Tạo __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -36,35 +36,16 @@ liveReloadServer.server.once("connection", () => {
   }, 100);
 });
 
-const getCategory = () => {
-  const data = fs.readFileSync("crawler.json", "utf8");
-  const articles = JSON.parse(data);
-
-  const categories = new Set();
-
-  articles.forEach((article) => {
-    try {
-      if (article.Category && article.Category.trim()) {
-        // Chuẩn hóa chuỗi JSON
-        let fixedCategory = article.Category.replace(/'/g, '"'); // Đổi nháy đơn thành nháy kép
-        const categoryArray = JSON.parse(fixedCategory); // Parse JSON sau khi chuẩn hóa
-        categoryArray.forEach((category) => {
-          categories.add(category.trim());
-        });
-      }
-    } catch (err) {
-      console.error(`Error parsing category: ${article.Category}`, err);
-    }
-  });
-
-  return Array.from(categories);
-};
-
 app.get("/", (req, res) => {
-  const categories = getCategory();
+  const articles = getArticles();
+  const categories = [
+    ...new Set(articles.flatMap((article) => article.categories)),
+  ];
+
   res.render("pages/HomePage", {
     title: "Trang chủ",
     categories,
+    articles,
   });
 });
 
