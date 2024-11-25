@@ -4,6 +4,7 @@ import livereload from "livereload";
 import connectLiveReload from "connect-livereload";
 import path from "path";
 import { fileURLToPath } from "url";
+import fs from "fs";
 
 // Tạo __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -32,13 +33,36 @@ liveReloadServer.server.once("connection", () => {
   }, 100);
 });
 
-// Render the index page
+const getCategory = () => {
+  const data = fs.readFileSync("crawler.json", "utf8");
+  const articles = JSON.parse(data);
+
+  const categories = new Set();
+
+  articles.forEach((article) => {
+    try {
+      if (article.Category && article.Category.trim()) {
+        // Chuẩn hóa chuỗi JSON
+        let fixedCategory = article.Category.replace(/'/g, '"'); // Đổi nháy đơn thành nháy kép
+        const categoryArray = JSON.parse(fixedCategory); // Parse JSON sau khi chuẩn hóa
+        categoryArray.forEach((category) => {
+          categories.add(category.trim());
+        });
+      }
+    } catch (err) {
+      console.error(`Error parsing category: ${article.Category}`, err);
+    }
+  });
+
+  return Array.from(categories);
+};
+
 app.get("/", (req, res) => {
-  const data = {
-    title: "SSR Web",
-    message: "This is a dynamic message from the server",
-  };
-  res.render("HomePage", data);
+  const categories = getCategory();
+  res.render("HomePage", {
+    title: "Trang chủ",
+    categories,
+  });
 });
 
 app.listen(3000, () => {
