@@ -1,7 +1,7 @@
-document.querySelectorAll(".slider-container").forEach((container) => {
-  const slider = container.querySelector(".slider");
-  const prevButton = container.querySelector(".prev");
-  const nextButton = container.querySelector(".next");
+document.querySelectorAll(".main-slider-container").forEach((container) => {
+  const slider = container.querySelector(".main-slider");
+  const prevButton = container.querySelector(".main-prev");
+  const nextButton = container.querySelector(".main-next");
 
   // Get all slides within the slider
   const slides = Array.from(slider.children);
@@ -24,14 +24,22 @@ document.querySelectorAll(".slider-container").forEach((container) => {
   nextButton.addEventListener("click", () => {
     if (currentIndex < slides.length - 1) {
       currentIndex++;
-      updateSliderPosition();
+      const adjustedWidth = slides[currentIndex].offsetWidth; // Use offsetWidth here
+      slider.scrollTo({
+        left: currentIndex * adjustedWidth,
+        behavior: "smooth",
+      });
     }
   });
 
   prevButton.addEventListener("click", () => {
     if (currentIndex > 0) {
       currentIndex--;
-      updateSliderPosition();
+      const adjustedWidth = slides[currentIndex].offsetWidth; // Use offsetWidth here
+      slider.scrollTo({
+        left: currentIndex * adjustedWidth,
+        behavior: "smooth",
+      });
     }
   });
 

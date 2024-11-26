@@ -1,15 +1,15 @@
-<div class="slider-container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
-    <button class="prev absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-500 text-white p-2 rounded-full">
+<div class="main-slider-container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
+    <button class="main-prev absolute -left-4 top-1/2 transform -translate-y-1/2  text-black p-2 rounded-full">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
         </svg>
     </button>
-    <button class="next absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-500 text-white p-2 rounded-full">
+    <button class="main-next absolute -right-4 top-1/2 transform -translate-y-1/2  text-black p-2 rounded-full">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
         </svg>
     </button>
-    <div class="slider flex overflow-hidden max-w-[95%] mx-auto bg-gray-200 text-black">
+    <div class="main-slider flex overflow-hidden max-w-full mx-auto bg-gray-200 text-black rounded-lg">
         <% articles.forEach(article => { %>
         <div class="flex-shrink-0 grid grid-cols-[6fr_4fr] w-full h-full gap-4">
             <!-- Image Section -->
@@ -36,7 +36,7 @@
                 <!-- Categories -->
                 <div class="my-2 flex flex-wrap gap-2">
                     <% article.categories.forEach(category => { %>
-                    <span class="bg-[#3E3232] opacity-75 px-2 py-1 rounded-md text-sm sm:text-md text-white">
+                    <span class="bg-[#3E3232] opacity-75 px-2 py-1 rounded-md cursor-pointer text-sm sm:text-md text-white hover:bg-[#6a5757]">
                         <%= category %>
                     </span>
                     <% }); %>
