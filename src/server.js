@@ -1,13 +1,21 @@
 import express from 'express';
 import ejs from 'ejs';
+import createDb from './config/db.js';
+import articleRoute from './routes/articleRoute.js';
 
 const app = express();
 
 // Set EJS as the view engine
 app.set('view engine', 'ejs');
 
+// Connect to the database
+createDb();
+
 // Serve static files
 app.use(express.static('public'));
+app.use(express.json());
+
+app.use('/api/articles', articleRoute);
 
 // Render the index page
 app.get('/', (req, res) => {
