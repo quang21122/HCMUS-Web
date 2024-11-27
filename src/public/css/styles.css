@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.blur-overlay {
+  position: absolute;
+  top: 0;
+  right: 2%;
+  height: 100%;
+  width: 130px;
+  background: linear-gradient(to left, rgb(255, 255, 255), transparent);
+  pointer-events: none;
+  filter: blur(16px);
+  z-index: 2;
+}
