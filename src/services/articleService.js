@@ -1,6 +1,23 @@
 import { readFile } from 'fs/promises';
 import Article from '../models/Article.js';
 
+const readArticle = async (id) => {
+    try {
+        // Find the article by ID
+        const article = await Article
+            .findById(id)
+            .exec();
+        
+        // Return the article or a not found message
+        return article || { error: "Article not found", status: 404 };
+    }
+    catch (error) {
+        // Log the error and return a failure response
+        console.error("Error reading article:", error);
+        return { error: error.message, status: 500 };
+    }
+};
+
 const createArticle = async (data) => {
     const articleData = {
         name: data["Title"],
@@ -53,4 +70,38 @@ const importArticlesFromLocal = async () => {
     return results;
 }
 
-export default { createArticle, createMultipleArticles, importArticlesFromLocal };
+const updateArticle = async (id, data) => {
+    try {
+        // Find the article by ID and update with the provided data
+        const updatedArticle = await Article
+            .updateOne({ _id: id }, data)
+            .exec();
+        
+        // Return the updated article or a not found message
+        return updatedArticle || { error: "Article not found", status: 404 };
+    }
+    catch (error) {
+        // Log the error and return a failure response
+        console.error("Error updating article:", error);
+        return { error: error.message, status: 500 };
+    }
+}
+
+const deleteArticle = async (id) => {
+    try {
+        // Find the article by ID and delete it
+        const deletedArticle = await Article
+            .deleteOne({ _id: id })
+            .exec();
+        
+        // Return the deleted article or a not found message
+        return deletedArticle || { error: "Article not found", status: 404 };
+    }
+    catch (error) {
+        // Log the error and return a failure response
+        console.error("Error deleting article:", error);
+        return { error: error.message, status: 500 };
+    }
+}
+
+export default { createArticle, createMultipleArticles, importArticlesFromLocal, readArticle, updateArticle, deleteArticle };

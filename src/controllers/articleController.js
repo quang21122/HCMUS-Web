@@ -43,4 +43,63 @@ const importArticles = async (req, res) => {
     }
 }
 
-export default { createArticle, importArticles };
+const readArticle = async (req, res) => {
+    try {
+        const id = req.params;
+        const article = await articleService.readArticle(id);
+
+        if (article.error) {
+            return res.status(article.status).json(article.error);
+        }
+
+        return res.status(200).json({
+            data: article
+        });
+
+    } catch (err) {
+        return res.status(400).json({
+            message: err.message
+        });
+    }
+}
+
+const updateArticle = async (req, res) => {
+    try {
+        const id = req.params;
+        const data = req.body;
+        const result = await articleService.updateArticle(id, data);
+
+        if (result.error) {
+            return res.status(result.status).json(result.error);
+        }
+
+        return res.status(200).json({
+            data: result
+        });
+    } catch (err) {
+        return res.status(400).json({
+            message: err.message
+        });
+    }
+}
+
+const deleteArticle = async (req, res) => {
+    try {
+        const id = req.params;
+        const result = await articleService.deleteArticle(id);
+
+        if (result.error) {
+            return res.status(result.status).json(result.error);
+        }
+
+        return res.status(200).json({
+            data: result
+        });
+    } catch (err) {
+        return res.status(400).json({
+            message: err.message
+        });
+    }
+}
+
+export default { createArticle, importArticles, readArticle, updateArticle, deleteArticle };
