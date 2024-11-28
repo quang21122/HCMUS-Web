@@ -1,35 +1,18 @@
-// getArticles.js
 import fs from "fs";
 
 export const getArticles = () => {
-  const data = fs.readFileSync("crawler.json", "utf8");
+  const data = fs.readFileSync("crawler-1.json", "utf8");
   const articles = JSON.parse(data);
 
   const articleDetails = articles
     .map((article) => {
       try {
-        // Ensure the 'Category' field is parsed correctly
-        let categories = [];
-        if (article.Category && article.Category.trim()) {
-          let fixedCategory = article.Category.replace(/'/g, '"');
-          categories = JSON.parse(fixedCategory); // Parse the JSON string
-        }
-
-        // Xử lý danh sách tags
-        let tags = [];
-        if (article["List tag a"] && Array.isArray(article["List tag a"])) {
-          tags = article["List tag a"]
-            .map((tagString) => {
-              let fixedTagString = tagString.replace(/'/g, '"');
-              try {
-                return JSON.parse(fixedTagString); // Parse chuỗi thành mảng [tag, url]
-              } catch (err) {
-                console.error(`Error parsing tag string: ${tagString}`);
-                return null;
-              }
-            })
-            .filter((tag) => tag !== null); // Lọc bỏ các tag bị lỗi
-        }
+        // Lấy category và subcategories từ mảng Category
+        const categories = Array.isArray(article.Category)
+          ? article.Category
+          : [];
+        const category = categories[0] || null; // Phần tử đầu tiên
+        const subcategories = categories.slice(1); // Các phần tử còn lại
 
         // Trả về chi tiết bài viết
         return {
@@ -38,8 +21,11 @@ export const getArticles = () => {
           author: article["Author"],
           date: article["Date"],
           content: article["Content"],
-          categories: categories,
-          tags: tags, // Trả về danh sách tags đã xử lý
+          category, // Danh mục chính
+          subcategories, // Danh mục phụ
+          tags: Array.isArray(article["List tag a"])
+            ? article["List tag a"]
+            : [], // List tag a
         };
       } catch (err) {
         console.error(`Error parsing article data: ${err}`);

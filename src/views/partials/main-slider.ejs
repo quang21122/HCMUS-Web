@@ -10,46 +10,67 @@
         </svg>
     </button>
     <div class="main-slider flex overflow-hidden max-w-full mx-auto bg-gray-200 text-black rounded-lg">
-        <% articles.forEach(article => { %>
-        <div class="flex-shrink-0 grid grid-cols-[6fr_4fr] w-full h-full gap-4">
-            <!-- Image Section -->
-            <div class="relative rounded-lg w-full h-full p-4">
-                <!-- Điều chỉnh chiều cao ảnh theo tỷ lệ -->
-                <div class="relative w-full h-0 pb-[56.25%]">
-                    <img src="<%= article.topImage %>" alt="<%= article.title %>" class="object-cover absolute top-0 left-0 w-full h-full rounded-lg">
+        <% articles.forEach(article=> { %>
+            <div class="flex-shrink-0 grid grid-cols-[6fr_4fr] w-full h-full gap-4">
+                <!-- Image Section -->
+                <div class="relative rounded-lg w-full h-full p-4">
+                    <!-- Điều chỉnh chiều cao ảnh theo tỷ lệ -->
+                    <div class="relative w-full h-0 pb-[56.25%]">
+                        <img src="<%= article.topImage %>" alt="<%= article.title %>"
+                            class="object-cover absolute top-0 left-0 w-full h-full rounded-lg">
+                    </div>
+                </div>
+
+                <!-- Content Section -->
+                <div class="px-4 flex flex-col justify-center space-y-6 w-full h-full">
+                    <!-- Date -->
+                    <div class="text-sm text-gray-500">
+                        <%= article.date %>
+                    </div>
+                    <!-- Title -->
+                    <div class="">
+                        <span class="font-semibold text-2xl sm:text-3xl block line-clamp-1">
+                            #<%= article.title %>
+                        </span>
+                    </div>
+
+                    <!-- Categories -->
+                    <div class="my-2">
+                        <% if (article.category && article.category.length> 0) { %>
+                            <!-- Main Category -->
+                            <div class="flex flex-wrap gap-2">
+                                <span class="bg-gray-300 px-2 py-1 rounded-md text-sm sm:text-md text-black">
+                                    <%= article.category %>
+                                </span>
+                            </div>
+                            <% if (article.subcategories && article.subcategories.length> 0) { %>
+                                <!-- Subcategories -->
+                                <div class="mt-2 flex flex-wrap gap-2">
+                                    <% article.subcategories.forEach(subcategory=> { %>
+                                        <span
+                                            class="bg-[#3E3232] opacity-75 px-2 py-1 rounded-md cursor-pointer text-sm sm:text-md text-white hover:bg-[#6a5757]">
+                                            <%= subcategory %>
+                                        </span>
+                                        <% }); %>
+                                </div>
+                                <% } %>
+                                    <% } else { %>
+                                        <!-- Fallback for Missing Category -->
+                                        <span class="text-gray-500 italic">
+                                            No categories available
+                                        </span>
+                                        <% } %>
+                    </div>
+
+
+                    <!-- Content -->
+                    <div class="rounded-lg max-w-full h-auto">
+                        <p class="text-lg text-black line-clamp-3">
+                            <%= article.content %>
+                        </p>
+                    </div>
                 </div>
             </div>
-
-            <!-- Content Section -->
-            <div class="px-4 flex flex-col justify-center space-y-6 w-full h-full">
-                <!-- Date -->
-                <div class="text-sm text-gray-500">
-                    <%= article.date %>
-                </div>
-                <!-- Title -->
-                <div class="">
-                    <span class="font-semibold text-2xl sm:text-3xl block line-clamp-1">
-                        #<%= article.title %>
-                    </span>
-                </div>
-
-                <!-- Categories -->
-                <div class="my-2 flex flex-wrap gap-2">
-                    <% article.categories.forEach(category => { %>
-                    <span class="bg-[#3E3232] opacity-75 px-2 py-1 rounded-md cursor-pointer text-sm sm:text-md text-white hover:bg-[#6a5757]">
-                        <%= category %>
-                    </span>
-                    <% }); %>
-                </div>
-
-                <!-- Content -->
-                <div class="rounded-lg max-w-full h-auto">
-                    <p class="text-lg text-black line-clamp-3">
-                        <%= article.content %>
-                    </p>
-                </div>
-            </div>
-        </div>
-        <% }); %>
+            <% }); %>
     </div>
 </div>

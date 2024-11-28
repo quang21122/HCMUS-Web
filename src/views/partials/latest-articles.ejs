@@ -96,12 +96,12 @@
         // Function to update active page button style
         const updateActivePage = (activePage) => {
             paginationButtons.forEach(button => {
-                button.classList.remove('bg-blue-500', 'text-white');
+                button.classList.remove('bg-blue-400', 'text-white');
                 button.classList.add('bg-white', 'text-black');
             });
             const activeButton = document.querySelector(`[data-page='${activePage}']`);
             activeButton.classList.remove('hover:bg-gray-100');
-            activeButton.classList.add('bg-blue-500', 'text-white');
+            activeButton.classList.add('bg-blue-400', 'text-white');
         };
 
         // Add click event to pagination buttons

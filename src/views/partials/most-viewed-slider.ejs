@@ -4,12 +4,14 @@
         <h2 class="text-2xl font-semibold text-gray-800 border-l-4 pl-4 border-red-500">Xem nhiều nhất</h2>
         <div class="space-x-2">
             <button class="prev bg-gray-300 text-white p-1 rounded-xl">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                 </svg>
             </button>
             <button class="next bg-gray-400 text-white p-1 rounded-xl">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                 </svg>
             </button>
@@ -18,12 +20,13 @@
 
     <!-- Slider -->
     <div class="most-viewed-slider flex overflow-hidden">
-        <% for (let i = 0; i < articles.length; i += 4) { %>
+        <% for (let i=0; i < articles.length; i +=4) { %>
             <div class="flex-shrink-0 grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 gap-4 w-full mr-4">
-                <% articles.slice(i, i + 4).forEach(article => { %>
+                <% articles.slice(i, i + 4).forEach(article=> { %>
                     <div class="flex flex-col items-center space-y-4 bg-white rounded-lg shadow-md p-4">
                         <div class="relative w-full h-48">
-                            <img src="<%= article.topImage %>" alt="<%= article.title %>" class="object-cover w-full h-full rounded-lg">
+                            <img src="<%= article.topImage %>" alt="<%= article.title %>"
+                                class="object-cover w-full h-full rounded-lg">
                         </div>
                         <h3 class="font-semibold text-lg text-gray-800 line-clamp-1">
                             <%= article.title %>
@@ -33,16 +36,28 @@
                         </p>
                         <!-- categories -->
                         <div class="flex flex-wrap gap-2 justify-start mr-auto">
-                            <% article.categories.forEach(category => { %>
-                                <span class="bg-[#3E3232] opacity-75 px-2 py-1 rounded-md cursor-pointer text-sm text-white hover:bg-[#6a5757]">
-                                    <%= category %>
-                                </span>
-                            <% }); %>
+                            <% if (article.subcategories && article.subcategories.length > 0) { 
+                                %>
+                                <!-- Hiển thị các subcategory nếu có -->
+                                <% article.subcategories.forEach(category=> { %>
+                                    <span
+                                        class="bg-[#3E3232] opacity-75 px-2 py-1 rounded-md cursor-pointer text-sm text-white hover:bg-[#6a5757]">
+                                        <%= category %>
+                                    </span>
+                                    <% }); %>
+                                        <% } else { %>
+                                            <!-- Hiển thị category (parent) nếu không có subcategories -->
+                                            <span
+                                                class="bg-[#3E3232] opacity-70 px-2 py-1 rounded-md cursor-pointer text-sm text-white">
+                                                <%= article.category %>
+                                            </span>
+                                            <% } %>
                         </div>
+
                     </div>
-                <% }); %>
+                    <% }); %>
             </div>
-        <% } %>
+            <% } %>
     </div>
 
 </div>
