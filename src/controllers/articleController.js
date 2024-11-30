@@ -69,12 +69,14 @@ const readArticle = async (req, res) => {
 
 const updateArticle = async (req, res) => {
     try {
-        const {id, ...data} = req.body;
+        const id = req.query._id;
 
         // Kiểm tra nếu không có _id trong query
         if (!id) {
             return res.status(400).json({ error: "Missing _id parameter" });
         }
+
+        const data = req.body;
         
         const result = await articleService.updateArticle(id, data);
 
