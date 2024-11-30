@@ -1,0 +1,62 @@
+[
+  {
+    "name": "Duc Thien",
+    "role": "guest",
+    "email": "dt@example.com",
+    "password": "hashed_password_123",
+    "ban": false,
+    "dob": "1990-05-20T00:00:00.000Z",
+    "createdAt": "2024-01-01T10:00:00.000Z",
+    "subscriptionExpiry": "2025-01-01T10:00:00.000Z",
+    "penName": "dthien",
+    "category": "technology"
+  },
+  {
+    "name": "Duy Bao",
+    "role": "subscriber",
+    "email": "db@example.com",
+    "password": "hashed_password_456",
+    "ban": false,
+    "dob": "1985-08-15T00:00:00.000Z",
+    "createdAt": "2024-02-15T12:30:00.000Z",
+    "subscriptionExpiry": null,
+    "penName": "duytech",
+    "category": "health"
+  },
+  {
+    "name": "Thai Thien",
+    "role": "writer",
+    "email": "tt@example.com",
+    "password": "hashed_password_789",
+    "ban": true,
+    "dob": "1992-11-30T00:00:00.000Z",
+    "createdAt": "2024-03-10T15:00:00.000Z",
+    "subscriptionExpiry": null,
+    "penName": "tthien",
+    "category": "travel"
+  },
+  {
+    "name": "Quang Tom",
+    "role": "administrator",
+    "email": "qt@example.com",
+    "password": "hashed_password_012",
+    "ban": false,
+    "dob": "2000-02-20T00:00:00.000Z",
+    "createdAt": "2024-05-05T08:00:00.000Z",
+    "subscriptionExpiry": "2024-12-31T23:59:59.000Z",
+    "penName": "quangtom",
+    "category": "sports"
+  },
+  {
+    "name": "Anh 5",
+    "role": "guest",
+    "email": "a5@example.com",
+    "password": "hashed_password_012",
+    "ban": false,
+    "dob": "2000-02-20T00:00:00.000Z",
+    "createdAt": "2024-05-05T08:00:00.000Z",
+    "subscriptionExpiry": "2024-12-31T23:59:59.000Z",
+    "penName": "anh5",
+    "category": "sports"
+  }
+]

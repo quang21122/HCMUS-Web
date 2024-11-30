@@ -1,7 +1,8 @@
-import express from 'express';
+import express from 'express';  
 import ejs from 'ejs';
 import createDb from './config/db.js';
 import articleRoute from './routes/articleRoute.js';
+import userRoute from './routes/userRoute.js'
 
 const app = express();
 
@@ -16,6 +17,8 @@ app.use(express.static('public'));
 app.use(express.json());
 
 app.use('/api/articles', articleRoute);
+app.use('/api/users', userRoute);
+
 
 // Render the index page
 app.get('/', (req, res) => {

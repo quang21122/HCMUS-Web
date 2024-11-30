@@ -1,8 +1,14 @@
 import { readFile } from 'fs/promises';
 import Article from '../models/Article.js';
+import mongoose from "mongoose";
+
 
 const readArticle = async (id) => {
     try {
+        // Kiểm tra ID hợp lệ
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return { error: "Invalid ID format", status: 400 };
+        }
         // Find the article by ID
         const article = await Article
             .findById(id)
@@ -72,6 +78,10 @@ const importArticlesFromLocal = async () => {
 
 const updateArticle = async (id, data) => {
     try {
+        // Kiểm tra ID hợp lệ
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return { error: "Invalid ID format", status: 400 };
+        }
         // Find the article by ID and update with the provided data
         const updatedArticle = await Article
             .updateOne({ _id: id }, data)
@@ -89,6 +99,10 @@ const updateArticle = async (id, data) => {
 
 const deleteArticle = async (id) => {
     try {
+        // Kiểm tra xem id có phải là ObjectId hợp lệ không
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return { error: "Invalid ID format", status: 400 };
+        }
         // Find the article by ID and delete it
         const deletedArticle = await Article
             .deleteOne({ _id: id })
