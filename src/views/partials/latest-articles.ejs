@@ -1,4 +1,4 @@
-<div class="max-w-[100rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
+<div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
     <h2 class="text-2xl font-semibold text-gray-800 border-l-4 pl-4 border-red-500">Mới nhất</h2>
     <div class="col-span-1 my-auto overflow-hidden mt-4">
         <div class="slider-wrapper top-category-slider flex overflow-hidden">
@@ -50,7 +50,7 @@
     // Pagination logic
     document.addEventListener('DOMContentLoaded', () => {
         const itemsPerPage = 6;
-        const articles = <%- JSON.stringify(articles) %>;
+        const articles = <%= JSON.stringify(articles) %>;
         const totalPages = Math.ceil(articles.length / itemsPerPage);
 
         const articlesContainer = document.getElementById('articles-container');
