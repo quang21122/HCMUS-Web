@@ -35,25 +35,31 @@
                             <%= article.content %>
                         </p>
                         <!-- categories -->
-                        <div class="flex flex-wrap gap-2 justify-start mr-auto">
-                            <% if (article.subcategories && article.subcategories.length > 0) { 
+                        <div class="flex flex-wrap flex-row gap-2 justify-start mr-auto">
+                            <% if (article.subcategories && article.subcategories.length> 0) {
                                 %>
                                 <!-- Hiển thị các subcategory nếu có -->
                                 <% article.subcategories.forEach(category=> { %>
                                     <span
-                                        class="bg-[#3E3232] opacity-75 px-2 py-1 rounded-md cursor-pointer text-sm text-white hover:bg-[#6a5757]">
+                                        class="text-sm text-cyan-500">
+
                                         <%= category %>
                                     </span>
                                     <% }); %>
                                         <% } else { %>
                                             <!-- Hiển thị category (parent) nếu không có subcategories -->
                                             <span
-                                                class="bg-[#3E3232] opacity-70 px-2 py-1 rounded-md cursor-pointer text-sm text-white">
+                                                class="text-sm text-cyan-500">
                                                 <%= article.category %>
                                             </span>
                                             <% } %>
+                            <span class="text-sm flex items-center text-cyan-500">
+                                | 
+                            </span>
+                            <span class="text-sm flex items-center text-cyan-500">
+                                <%= article.date.split(',')[1].trim().split(',')[0] %>
+                            </span>
                         </div>
-
                     </div>
                     <% }); %>
             </div>

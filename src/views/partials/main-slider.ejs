@@ -22,52 +22,50 @@
                 </div>
 
                 <!-- Content Section -->
-                <div class="px-4 flex flex-col justify-center space-y-6 w-full h-full">
+                <div class="px-4 flex flex-col space-y-6 w-full h-full">
                     <!-- Date -->
-                    <div class="text-sm text-gray-500">
-                        <%= article.date %>
+                    <div class="text-xl text-gray-500 flex justify-end">
+                        <%= article.date.split(',')[1].trim().split(',')[0] %>
                     </div>
-                    <!-- Title -->
-                    <div class="">
-                        <span class="font-semibold text-2xl sm:text-3xl block line-clamp-1">
+
+                    <div class="flex flex-col pt-16">
+                        <!-- Title -->
+                        <span class="font-semibold text-2xl sm:text-3xl block pb-4 line-clamp-1">
                             <%= article.title %>
                         </span>
-                    </div>
-
-                    <!-- Categories -->
-                    <div class="my-2">
-                        <% if (article.category && article.category.length> 0) { %>
-                            <!-- Main Category -->
-                            <div class="flex flex-wrap gap-2">
-                                <span class="bg-gray-300 px-2 py-1 rounded-md text-sm sm:text-md text-black">
-                                    <%= article.category %>
-                                </span>
-                            </div>
-                            <% if (article.subcategories && article.subcategories.length> 0) { %>
-                                <!-- Subcategories -->
-                                <div class="mt-2 flex flex-wrap gap-2">
-                                    <% article.subcategories.forEach(subcategory=> { %>
-                                        <span
-                                            class="bg-[#3E3232] opacity-75 px-2 py-1 rounded-md cursor-pointer text-sm sm:text-md text-white hover:bg-[#6a5757]">
-                                            <%= subcategory %>
-                                        </span>
-                                        <% }); %>
+                        <!-- Category -->
+                        <div class="my-2">
+                            <% if (article.category && article.category.length> 0) { %>
+                                <!-- Main Category -->
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="bg-gray-300 px-2 py-1 rounded-md text-sm sm:text-md text-black">
+                                        <%= article.category %>
+                                    </span>
                                 </div>
-                                <% } %>
-                                    <% } else { %>
-                                        <!-- Fallback for Missing Category -->
-                                        <span class="text-gray-500 italic">
-                                            No categories available
-                                        </span>
-                                        <% } %>
-                    </div>
-
-
-                    <!-- Content -->
-                    <div class="rounded-lg max-w-full h-auto">
-                        <p class="text-lg text-black line-clamp-3">
-                            <%= article.content %>
-                        </p>
+                                <% if (article.subcategories && article.subcategories.length> 0) { %>
+                                    <!-- Subcategories -->
+                                    <div class="mt-2 flex flex-wrap gap-2">
+                                        <% article.subcategories.forEach(subcategory=> { %>
+                                            <span
+                                                class="bg-[#3E3232] opacity-75 px-2 py-1 rounded-md cursor-pointer text-sm sm:text-md text-white hover:bg-[#6a5757]">
+                                                <%= subcategory %>
+                                            </span>
+                                            <% }); %>
+                                    </div>
+                                    <% } %>
+                                        <% } else { %>
+                                            <!-- Fallback for Missing Category -->
+                                            <span class="text-gray-500 italic">
+                                                No categories available
+                                            </span>
+                                            <% } %>
+                        </div>
+                        <!-- Content -->
+                        <div class="rounded-lg max-w-full h-auto">
+                            <p class="text-lg text-black line-clamp-3">
+                                <%= article.content %>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
