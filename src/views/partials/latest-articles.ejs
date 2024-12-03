@@ -4,44 +4,58 @@
         <div class="slider-wrapper top-category-slider flex overflow-hidden">
             <!-- Fixed grid layout: 2 columns and multiple rows -->
             <div id="articles-container" class="grid grid-cols-2 gap-4 w-full">
-                <% 
-                    const itemsPerPage = 6;
-                    const totalPages = Math.ceil(articles.length / itemsPerPage);
-                %>
-                <% articles.slice(0, itemsPerPage).forEach((article) => { %>
-                    <div class="article-item bg-white shadow-lg rounded-lg border-gray-100 border">
-                        <div class="grid grid-cols-10 gap-2 w-full h-full p-4">
-                            <!-- Image -->
-                            <div class="col-span-5 relative flex flex-col justify-between">
-                                <div class="relative w-full h-48 overflow-hidden">
-                                    <img src="<%= article.topImage %>" alt="<%= article.title %>"
-                                        class="object-cover w-full h-full rounded-lg">
+                <% const itemsPerPage=10; const totalPages=Math.ceil(articles.length / itemsPerPage); %>
+                    <% articles.slice(0, itemsPerPage).forEach((article)=> { %>
+                        <div class="article-item bg-white shadow-lg rounded-lg border-gray-100 border">
+                            <div class="grid grid-cols-10 gap-2 w-full h-full p-4">
+                                <!-- Image -->
+                                <div class="col-span-5 relative flex flex-col justify-between">
+                                    <div class="relative w-full h-48 overflow-hidden">
+                                        <img src="<%= article.topImage %>" alt="<%= article.title %>"
+                                            class="object-cover w-full h-full rounded-lg">
+                                    </div>
+                                </div>
+                                <!-- Title and Content -->
+                                <div class="col-span-5 flex flex-col justify-around space-y-4">
+                                    <h3 class="font-semibold text-lg text-black line-clamp-1">
+                                        <%= article.title %>
+                                    </h3>
+                                    <div class="flex flex-row space-x-2">
+                                        <div
+                                            class="p-1 flex text-sm justify-center border border-black rounded-xl w-[28%]">
+                                            <%= article.category %>
+                                        </div>
+                                        <% if (article.subcategories && article.subcategories.length> 0) {
+                                            %>
+                                            <!-- Hiển thị các subcategory nếu có -->
+                                            <% article.subcategories.forEach(category=> { %>
+                                                <span class="text-sm text-cyan-500 flex justify-center items-center">
+
+                                                    #<%= category %>
+                                                </span>
+                                                <% }) }; %>
+                                    </div>
+                                    <p class="text-sm text-black line-clamp-3">
+                                        <%= article.content %>
+                                    </p>
+                                    <p class="text-sm text-gray-400">
+                                        <%= article.author %> | <%= article.date.split(',')[1].trim().split(',')[0]
+                                                || 'No date available' %>
+                                    </p>
                                 </div>
                             </div>
-                            <!-- Title and Content -->
-                            <div class="col-span-5 flex flex-col justify-around space-y-4">
-                                <h3 class="font-semibold text-lg text-black line-clamp-1">
-                                    <%= article.title %>
-                                </h3>
-                                <p class="text-sm text-black line-clamp-5">
-                                    <%= article.content %>
-                                </p>
-                                <p class="text-sm text-cyan-500">
-                                    <%= article.date %>
-                                </p>
-                            </div>
                         </div>
-                    </div>
-                <% }); %>
+                        <% }); %>
             </div>
         </div>
         <!-- Pagination -->
         <div id="pagination" class="flex justify-center space-x-2 mt-6">
-            <% for (let i = 1; i <= totalPages; i++) { %>
-                <button data-page="<%= i %>" class="pagination-btn px-4 py-2 border border-gray-300 bg-white rounded hover:bg-gray-100">
+            <% for (let i=1; i <=totalPages; i++) { %>
+                <button data-page="<%= i %>"
+                    class="pagination-btn px-4 py-2 border border-gray-300 bg-white rounded hover:bg-gray-100">
                     <%= i %>
                 </button>
-            <% } %>
+                <% } %>
         </div>
     </div>
 </div>
@@ -49,7 +63,7 @@
 <script>
     // Pagination logic
     document.addEventListener('DOMContentLoaded', () => {
-        const itemsPerPage = 6;
+        const itemsPerPage = 10;
         const articles = <%= JSON.stringify(articles) %>;
         const totalPages = Math.ceil(articles.length / itemsPerPage);
 

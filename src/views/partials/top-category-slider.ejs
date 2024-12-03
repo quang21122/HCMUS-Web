@@ -32,10 +32,10 @@
                                 <!-- Categories -->
                                 <div class="absolute top-0 left-0 p-2">
                                     <div class="flex flex-wrap gap-2 justify-start">
-                                            <span
-                                                class="bg-white opacity-70 px-2 py-1 rounded-md cursor-pointer text-sm text-black">
-                                                <%= firstArticle.category %>
-                                            </span>
+                                        <span
+                                            class="bg-white opacity-70 px-2 py-1 rounded-md cursor-pointer text-sm text-black">
+                                            <%= firstArticle.category %>
+                                        </span>
                                     </div>
                                 </div>
                                 <!-- Title and Content -->
@@ -50,7 +50,8 @@
                                             <%= firstArticle.content || 'No content available' %>
                                         </p>
                                         <p class="text-sm text-black">
-                                            <%= firstArticle.author %> | <%=firstArticle.date.split(',')[1].trim().split(',')[0]
+                                            <%= firstArticle.author %> |
+                                                <%=firstArticle.date.split(',')[1].trim().split(',')[0]
                                                     || 'No date available' %>
                                         </p>
                                     </div>
@@ -84,30 +85,37 @@
                                                                 <img src="<%= article.topImage || '/path/to/default-image.jpg' %>"
                                                                     alt="<%= article.title || 'No title available' %>"
                                                                     class="object-cover w-full h-full rounded-lg">
+                                                                <!-- Categories -->
+                                                                <div class="absolute top-0 left-0 p-2">
+                                                                    <div class="flex flex-wrap gap-2 justify-start">
+                                                                        <span
+                                                                            class="bg-black opacity-70 px-2 py-1 rounded-md cursor-pointer text-sm text-white">
+                                                                            <%= article.category %>
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                         <!-- Title and Content -->
-                                                        <div class="col-span-5 flex flex-col justify-between space-y-2">
+                                                        <div class="col-span-5 flex flex-col justify-center space-y-8">
                                                             <div>
                                                                 <h3
                                                                     class="font-semibold text-lg text-black line-clamp-1">
                                                                     <%= article.title || 'No title available' %>
                                                                 </h3>
-                                                                <div class="text-sm text-black line-clamp-3">
+                                                                <div class="text-sm text-black line-clamp-4">
                                                                     <%= article.content || 'No content available' %>
                                                                 </div>
                                                             </div>
-                                                            <div class="flex">
-                                                                <p class="text-sm text-cyan-500">
-                                                                    <%= article.author
-                                                                        || 'No date available' %>
+                                                            <div class="flex flex-col">
+                                                                <p class="text-sm text-cyan-500 line-clamp-1">
+                                                                    <%= article.author || 'No author available' %>
                                                                 </p>
                                                                 <p class="text-sm text-cyan-500">
                                                                     <%= article.date.split(',')[1].trim().split(',')[0]
                                                                         || 'No date available' %>
                                                                 </p>
                                                             </div>
-
                                                         </div>
                                                     </div>
                                                 </div>
