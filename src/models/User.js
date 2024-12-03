@@ -1,7 +1,9 @@
 import { Schema, model } from 'mongoose';
+import mongoose from 'mongoose';
+
 
 const userSchema = new Schema({
-    id: { type: Schema.Types.ObjectId, auto: true, required: true, unique: true },
+    id: { type: mongoose.Types.ObjectId, auto: true, required: true, unique: true },
     name: { type: String, required: true },
     role: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -10,7 +12,7 @@ const userSchema = new Schema({
     dob: { type: Date, required: true },
     createdAt: { type: Date, default: Date.now },
     subscriptionExpiry: { type: Date },
-    pen_name: { type: String },
+    penName: { type: String },
     category: { type: String }
 });
 

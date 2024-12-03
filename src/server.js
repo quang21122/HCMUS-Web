@@ -24,6 +24,9 @@ app.set("view engine", "ejs");
 // Set the views directory
 app.set("views", path.join(__dirname, "views"));
 
+// Connect to the database
+createDb();
+
 // Serve static files
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -47,7 +50,21 @@ app.get("/", (req, res) => {
     categories,
     articles,
   });
-});
+
+app.use(express.static('public'));
+app.use(express.json());
+
+app.use('/api/articles', articleRoute);
+app.use('/api/users', userRoute);
+
+
+// Render the index page
+app.get('/', (req, res) => {
+  const data = {
+    title: 'SSR Web',
+    message: 'This is a dynamic message from the server'
+  };
+  res.render('index', data);
 
 app.listen(3000, () => {
   console.log("Server listening on port 3000");

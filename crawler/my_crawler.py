@@ -112,6 +112,7 @@ if __name__ == '__main__':
         print(f'Authors : {authors}\n')
     
         date_published, category, a_list = get_article_by_Soup(url)
+
         print(f'Date : {date_published}\n')
         print(f'Category : {category}\n')
         print(f'List : {a_list}\n')
@@ -127,8 +128,8 @@ if __name__ == '__main__':
             "Author": str(authors) if authors else "",
             "Date": str(date_published) if date_published else "",
             "Content": str(text) if text else "",
-            "Category": str(category) if category else "",
-            "List tag a": [str(tag) for tag in a_list] if a_list else [],
+            "Category": category if category else "",
+            "List tag a": [tag for tag in a_list] if a_list else [],
             # "Comments": {
             #     "Date cmt": [str(date) for date in date_cmt],
             #     "Nickname": [str(name) for name in nickname],
