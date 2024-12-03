@@ -5,6 +5,11 @@ import connectLiveReload from "connect-livereload";
 import path from "path";
 import { fileURLToPath } from "url";
 import { getArticles } from "./getArticles.js";
+import { getArticles1 } from "./getArticles-1.js";
+import { connectDB } from "./db.js";
+import NodeCache from "node-cache";
+
+const cache = new NodeCache({ stdTTL: 300 });
 
 // Tạo __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -49,6 +54,53 @@ app.get("/", (req, res) => {
   });
 });
 
-app.listen(3000, () => {
-  console.log("Server listening on port 3000");
+
+// Modified article route with caching
+app.get("/article/:id", async (req, res) => {
+  try {
+    const articleId = req.params.id;
+    const cacheKey = `article_${articleId}`;
+
+    // Check cache first
+    const cachedArticle = cache.get(cacheKey);
+    if (cachedArticle) {
+      return res.render("pages/ArticlePage", cachedArticle);
+    }
+
+    // Get article by ID
+    const response = await getArticles1(articleId);
+    
+    if (!response.success) {
+      return res.status(404).send(response.error);
+    }
+
+    const article = response.data;
+    const articleData = {
+      title: article.name,
+      article,
+    };
+
+    // Save to cache
+    cache.set(cacheKey, articleData);
+
+    res.render("pages/ArticlePage", articleData);
+  } catch (error) {
+    console.error("Route handler error:", error);
+    res.status(500).send("Server error");
+  }
 });
+
+const startServer = async () => {
+  try {
+    await connectDB();
+
+    app.listen(3000, () => {
+      console.log("Server listening on port 3000");
+    });
+  } catch (error) {
+    console.error("Server startup error:", error);
+    process.exit(1);
+  }
+};
+
+startServer();
