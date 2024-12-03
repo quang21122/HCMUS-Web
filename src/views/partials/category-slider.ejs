@@ -1,35 +1,50 @@
 <div class="category-slider-container max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-4 relative">
-    <button class="category-prev absolute -left-4 top-1/2 transform -translate-y-1/2 text-black p-2 rounded-full">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-        </svg>
-    </button>
-    <button class="category-next absolute -right-4 top-1/2 transform -translate-y-1/2 text-black p-2 rounded-full">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-        </svg>
-    </button>
-    <div class="category-slider flex space-x-4 overflow-visible max-w-full mx-auto" id="slider" style="width: 100%;">
-        <% const uniqueCategories=[...new Set(articles.map(article=> article.category))];
-            uniqueCategories.forEach(category => {
-            // Kiểm tra nếu category không phải là chuỗi rỗng
-                if (category !== null) {
-            %>
-            <div class="flex-shrink-0 w-40 group relative overflow-visible hover:cursor-pointer">
-                <div class="relative h-14 rounded-lg overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-r from-gray-500 to-gray-700 opacity-75"></div>
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <span class="text-white font-semibold">
-                            <%= category %>
-                        </span>
-                    </div>
-                </div>
-                <div
-                    class="hidden group-hover:block absolute left-0 top-full mt-2 w-full bg-white 
-                                                                    shadow-lg rounded-lg p-3 border border-gray-200 z-10">
-                    <p class="text-sm text-gray-600">Category details for <%= category %></p>
-                </div>
-            </div>
-            <% } }); %>
+    <div class="category-slider navwrap" id="slider">
+        <ul id="nav" class="nav">
+            <% articles.forEach( article=> {
+                %>
+                <li class="category rounded-lg">
+
+                    <a href="#" class="text-sm text-gray-600">
+                        <%= article.category %>
+                    </a>
+                    <div class="hover:cursor-pointer h-2"></div>
+                    <ul class="dropdown">
+                        <% article.subcategories.forEach( subcategory=> {
+                            %>
+                            <li>
+                                <a href="#" class="text-sm bg-black opacity-70">
+                                    <%= subcategory %>
+                                </a>
+                            </li>
+                            <% } ); %>
+
+                    </ul>
+                </li>
+                <% } ); %>
+        </ul>
     </div>
 </div>
+
+<script>
+    (function () {
+        // detect touch
+        if ("ontouchstart" in document.documentElement) {
+            document.documentElement.className += " touch-device";
+        }
+
+        const scroller = document.querySelector(".navwrap");
+        const dropDown = document.querySelectorAll(".dropdown");
+        scroller.addEventListener("scroll", checkScroll);
+
+        function checkScroll() {
+            document.activeElement.blur();
+            scroller.classList.add("isScrolling");
+            for (let i = 0; i < dropDown.length; i++) {
+                dropDown[i].style.transform =
+                    "translateX(-" + scroller.scrollLeft + "px)";
+            }
+            scroller.classList.remove("isScrolling");
+        }
+    })();
+</script>

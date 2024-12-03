@@ -13,3 +13,160 @@
   filter: blur(16px);
   z-index: 2;
 }
+
+body {
+  font-family: Verdana, Geneva, sans-serif;
+}
+h1 {
+  text-align: center;
+}
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.navwrap {
+  max-width: 100%;
+  margin: auto;
+  overflow-y: auto;
+  white-space: nowrap;
+}
+
+
+.nav {
+  display: table;
+  width: 100%;
+  text-align: center;
+  word-spacing: -9em;
+}
+
+.nav li {
+  display: inline-block;
+  text-align: left;
+  word-spacing: normal;
+  margin-right: 1rem; /* Add spacing between li elements */ /* Optional vertical spacing */
+}
+
+/* Add specific styling for dropdown menu */
+.nav li .dropdown {
+  color: white; /* or any color you want */
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  width: 8rem;
+}
+
+/* Style dropdown items */
+.nav li .dropdown li a {
+  display: block;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s;
+  color: white;
+}
+
+.nav li .dropdown li a:hover {
+  opacity: 0.9;
+}
+
+/* For nested li elements, remove margin */
+.nav li li {
+  display: block;
+  margin-right: 0;
+}
+.nav li > a {
+  position: relative;
+}
+.nav li:hover,
+.nav > li > a:hover,
+.nav li:focus,
+.nav > li > a:focus {
+  z-index: 105;
+}
+.nav li li {
+  display: block;
+}
+.nav > li > a {
+  width: 8rem;
+  display: block;
+  padding: 0.5rem 1rem;
+  background: black;
+  opacity: 0.7;
+  border-radius: 0.5rem;
+  color: #fff;
+  border: 1px solid #000;
+  text-decoration: none;
+  white-space: nowrap;
+  position: relative;
+  text-align: center;
+}
+.nav li:hover > a,
+.nav a:hover,
+.nav li:focus > a,
+.nav a:focus {
+  background: #000;
+}
+.nav ul {
+  position: absolute;
+  z-index: 104;
+  left: -999em;
+  top: 0;
+  opacity: 0;
+  transition: opacity 0.5s, left 0s 0.5s, top 0.5s;
+}
+.nav li:hover > ul {
+  left: auto;
+  top: auto;
+  opacity: 1;
+  transition: opacity 0.5s linear, top 0.5s;
+}
+.nav li:focus-within > ul {
+  left: auto;
+  top: auto;
+  opacity: 1;
+  transition: opacity 0.5s linear, top 0.5s;
+}
+.nav ul ul {
+  transition: opacity 0.4s, left 0s 0.4s, margin 0s 0.4s;
+  z-index: 103;
+  background-color: #eee;
+}
+.nav li li:hover ul {
+  top: auto;
+  margin-left: 100%;
+  transform: translateY(-2.2rem);
+  opacity: 1;
+  transition: opacity 0.5s linear, margin 0.5s;
+}
+.nav li li:focus-within ul {
+  top: auto;
+  margin-left: 100%;
+  transform: translateY(-2.2rem);
+  opacity: 1;
+  transition: opacity 0.5s linear, margin 0.5s;
+}
+
+/* allow touch to play but probably won't work with this scrolling version*/
+.nav .touch-only {
+  display: none;
+  left: -10px;
+}
+.touch-device .nav .touch-only {
+  display: inline-block;
+}
+.touch-device .nav .touch-only a {
+  background: #000;
+  color: #fff;
+}
+
+.wrap {
+  padding: 20px;
+  max-width: 980px;
+  margin: auto;
+  background: #eee;
+}
+
+/* remove hover when scrolling  */
+.isScrolling .nav ul.dropdown {
+  left: -999em;
+  opacity: 0;
+}
