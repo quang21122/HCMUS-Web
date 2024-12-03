@@ -1,0 +1,129 @@
+<div class="top-category-slider-container max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-semibold text-gray-800 border-l-4 pl-4 border-red-500">Top chuyên mục</h2>
+        <div class="space-x-2 z-10">
+            <button class="top-category-prev bg-gray-300 text-white p-1 rounded-xl">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+            <button class="top-category-next bg-gray-400 text-white p-1 rounded-xl">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Slider Container -->
+    <div class="">
+        <div class="grid grid-cols-2 gap-1 w-full">
+            <!-- First Article: 50% width -->
+            <% if (articles && articles.length> 0) { %>
+                <% const firstArticle=articles[0]; %>
+                    <div class="col-span-1">
+                        <div class="relative rounded-lg w-full h-full flex">
+                            <div class="relative w-full flex-grow">
+                                <img src="<%= firstArticle.topImage || '/path/to/default-image.jpg' %>"
+                                    alt="<%= firstArticle.title || 'No title available' %>"
+                                    class="object-cover w-full h-full rounded-lg">
+                                <!-- Categories -->
+                                <div class="absolute top-0 left-0 p-2">
+                                    <div class="flex flex-wrap gap-2 justify-start">
+                                        <span
+                                            class="bg-white opacity-70 px-2 py-1 rounded-md cursor-pointer text-sm text-black">
+                                            <%= firstArticle.category %>
+                                        </span>
+                                    </div>
+                                </div>
+                                <!-- Title and Content -->
+                                <div
+                                    class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-[calc(100%-1rem)] bg-white opacity-70 rounded-lg mb-2">
+                                    <div class="px-4 py-2 bg-white opacity-90 rounded-lg space-y-3">
+                                        <h3
+                                            class="font-semibold flex justify-start text-lg text-center text-black line-clamp-1">
+                                            <%= firstArticle.title || 'No title available' %>
+                                        </h3>
+                                        <p class="text-sm text-black line-clamp-2">
+                                            <%= firstArticle.content || 'No content available' %>
+                                        </p>
+                                        <p class="text-sm text-black">
+                                            <%= firstArticle.author %> |
+                                                <%=firstArticle.date.split(',')[1].trim().split(',')[0]
+                                                    || 'No date available' %>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <% } else { %>
+                        <!-- Fallback for no articles -->
+                        <div class="col-span-2 text-center text-gray-500 italic">
+                            No articles available.
+                        </div>
+                        <% } %>
+
+                            <!-- Remaining Articles: 50% width grid -->
+                            <% if (articles && articles.length> 1) { %>
+                                <div class="col-span-1 my-auto overflow-hidden">
+                                    <div
+                                        class="absolute top-0 right-0 h-full w-48 bg-gradient-to-l from-white/80 to-transparent pointer-events-none blur-overlay">
+                                    </div>
+                                    <div class="slider-wrapper top-category-slider flex overflow-hidden">
+                                        <!-- Dynamic grid layout: 2 rows with scrollable columns -->
+                                        <div
+                                            class="flex-shrink-0 grid grid-rows-2 gap-2 auto-cols-[minmax(400px,_1fr)] grid-flow-col w-full">
+                                            <% articles.slice(1).forEach((article, index)=> { %>
+                                                <div class="article-item bg-white shadow-lg rounded-lg">
+                                                    <div class="grid grid-cols-10 gap-2 w-full h-full p-4">
+                                                        <!-- Image -->
+                                                        <div class="col-span-5 relative flex flex-col justify-between">
+                                                            <div class="relative w-full h-full">
+                                                                <img src="<%= article.topImage || '/path/to/default-image.jpg' %>"
+                                                                    alt="<%= article.title || 'No title available' %>"
+                                                                    class="object-cover w-full h-full rounded-lg">
+                                                                <!-- Categories -->
+                                                                <div class="absolute top-0 left-0 p-2">
+                                                                    <div class="flex flex-wrap gap-2 justify-start">
+                                                                        <span
+                                                                            class="bg-black opacity-70 px-2 py-1 rounded-md cursor-pointer text-sm text-white">
+                                                                            <%= article.category %>
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <!-- Title and Content -->
+                                                        <div class="col-span-5 flex flex-col justify-center space-y-8">
+                                                            <div>
+                                                                <h3
+                                                                    class="font-semibold text-lg text-black line-clamp-1">
+                                                                    <%= article.title || 'No title available' %>
+                                                                </h3>
+                                                                <div class="text-sm text-black line-clamp-4">
+                                                                    <%= article.content || 'No content available' %>
+                                                                </div>
+                                                            </div>
+                                                            <div class="flex flex-col">
+                                                                <p class="text-sm text-cyan-500 line-clamp-1">
+                                                                    <%= article.author || 'No author available' %>
+                                                                </p>
+                                                                <p class="text-sm text-cyan-500">
+                                                                    <%= article.date.split(',')[1].trim().split(',')[0]
+                                                                        || 'No date available' %>
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <% }); %>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% } %>
+        </div>
+    </div>
+</div>

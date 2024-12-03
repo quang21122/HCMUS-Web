@@ -1,0 +1,50 @@
+<div class="category-slider-container max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-4 relative">
+    <div class="category-slider navwrap" id="slider">
+        <ul id="nav" class="nav">
+            <% articles.forEach( article=> {
+                %>
+                <li class="category rounded-lg">
+
+                    <a href="#" class="text-sm text-gray-600">
+                        <%= article.category %>
+                    </a>
+                    <div class="hover:cursor-pointer h-2"></div>
+                    <ul class="dropdown">
+                        <% article.subcategories.forEach( subcategory=> {
+                            %>
+                            <li>
+                                <a href="#" class="text-sm bg-black opacity-70">
+                                    <%= subcategory %>
+                                </a>
+                            </li>
+                            <% } ); %>
+
+                    </ul>
+                </li>
+                <% } ); %>
+        </ul>
+    </div>
+</div>
+
+<script>
+    (function () {
+        // detect touch
+        if ("ontouchstart" in document.documentElement) {
+            document.documentElement.className += " touch-device";
+        }
+
+        const scroller = document.querySelector(".navwrap");
+        const dropDown = document.querySelectorAll(".dropdown");
+        scroller.addEventListener("scroll", checkScroll);
+
+        function checkScroll() {
+            document.activeElement.blur();
+            scroller.classList.add("isScrolling");
+            for (let i = 0; i < dropDown.length; i++) {
+                dropDown[i].style.transform =
+                    "translateX(-" + scroller.scrollLeft + "px)";
+            }
+            scroller.classList.remove("isScrolling");
+        }
+    })();
+</script>
