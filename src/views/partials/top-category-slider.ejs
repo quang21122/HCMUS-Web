@@ -32,12 +32,10 @@
                                 <!-- Categories -->
                                 <div class="absolute top-0 left-0 p-2">
                                     <div class="flex flex-wrap gap-2 justify-start">
-                                        <% (firstArticle.categories || []).forEach(category=> { %>
                                             <span
                                                 class="bg-white opacity-70 px-2 py-1 rounded-md cursor-pointer text-sm text-black">
-                                                #<%= category %>
+                                                <%= firstArticle.category %>
                                             </span>
-                                            <% }); %>
                                     </div>
                                 </div>
                                 <!-- Title and Content -->
@@ -52,8 +50,7 @@
                                             <%= firstArticle.content || 'No content available' %>
                                         </p>
                                         <p class="text-sm text-black">
-                                            <%= firstArticle.author || 'No author available' %> | <%=
-                                                    firstArticle.date.split(',')[1].trim().split(',')[0]
+                                            <%= firstArticle.author %> | <%=firstArticle.date.split(',')[1].trim().split(',')[0]
                                                     || 'No date available' %>
                                         </p>
                                     </div>
@@ -96,11 +93,15 @@
                                                                     class="font-semibold text-lg text-black line-clamp-1">
                                                                     <%= article.title || 'No title available' %>
                                                                 </h3>
-                                                                <p class="text-sm text-black line-clamp-3">
+                                                                <div class="text-sm text-black line-clamp-3">
                                                                     <%= article.content || 'No content available' %>
-                                                                </p>
+                                                                </div>
                                                             </div>
-                                                            <div class="flex flex-row">
+                                                            <div class="flex">
+                                                                <p class="text-sm text-cyan-500">
+                                                                    <%= article.author
+                                                                        || 'No date available' %>
+                                                                </p>
                                                                 <p class="text-sm text-cyan-500">
                                                                     <%= article.date.split(',')[1].trim().split(',')[0]
                                                                         || 'No date available' %>
