@@ -16,6 +16,7 @@ export const getArticles = () => {
 
         // Trả về chi tiết bài viết
         return {
+          
           topImage: article["Top image"],
           title: article["Title"],
           author: article["Author"],
