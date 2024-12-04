@@ -86,7 +86,7 @@ export const getArticlesById = async (id) => {
   }
 };
 
-export const getArticlesByCategory = async (category, currentArticleId) => {
+export const getArticlesSameCategory = async (category, currentArticleId) => {
   if (!category) {
     return { success: false, error: "Category parameter is required" };
   }

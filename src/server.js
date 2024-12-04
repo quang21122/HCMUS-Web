@@ -7,7 +7,7 @@ import { fileURLToPath } from "url";
 // import { getArticles } from "./getArticles.js";
 import {
   getArticlesById,
-  getArticlesByCategory,
+  getArticlesSameCategory,
   getArticles,
   getCategorizedArticles,
 } from "./getArticles-1.js";
@@ -87,7 +87,7 @@ app.get("/article/:id", async (req, res) => {
     }
 
     const article = response.data;
-    const relatedResponse = await getArticlesByCategory(
+    const relatedResponse = await getArticlesSameCategory(
       article.category[0],
       articleId
     );
@@ -118,6 +118,81 @@ app.get("/article/:id", async (req, res) => {
   } catch (error) {
     console.error("Route handler error:", error);
     res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+const findCategoryFamily = (categories, targetCategory) => {
+  try {
+    // Check if target is a parent category
+    const asParent = categories.find(
+      (cat) => cat.parentCategory === targetCategory
+    );
+    if (asParent) {
+      return [asParent.parentCategory, ...asParent.childCategories];
+    }
+
+    // Check if target is a child category
+    const parentCat = categories.find((cat) =>
+      cat.childCategories.includes(targetCategory)
+    );
+    if (parentCat) {
+      return [parentCat.parentCategory, ...parentCat.childCategories];
+    }
+
+    // If not found, return array with just target
+    return [targetCategory];
+  } catch (error) {
+    console.error("findCategoryFamily error:", error);
+    return [targetCategory];
+  }
+};
+
+app.get("/categories/:category", async (req, res) => {
+  try {
+    const currentCategory = decodeURIComponent(req.params.category);
+    const page = parseInt(req.query.page) || 1;
+    const cacheKey = `category_${currentCategory}_page_${page}`;
+
+    // Check cache first
+    const cachedData = cache.get(cacheKey);
+    if (cachedData) {
+      return res.render("pages/CategoriesPage", cachedData);
+    }
+
+    // Run queries in parallel
+    const [categoriesResponse, articleResponse] = await Promise.all([
+      getCategorizedArticles(),
+      getArticlesByCategory(currentCategory, page),
+    ]);
+
+    if (!currentCategory) {
+      return res.status(400).json({
+        success: false,
+        error: "Category parameter is required",
+      });
+    }
+
+    const categoryFamily = findCategoryFamily(
+      categoriesResponse.data,
+      currentCategory
+    );
+
+    const pageData = {
+      title: currentCategory,
+      articles: articleResponse.data,
+      categories: categoriesResponse.data,
+      currentCategory,
+      categoryFamily,
+      pagination: articleResponse.pagination,
+    };
+
+    // Cache the result
+    cache.set(cacheKey, pageData, 300); // Cache for 5 minutes
+
+    res.render("pages/CategoriesPage", pageData);
+  } catch (error) {
+    console.error("Category route error:", error);
+    res.status(500).send("Server error");
   }
 });
 
