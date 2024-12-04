@@ -52,7 +52,7 @@
                                         <%= article.name %>
                                     </h3>
                                     <div class="text-sm text-gray-500">
-                                        <%= article.publishedAt %>
+                                        <%= article.publishedAt ? article.publishedAt.split(',')[1]?.trim() || article.publishedAt : 'No date' %>
                                     </div>
                                 </div>
                     </div>

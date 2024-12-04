@@ -1,0 +1,103 @@
+<div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
+    <!-- Categories List -->
+    <div class="flex flex-row items-center space-x-3">
+        <a href="/categories/<%= categoryFamily[0] %>"
+            class="flex items-center text-3xl font-semibold <%= categoryFamily[0] === currentCategory ? 'text-blue-600' : 'text-black' %>">
+            <%= categoryFamily[0] %>
+        </a>
+        <svg xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 320 512"
+            class="w-6 h-6">
+            <path
+                d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" />
+        </svg>
+        <!-- Child categories -->
+        <div class="flex flex-row items-center gap-6">
+            <% categoryFamily.slice(1).forEach(childCategory=> { %>
+                <a href="/categories/<%= childCategory %>"
+                    class="text-base <%= childCategory === currentCategory ? 'text-blue-600' : 'hover:text-cyan-300 text-black' %>">
+                    <%= childCategory %>
+                </a>
+                <% }); %>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-4 gap-4 mt-8">
+        <% articles.forEach(article=> { %>
+            <a href="/article/<%= article._id %>" class="block hover:shadow-lg transition-all duration-300">
+                <div class="bg-white rounded-lg shadow overflow-hidden p-2">
+                    <!-- Image -->
+                    <div class="relative w-full h-48">
+                        <img src="<%= article.image %>" alt="<%= article.name %>" class="w-full h-full object-cover rounded-xl">
+                        <% if (article.isPremium) { %>
+                            <div class="absolute top-2 left-2">
+                                <svg class="w-6 h-6 text-yellow-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                    fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M11 9a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z" />
+                                    <path fill-rule="evenodd"
+                                        d="M9.896 3.051a2.681 2.681 0 0 1 4.208 0c.147.186.38.282.615.255a2.681 2.681 0 0 1 2.976 2.975.681.681 0 0 0 .254.615 2.681 2.681 0 0 1 0 4.208.682.682 0 0 0-.254.615 2.681 2.681 0 0 1-2.976 2.976.681.681 0 0 0-.615.254 2.682 2.682 0 0 1-4.208 0 .681.681 0 0 0-.614-.255 2.681 2.681 0 0 1-2.976-2.975.681.681 0 0 0-.255-.615 2.681 2.681 0 0 1 0-4.208.681.681 0 0 0 .255-.615 2.681 2.681 0 0 1 2.976-2.975.681.681 0 0 0 .614-.255Z" />
+                                </svg>
+                            </div>
+                            <% } %>
+                    </div>
+                    <!-- Content -->
+                    <div class="flex flex-col space-y-4 mt-2 ml-2">
+                        <h3 class="font-semibold text-lg line-clamp-1">
+                            <%= article.name %>
+                        </h3>
+                        <div class="flex flex-row space-x-2">
+                            <div class="p-1 flex text-xs justify-center border border-black rounded-xl w-[32%]">
+                                <% if (article.category && article.category.length> 0) { %>
+                                    <%= article.category[0] %>
+                                        <% } else { %>
+                                            No category
+                                            <% } %>
+                            </div>
+                            <!-- Child categories -->
+                            <% if (article.category && article.category.length> 1) { %>
+                                <% article.category.slice(1).forEach(childCategory=> { %>
+                                    <span class="text-xs text-cyan-500 flex justify-center items-center">
+                                        #<%= childCategory %>
+                                    </span>
+                                    <% }); %>
+                                        <% } %>
+                        </div>
+                        <p class="text-sm text-gray-500 line-clamp-3">
+                            <%= article.abstract || article.content %>
+                        </p>
+                        <p class="text-sm text-gray-500">
+                            <%= article.author %> | <%= article.publishedAt ? article.publishedAt.split(',')[1]?.trim() || article.publishedAt
+                                    : 'No date' %>
+                        </p>
+                    </div>
+                </div>
+            </a>
+            <% }); %>
+    </div>
+    
+    <!-- Pagination -->
+    <% if (pagination.totalPages> 1) { %>
+        <div class="flex justify-center mt-8 gap-2">
+            <% for(let i=1; i <=pagination.totalPages; i++) { %>
+                <button data-page="<%= i %>"
+                    class="pagination-btn px-4 py-2 rounded <%= i === pagination.currentPage ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300' %>">
+                    <%= i %>
+                </button>
+                <% } %>
+        </div>
+        <% } %>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const buttons = document.querySelectorAll('.pagination-btn');
+
+        buttons.forEach(button => {
+            button.addEventListener('click', function () {
+                const page = this.dataset.page;
+                // Use window.location to reload page with new page parameter
+                window.location.href = `/categories/<%= currentCategory %>?page=${page}`;
+            });
+        });
+    });
+</script>

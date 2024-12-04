@@ -8,6 +8,7 @@ import { fileURLToPath } from "url";
 import {
   getArticlesById,
   getArticlesSameCategory,
+  getArticlesByCategory,
   getArticles,
   getCategorizedArticles,
 } from "./getArticles-1.js";
@@ -48,20 +49,41 @@ liveReloadServer.server.once("connection", () => {
 
 app.get("/", async (req, res) => {
   try {
-    const [articlesResponse, categoriesResponse] = await Promise.all([
-      getArticles(),
-      getCategorizedArticles(),
+    const cacheKey = "homepage";
+
+    // Check cache first
+    const cachedData = cache.get(cacheKey);
+    if (cachedData) {
+      return res.render("pages/HomePage", cachedData);
+    }
+
+    // Create timeout promise
+    const timeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Request timeout")), 5000)
+    );
+
+    // Run queries in parallel with timeout
+    const result = await Promise.race([
+      Promise.all([getArticles(), getCategorizedArticles()]),
+      timeout,
     ]);
+
+    const [articlesResponse, categoriesResponse] = result;
 
     if (!articlesResponse.success || !categoriesResponse.success) {
       throw new Error("Failed to fetch data");
     }
 
-    res.render("pages/HomePage", {
+    const pageData = {
       title: "Trang chủ",
       articles: articlesResponse.data,
       categories: categoriesResponse.data,
-    });
+    };
+
+    // Cache the result
+    cache.set(cacheKey, pageData);
+
+    res.render("pages/HomePage", pageData);
   } catch (error) {
     console.error("Home route error:", error);
     res.status(500).send("Server error");

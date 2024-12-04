@@ -44,15 +44,13 @@
                                     <div class="px-4 py-2 bg-white opacity-90 rounded-lg space-y-3">
                                         <h3
                                             class="font-semibold flex justify-start text-lg text-center text-black line-clamp-1">
-                                            <%= firstArticle.title || 'No title available' %>
+                                            <%= firstArticle.name || 'No title available' %>
                                         </h3>
                                         <p class="text-sm text-black line-clamp-2">
                                             <%= firstArticle.content || 'No content available' %>
                                         </p>
                                         <p class="text-sm text-black">
-                                            <%= firstArticle.author %> |
-                                                <%=firstArticle.publishedAt
-                                                    || 'No date available' %>
+                                            <%= firstArticle.author  %> | <%= firstArticle.publishedAt ? firstArticle.publishedAt.split(',')[1]?.trim() || firstArticle.publishedAt : 'No date' %>
                                         </p>
                                     </div>
                                 </div>

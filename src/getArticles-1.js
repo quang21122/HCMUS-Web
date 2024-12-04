@@ -118,3 +118,45 @@ export const getArticlesSameCategory = async (category, currentArticleId) => {
     return { success: false, error: error.message };
   }
 };
+export const getArticlesByCategory = async (category, page = 1, limit = 12) => {
+  try {
+    const skip = (page - 1) * limit;
+
+    // Use projection to limit fields
+    const projection = {
+      name: 1,
+      image: 1,
+      abstract: 1,
+      content: 1,
+      author: 1,
+      publishedAt: 1,
+      isPremium: 1,
+      category: 1,
+    };
+
+    // Run count and find in parallel
+    const [total, articles] = await Promise.all([
+      Article.countDocuments({ category: { $in: [category] } }),
+      Article.find({ category: { $in: [category] } })
+        .select(projection)
+        .sort({ publishedAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean()
+        .exec(),
+    ]);
+
+    return {
+      success: true,
+      data: articles,
+      pagination: {
+        total,
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  } catch (error) {
+    console.error("getArticlesByCategory error:", error);
+    return { success: false, error: error.message };
+  }
+};
