@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return; // Skip this container if no slider is found
       }
 
-      const slides = slider.querySelectorAll(".flex-shrink-0 > div");
+      const slides = slider.querySelectorAll(".flex-shrink-0 > a");
       if (slides.length === 0) {
         console.error("No slides found in the slider:", slider);
         return;

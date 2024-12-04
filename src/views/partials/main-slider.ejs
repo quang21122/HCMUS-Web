@@ -11,7 +11,7 @@
     </button>
     <div class="main-slider flex overflow-hidden max-w-full mx-auto bg-gray-200 text-black rounded-lg">
         <% articles.forEach(article=> { %>
-            <div class="flex-shrink-0 grid grid-cols-[6fr_4fr] w-full h-full gap-4">
+            <a href="/article/<%= article._id %>" class="flex-shrink-0 grid grid-cols-[6fr_4fr] w-full h-full gap-4 cursor-pointer">
                 <!-- Image Section -->
                 <div class="relative rounded-lg w-full h-full p-4">
                     <!-- Điều chỉnh chiều cao ảnh theo tỷ lệ -->
@@ -68,7 +68,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </a>
             <% }); %>
     </div>
 </div>
