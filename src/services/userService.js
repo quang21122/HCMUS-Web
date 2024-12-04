@@ -33,7 +33,8 @@ const createUser = async (data) => {
         createdAt: data["createdAt"] || new Date(), // Default to the current date if not provided
         subscriptionExpiry: data["subscriptionExpiry"] || null, // Default to 'null'
         penName: data["penName"] || "", // Default to an empty string if not provided
-        category: data["category"] || "" // Default to an empty string if not provided
+        category: data["category"] || "", // Default to an empty string if not provided
+        googleID: ""
     };
 
     try {

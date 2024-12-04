@@ -13,7 +13,8 @@ const userSchema = new Schema({
     createdAt: { type: Date, default: Date.now },
     subscriptionExpiry: { type: Date },
     penName: { type: String },
-    category: { type: String }
+    category: { type: String },
+    googleID: {type: String}
 });
 
 const User = model('User', userSchema);

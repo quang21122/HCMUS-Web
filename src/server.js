@@ -1,4 +1,5 @@
 import express from "express";
+import session from "express-session";
 import ejs from "ejs";
 import livereload from "livereload";
 import connectLiveReload from "connect-livereload";
@@ -8,12 +9,15 @@ import { getArticles } from "./getArticles.js";
 import { getArticles1 } from "./getArticles-1.js";
 import { connectDB } from "./db.js";
 import NodeCache from "node-cache";
-import articleRoute from './routes/articleRoute.js';
-import userRoute from './routes/userRoute.js';
+import articleRoute from "./routes/articleRoute.js";
+import userRoute from "./routes/userRoute.js";
+import loginRegisterRoutes from "./strategies/local-strategy.js";
+import passport from "./config/passport.js";
+export const PassportSetup = passport;
 
 const cache = new NodeCache({ stdTTL: 300 });
 
-// Tạo __dirname
+// Create __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -31,8 +35,19 @@ app.set("view engine", "ejs");
 // Set the views directory
 app.set("views", path.join(__dirname, "views"));
 
-// Connect to the database
-connectDB();
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(
+  session({
+    secret: "your-secret-key",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Serve static files
 app.use(express.static(path.join(__dirname, "public")));
@@ -46,6 +61,7 @@ liveReloadServer.server.once("connection", () => {
   }, 100);
 });
 
+// Routes
 app.get("/", (req, res) => {
   const articles = getArticles();
   const categories = [
@@ -59,21 +75,9 @@ app.get("/", (req, res) => {
   });
 });
 
-app.use(express.static('public'));
-app.use(express.json());
-
-app.use('/api/articles', articleRoute);
-app.use('/api/users', userRoute);
-
-
-// Render the index page
-app.get('/', (req, res) => {
-  const data = {
-    title: 'SSR Web',
-    message: 'This is a dynamic message from the server'
-  };
-  res.render('index', data);
-});
+app.use("/api/articles", articleRoute);
+app.use("/api/users", userRoute);
+app.use("/auth", loginRegisterRoutes);
 
 // Modified article route with caching
 app.get("/article/:id", async (req, res) => {
@@ -89,7 +93,7 @@ app.get("/article/:id", async (req, res) => {
 
     // Get article by ID
     const response = await getArticles1(articleId);
-    
+
     if (!response.success) {
       return res.status(404).send(response.error);
     }
