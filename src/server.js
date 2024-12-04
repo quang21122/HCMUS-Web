@@ -8,6 +8,8 @@ import { getArticles } from "./getArticles.js";
 import { getArticles1 } from "./getArticles-1.js";
 import { connectDB } from "./db.js";
 import NodeCache from "node-cache";
+import articleRoute from './routes/articleRoute.js';
+import userRoute from './routes/userRoute.js';
 
 const cache = new NodeCache({ stdTTL: 300 });
 
@@ -30,7 +32,7 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 // Connect to the database
-createDb();
+connectDB();
 
 // Serve static files
 app.use(express.static(path.join(__dirname, "public")));
@@ -55,6 +57,7 @@ app.get("/", (req, res) => {
     categories,
     articles,
   });
+});
 
 app.use(express.static('public'));
 app.use(express.json());
@@ -70,7 +73,7 @@ app.get('/', (req, res) => {
     message: 'This is a dynamic message from the server'
   };
   res.render('index', data);
-
+});
 
 // Modified article route with caching
 app.get("/article/:id", async (req, res) => {
