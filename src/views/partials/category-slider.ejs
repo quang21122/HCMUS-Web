@@ -1,27 +1,24 @@
 <div class="category-slider-container max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-4 relative">
     <div class="category-slider navwrap" id="slider">
         <ul id="nav" class="nav">
-            <% articles.forEach( article=> {
-                %>
+            <% categories.filter(category=> category.childCategories && category.childCategories.length >
+                0).forEach(category => { %>
                 <li class="category rounded-lg">
-
-                    <a href="#" class="text-sm text-gray-600">
-                        <%= article.category %>
+                    <a href="/categories/<%= category.parentCategory %>" class="text-xs text-center text-gray-600">
+                        <%= category.parentCategory %>
                     </a>
                     <div class="hover:cursor-pointer h-2"></div>
-                    <ul class="dropdown">
-                        <% article.subcategories.forEach( subcategory=> {
-                            %>
+                    <ul class="dropdown bg-black opacity-70">
+                        <% category.childCategories.forEach(childCategory=> { %>
                             <li>
-                                <a href="#" class="text-sm bg-black opacity-70">
-                                    <%= subcategory %>
+                                <a href="/categories/<%= childCategory %>" class="text-sm bg-black opacity-70">
+                                    <%= childCategory %>
                                 </a>
                             </li>
-                            <% } ); %>
-
+                            <% }); %>
                     </ul>
                 </li>
-                <% } ); %>
+                <% }); %>
         </ul>
     </div>
 </div>

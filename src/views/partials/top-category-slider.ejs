@@ -26,8 +26,8 @@
                     <div class="col-span-1">
                         <div class="relative rounded-lg w-full h-full flex">
                             <div class="relative w-full flex-grow">
-                                <img src="<%= firstArticle.topImage || '/path/to/default-image.jpg' %>"
-                                    alt="<%= firstArticle.title || 'No title available' %>"
+                                <img src="<%= firstArticle.image || '/path/to/default-image.jpg' %>"
+                                    alt="<%= firstArticle.name || 'No title available' %>"
                                     class="object-cover w-full h-full rounded-lg">
                                 <!-- Categories -->
                                 <div class="absolute top-0 left-0 p-2">
@@ -51,7 +51,7 @@
                                         </p>
                                         <p class="text-sm text-black">
                                             <%= firstArticle.author %> |
-                                                <%=firstArticle.date.split(',')[1].trim().split(',')[0]
+                                                <%=firstArticle.publishedAt
                                                     || 'No date available' %>
                                         </p>
                                     </div>
@@ -82,15 +82,15 @@
                                                         <!-- Image -->
                                                         <div class="col-span-5 relative flex flex-col justify-between">
                                                             <div class="relative w-full h-full">
-                                                                <img src="<%= article.topImage || '/path/to/default-image.jpg' %>"
-                                                                    alt="<%= article.title || 'No title available' %>"
+                                                                <img src="<%= article.image || '/path/to/default-image.jpg' %>"
+                                                                    alt="<%= article.name || 'No title available' %>"
                                                                     class="object-cover w-full h-full rounded-lg">
                                                                 <!-- Categories -->
                                                                 <div class="absolute top-0 left-0 p-2">
                                                                     <div class="flex flex-wrap gap-2 justify-start">
                                                                         <span
                                                                             class="bg-black opacity-70 px-2 py-1 rounded-md cursor-pointer text-sm text-white">
-                                                                            <%= article.category %>
+                                                                            <%= article.category[0] %>
                                                                         </span>
                                                                     </div>
                                                                 </div>
@@ -112,8 +112,7 @@
                                                                     <%= article.author || 'No author available' %>
                                                                 </p>
                                                                 <p class="text-sm text-cyan-500">
-                                                                    <%= article.date.split(',')[1].trim().split(',')[0]
-                                                                        || 'No date available' %>
+                                                                    <%= article.publishedAt ? article.publishedAt.split(',')[1]?.trim() || article.publishedAt : 'No date'%>
                                                                 </p>
                                                             </div>
                                                         </div>

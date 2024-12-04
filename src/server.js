@@ -4,8 +4,13 @@ import livereload from "livereload";
 import connectLiveReload from "connect-livereload";
 import path from "path";
 import { fileURLToPath } from "url";
-import { getArticles } from "./getArticles.js";
-import { getArticles1 } from "./getArticles-1.js";
+// import { getArticles } from "./getArticles.js";
+import {
+  getArticlesById,
+  getArticlesByCategory,
+  getArticles,
+  getCategorizedArticles,
+} from "./getArticles-1.js";
 import { connectDB } from "./db.js";
 import NodeCache from "node-cache";
 
@@ -41,17 +46,26 @@ liveReloadServer.server.once("connection", () => {
   }, 100);
 });
 
-app.get("/", (req, res) => {
-  const articles = getArticles();
-  const categories = [
-    ...new Set(articles.flatMap((article) => article.categories)),
-  ];
+app.get("/", async (req, res) => {
+  try {
+    const [articlesResponse, categoriesResponse] = await Promise.all([
+      getArticles(),
+      getCategorizedArticles(),
+    ]);
 
-  res.render("pages/HomePage", {
-    title: "Trang chủ",
-    categories,
-    articles,
-  });
+    if (!articlesResponse.success || !categoriesResponse.success) {
+      throw new Error("Failed to fetch data");
+    }
+
+    res.render("pages/HomePage", {
+      title: "Trang chủ",
+      articles: articlesResponse.data,
+      categories: categoriesResponse.data,
+    });
+  } catch (error) {
+    console.error("Home route error:", error);
+    res.status(500).send("Server error");
+  }
 });
 
 
@@ -61,32 +75,49 @@ app.get("/article/:id", async (req, res) => {
     const articleId = req.params.id;
     const cacheKey = `article_${articleId}`;
 
-    // Check cache first
-    const cachedArticle = cache.get(cacheKey);
-    if (cachedArticle) {
-      return res.render("pages/ArticlePage", cachedArticle);
+    // Check cache
+    const cachedData = cache.get(cacheKey);
+    if (cachedData) {
+      return res.render("pages/ArticlePage", cachedData);
     }
 
-    // Get article by ID
-    const response = await getArticles1(articleId);
-    
+    const response = await getArticlesById(articleId);
     if (!response.success) {
       return res.status(404).send(response.error);
     }
 
     const article = response.data;
+    const relatedResponse = await getArticlesByCategory(
+      article.category[0],
+      articleId
+    );
+
+    if (!relatedResponse.success) {
+      return res
+        .status(500)
+        .json({ success: false, error: relatedResponse.error });
+    }
+
     const articleData = {
       title: article.name,
       article,
+      articleSameCategory: relatedResponse.data,
     };
 
-    // Save to cache
+    // Cache the data
     cache.set(cacheKey, articleData);
+
+    if (req.xhr || req.headers["x-requested-with"] === "XMLHttpRequest") {
+      return res.json({
+        success: true,
+        data: articleData,
+      });
+    }
 
     res.render("pages/ArticlePage", articleData);
   } catch (error) {
     console.error("Route handler error:", error);
-    res.status(500).send("Server error");
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 

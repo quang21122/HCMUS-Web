@@ -25,40 +25,54 @@
                 <% articles.slice(i, i + 4).forEach(article=> { %>
                     <div class="flex flex-col items-center space-y-4 bg-white rounded-lg shadow-md p-4">
                         <div class="relative w-full h-48">
-                            <img src="<%= article.topImage %>" alt="<%= article.title %>"
+                            <img src="<%= article.image %>" alt="<%= article.title %>"
                                 class="object-cover w-full h-full rounded-lg">
+                            <div class="absolute top-1 left-0">
+                                <% if (article.isPremium) { %>
+                                    <svg class="w-6 h-6 text-yellow-400" aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path d="M11 9a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z" />
+                                        <path fill-rule="evenodd"
+                                            d="M9.896 3.051a2.681 2.681 0 0 1 4.208 0c.147.186.38.282.615.255a2.681 2.681 0 0 1 2.976 2.975.681.681 0 0 0 .254.615 2.681 2.681 0 0 1 0 4.208.682.682 0 0 0-.254.615 2.681 2.681 0 0 1-2.976 2.976.681.681 0 0 0-.615.254 2.682 2.682 0 0 1-4.208 0 .681.681 0 0 0-.614-.255 2.681 2.681 0 0 1-2.976-2.975.681.681 0 0 0-.255-.615 2.681 2.681 0 0 1 0-4.208.681.681 0 0 0 .255-.615 2.681 2.681 0 0 1 2.976-2.975.681.681 0 0 0 .614-.255ZM12 6a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"
+                                            clip-rule="evenodd" />
+                                        <path
+                                            d="M5.395 15.055 4.07 19a1 1 0 0 0 1.264 1.267l1.95-.65 1.144 1.707A1 1 0 0 0 10.2 21.1l1.12-3.18a4.641 4.641 0 0 1-2.515-1.208 4.667 4.667 0 0 1-3.411-1.656Zm7.269 2.867 1.12 3.177a1 1 0 0 0 1.773.224l1.144-1.707 1.95.65A1 1 0 0 0 19.915 19l-1.32-3.93a4.667 4.667 0 0 1-3.4 1.642 4.643 4.643 0 0 1-2.53 1.21Z" />
+                                    </svg>
+                                    <% } %>
+                            </div>
                         </div>
                         <h3 class="font-semibold text-lg text-gray-800 line-clamp-1">
-                            <%= article.title %>
+                            <%= article.name %>
                         </h3>
                         <p class="text-sm text-gray-500 line-clamp-2">
                             <%= article.content %>
                         </p>
                         <!-- categories -->
                         <div class="flex flex-wrap flex-row gap-2 justify-start mr-auto">
-                            <% if (article.subcategories && article.subcategories.length> 0) {
-                                %>
-                                <!-- Hiển thị các subcategory nếu có -->
-                                <% article.subcategories.forEach(category=> { %>
-                                    <span
-                                        class="text-sm text-cyan-500">
-
-                                        <%= category %>
-                                    </span>
-                                    <% }); %>
-                                        <% } else { %>
-                                            <!-- Hiển thị category (parent) nếu không có subcategories -->
-                                            <span
-                                                class="text-sm text-cyan-500">
-                                                <%= article.category %>
-                                            </span>
-                                            <% } %>
-                            <span class="text-sm flex items-center text-cyan-500">
-                                | 
-                            </span>
-                            <span class="text-sm flex items-center text-cyan-500">
-                                <%= article.date.split(',')[1].trim().split(',')[0] %>
-                            </span>
+                            <% if (article.category && article.category.length> 1) { %>
+                                <!-- Display child categories -->
+                                <% article.category.slice(1).forEach((childCategory, index)=> { %>
+                                    <a href="/categories/<%= childCategory %>" class="text-sm text-cyan-500">
+                                        <%= childCategory %>
+                                    </a>
+                                    <% if (index < article.category.slice(1).length - 1) { %>
+                                        <span class="text-sm text-cyan-500 mx-1">|</span>
+                                        <% } %>
+                                            <% }); %>
+                                                <% } else { %>
+                                                    <!-- Display parent category if no children -->
+                                                    <a href="/categories/<%= article.category[0] %>"
+                                                        class="text-sm text-cyan-500">
+                                                        <%= article.category[0] %>
+                                                    </a>
+                                                    <% } %>
+                                                        <span class="text-sm flex items-center text-cyan-500">|</span>
+                                                        <span class="text-sm flex items-center text-cyan-500">
+                                                            <%= article.publishedAt ?
+                                                                article.publishedAt.split(',')[1]?.trim() ||
+                                                                article.publishedAt : 'No date' %>
+                                                        </span>
                         </div>
                     </div>
                     <% }); %>
