@@ -1,0 +1,15 @@
+{
+    "Categories": {
+      "Thế giới": ["Phân tích", "Quân sự"],
+      "Kinh doanh": ["Quốc tế", "Chứng khoán", "Hàng hóa", "Doanh nghiệp"],
+      "Bất động sản": ["Thị trường"],
+      "Thời sự": ["Giao thông", "Chính trị"],
+      "Thể thao": ["Bóng đá", "Các giải khác", "Tennis"],
+      "Giải trí": ["Giới sao", "Trong nước"],
+      "Du lịch": ["Tin tức"],
+      "Khoa học": ["Tin tức"],
+      "Đời sống": ["Tổ ấm"],
+      "Pháp luật": []
+    }
+  }
+  

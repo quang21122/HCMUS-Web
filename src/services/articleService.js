@@ -68,7 +68,7 @@ const createMultipleArticles = async (articles) => {
 
 const importArticlesFromLocal = async () => {
     // Read the local articles.json file
-    const data = await readFile('../crawler/crawler.json', 'utf8');
+    const data = await readFile('../crawler/crawler-1.json', 'utf8');
     const localArticles = JSON.parse(data);
 
     const results = await createMultipleArticles(localArticles);
