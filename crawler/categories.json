@@ -1,15 +1,164 @@
-{
-    "Categories": {
-      "Thế giới": ["Phân tích", "Quân sự"],
-      "Kinh doanh": ["Quốc tế", "Chứng khoán", "Hàng hóa", "Doanh nghiệp"],
-      "Bất động sản": ["Thị trường"],
-      "Thời sự": ["Giao thông", "Chính trị"],
-      "Thể thao": ["Bóng đá", "Các giải khác", "Tennis"],
-      "Giải trí": ["Giới sao", "Trong nước"],
-      "Du lịch": ["Tin tức"],
-      "Khoa học": ["Tin tức"],
-      "Đời sống": ["Tổ ấm"],
-      "Pháp luật": []
-    }
+[
+  {
+      "_id": "d9078493-4f19-40e7-88c2-e194bc2443af",
+      "name": "Thế giới",
+      "image": "",
+      "parent": null
+  },
+  {
+      "_id": "3059c9a3-3648-422b-8060-a4be099bde01",
+      "name": "Phân tích",
+      "image": "",
+      "parent": "d9078493-4f19-40e7-88c2-e194bc2443af"
+  },
+  {
+      "_id": "8cc09f33-fef6-4114-b264-43b7939f0a3c",
+      "name": "Quân sự",
+      "image": "",
+      "parent": "d9078493-4f19-40e7-88c2-e194bc2443af"
+  },
+  {
+      "_id": "d98eaa8e-465d-4a1d-b5f0-ded7f39cb9ea",
+      "name": "Kinh doanh",
+      "image": "",
+      "parent": null
+  },
+  {
+      "_id": "406510e2-2004-480f-ade7-7ab1d2eea775",
+      "name": "Quốc tế",
+      "image": "",
+      "parent": "d98eaa8e-465d-4a1d-b5f0-ded7f39cb9ea"
+  },
+  {
+      "_id": "573162ac-2092-4b8e-8691-68f70edfc0ef",
+      "name": "Chứng khoán",
+      "image": "",
+      "parent": "d98eaa8e-465d-4a1d-b5f0-ded7f39cb9ea"
+  },
+  {
+      "_id": "9ede175d-6b75-4cca-942a-3a200fb42145",
+      "name": "Hàng hóa",
+      "image": "",
+      "parent": "d98eaa8e-465d-4a1d-b5f0-ded7f39cb9ea"
+  },
+  {
+      "_id": "8ef02aec-7003-495d-a04c-4cc8f24bf0e7",
+      "name": "Doanh nghiệp",
+      "image": "",
+      "parent": "d98eaa8e-465d-4a1d-b5f0-ded7f39cb9ea"
+  },
+  {
+      "_id": "a75504f0-f0f3-415b-9cb9-21866394078d",
+      "name": "Bất động sản",
+      "image": "",
+      "parent": null
+  },
+  {
+      "_id": "941f712c-f9fb-4ffe-8879-bf849f099814",
+      "name": "Thị trường",
+      "image": "",
+      "parent": "a75504f0-f0f3-415b-9cb9-21866394078d"
+  },
+  {
+      "_id": "76171657-36c7-49db-af89-29b82e318e28",
+      "name": "Thời sự",
+      "image": "",
+      "parent": null
+  },
+  {
+      "_id": "d94ec80c-0d49-4743-a100-f16198b078d8",
+      "name": "Giao thông",
+      "image": "",
+      "parent": "76171657-36c7-49db-af89-29b82e318e28"
+  },
+  {
+      "_id": "253b4451-3ee2-4ac6-8721-4701dbcf6eb6",
+      "name": "Chính trị",
+      "image": "",
+      "parent": "76171657-36c7-49db-af89-29b82e318e28"
+  },
+  {
+      "_id": "9ff5d9dc-eb10-41e8-a9bb-6dcbcc6438fa",
+      "name": "Thể thao",
+      "image": "",
+      "parent": null
+  },
+  {
+      "_id": "b28d86ca-79e1-4ce3-b485-626c6d30d35e",
+      "name": "Bóng đá",
+      "image": "",
+      "parent": "9ff5d9dc-eb10-41e8-a9bb-6dcbcc6438fa"
+  },
+  {
+      "_id": "a54004b8-dff8-4e68-8dd2-cea849ce77bb",
+      "name": "Các giải khác",
+      "image": "",
+      "parent": "9ff5d9dc-eb10-41e8-a9bb-6dcbcc6438fa"
+  },
+  {
+      "_id": "c0fc42c5-2aca-4665-a3d8-8f2b576820a3",
+      "name": "Tennis",
+      "image": "",
+      "parent": "9ff5d9dc-eb10-41e8-a9bb-6dcbcc6438fa"
+  },
+  {
+      "_id": "6366d72f-0641-4d13-9155-38df2d5c7f4d",
+      "name": "Giải trí",
+      "image": "",
+      "parent": null
+  },
+  {
+      "_id": "626b4a0a-90c2-407c-93eb-c8af8b071bfa",
+      "name": "Giới sao",
+      "image": "",
+      "parent": "6366d72f-0641-4d13-9155-38df2d5c7f4d"
+  },
+  {
+      "_id": "ee4ad288-b9a3-4867-b450-38ace9973996",
+      "name": "Trong nước",
+      "image": "",
+      "parent": "6366d72f-0641-4d13-9155-38df2d5c7f4d"
+  },
+  {
+      "_id": "335942e2-78f2-4634-8b0b-631ea3c4bef7",
+      "name": "Du lịch",
+      "image": "",
+      "parent": null
+  },
+  {
+      "_id": "938a32b3-7c4f-4ab9-a318-b7f71a757fa5",
+      "name": "Tin tức",
+      "image": "",
+      "parent": "335942e2-78f2-4634-8b0b-631ea3c4bef7"
+  },
+  {
+      "_id": "2afa0d8d-d96b-430a-9ea1-efd9d37a77cc",
+      "name": "Khoa học",
+      "image": "",
+      "parent": null
+  },
+  {
+      "_id": "04e5d3bd-1bfb-4771-8430-df5acc91d492",
+      "name": "Tin tức",
+      "image": "",
+      "parent": "2afa0d8d-d96b-430a-9ea1-efd9d37a77cc"
+  },
+  {
+      "_id": "845d8841-8490-4d65-ae87-543f42855a7d",
+      "name": "Đời sống",
+      "image": "",
+      "parent": null
+  },
+  {
+      "_id": "c709f634-f850-485a-a582-2329bc75583c",
+      "name": "Tổ ấm",
+      "image": "",
+      "parent": "845d8841-8490-4d65-ae87-543f42855a7d"
+  },
+  {
+      "_id": "005ecf8a-a3cb-4e80-b27a-1daac499c89f",
+      "name": "Pháp luật",
+      "image": "",
+      "parent": null
   }
-  
+]
