@@ -23,11 +23,11 @@
             <!-- First Article: 50% width -->
             <% if (articles && articles.length> 0) { %>
                 <% const firstArticle=articles[0]; %>
-                    <div class="col-span-1">
+                    <a href="/article/<%= firstArticle._id %>" class="col-span-1">
                         <div class="relative rounded-lg w-full h-full flex">
                             <div class="relative w-full flex-grow">
-                                <img src="<%= firstArticle.topImage || '/path/to/default-image.jpg' %>"
-                                    alt="<%= firstArticle.title || 'No title available' %>"
+                                <img src="<%= firstArticle.image || '/path/to/default-image.jpg' %>"
+                                    alt="<%= firstArticle.name || 'No title available' %>"
                                     class="object-cover w-full h-full rounded-lg">
                                 <!-- Categories -->
                                 <div class="absolute top-0 left-0 p-2">
@@ -44,21 +44,19 @@
                                     <div class="px-4 py-2 bg-white opacity-90 rounded-lg space-y-3">
                                         <h3
                                             class="font-semibold flex justify-start text-lg text-center text-black line-clamp-1">
-                                            <%= firstArticle.title || 'No title available' %>
+                                            <%= firstArticle.name || 'No title available' %>
                                         </h3>
                                         <p class="text-sm text-black line-clamp-2">
                                             <%= firstArticle.content || 'No content available' %>
                                         </p>
                                         <p class="text-sm text-black">
-                                            <%= firstArticle.author %> |
-                                                <%=firstArticle.date.split(',')[1].trim().split(',')[0]
-                                                    || 'No date available' %>
+                                            <%= firstArticle.author  %> | <%= firstArticle.publishedAt ? firstArticle.publishedAt.split(',')[1]?.trim() || firstArticle.publishedAt : 'No date' %>
                                         </p>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                     <% } else { %>
                         <!-- Fallback for no articles -->
                         <div class="col-span-2 text-center text-gray-500 italic">
@@ -77,20 +75,20 @@
                                         <div
                                             class="flex-shrink-0 grid grid-rows-2 gap-2 auto-cols-[minmax(400px,_1fr)] grid-flow-col w-full">
                                             <% articles.slice(1).forEach((article, index)=> { %>
-                                                <div class="article-item bg-white shadow-lg rounded-lg">
+                                                <a href="/article/<%= article._id %>" class="article-item bg-white shadow-lg rounded-lg">
                                                     <div class="grid grid-cols-10 gap-2 w-full h-full p-4">
                                                         <!-- Image -->
                                                         <div class="col-span-5 relative flex flex-col justify-between">
                                                             <div class="relative w-full h-full">
-                                                                <img src="<%= article.topImage || '/path/to/default-image.jpg' %>"
-                                                                    alt="<%= article.title || 'No title available' %>"
+                                                                <img src="<%= article.image || '/path/to/default-image.jpg' %>"
+                                                                    alt="<%= article.name || 'No title available' %>"
                                                                     class="object-cover w-full h-full rounded-lg">
                                                                 <!-- Categories -->
                                                                 <div class="absolute top-0 left-0 p-2">
                                                                     <div class="flex flex-wrap gap-2 justify-start">
                                                                         <span
                                                                             class="bg-black opacity-70 px-2 py-1 rounded-md cursor-pointer text-sm text-white">
-                                                                            <%= article.category %>
+                                                                            <%= article.category[0] %>
                                                                         </span>
                                                                     </div>
                                                                 </div>
@@ -101,7 +99,7 @@
                                                             <div>
                                                                 <h3
                                                                     class="font-semibold text-lg text-black line-clamp-1">
-                                                                    <%= article.title || 'No title available' %>
+                                                                    <%= article.name || 'No title available' %>
                                                                 </h3>
                                                                 <div class="text-sm text-black line-clamp-4">
                                                                     <%= article.content || 'No content available' %>
@@ -112,13 +110,12 @@
                                                                     <%= article.author || 'No author available' %>
                                                                 </p>
                                                                 <p class="text-sm text-cyan-500">
-                                                                    <%= article.date.split(',')[1].trim().split(',')[0]
-                                                                        || 'No date available' %>
+                                                                    <%= article.publishedAt ? article.publishedAt.split(',')[1]?.trim() || article.publishedAt : 'No date'%>
                                                                 </p>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </a>
                                                 <% }); %>
                                         </div>
                                     </div>

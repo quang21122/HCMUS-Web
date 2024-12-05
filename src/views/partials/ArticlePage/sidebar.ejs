@@ -1,0 +1,63 @@
+<div class="flex flex-col space-y-6 w-full">
+    <div class="author-info bg-[#F5F5F5] rounded-xl p-4 w-full">
+
+    </div>
+    <div class="category-tag-info grid grid-cols-[5.2fr_0.3fr_4.5fr] bg-[#F5F5F5] rounded-xl p-3 w-full">
+        <div class="tag flex flex-col">
+            <div class="border-l-4 border-red-600 text-lg font-semibold rounded-s-sm">
+                <p class="ml-2">Nhãn</p>
+            </div>
+            <div class="flex flex-wrap gap-2 mt-3 p-1 ">
+                <% article.tags.forEach(tag=> { %>
+                    <a href="/tags/<%= tag[0] %>"
+                        class="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded-full text-xs transition-colors">
+                        #<%= tag[0] %>
+                    </a>
+                    <% }); %>
+            </div>
+        </div>
+
+        <div class="w-[0.2px] bg-black h-[70%] my-auto"></div>
+
+        <div class="category flex flex-col ml-4">
+            <div class="border-l-4 border-red-600 text-lg font-semibold rounded-s-sm">
+                <p class="ml-2">Chuyên mục</p>
+            </div>
+            <div class="flex flex-wrap p-1 gap-2 mt-3">
+                <% article.category.forEach(category=> { %>
+                    <a href="/categories/<%= category %>"
+                        class="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded-full text-xs transition-colors">
+                        <%= category %>
+                    </a>
+                    <% }); %>
+            </div>
+        </div>
+    </div>
+
+    <div class="related-articles bg-[#F5F5F5] rounded-xl p-4 w-full">
+        <div class="border-l-4 border-red-600 text-lg font-semibold rounded-s-sm">
+            <p class="ml-2">Có thể bạn quan tâm</p>
+        </div>
+
+        <div class="mt-4 space-y-4">
+            <% articleSameCategory.forEach(article=> { %>
+                <a href="/article/<%= article._id %>" class="block hover:bg-gray-100 p-2 rounded-lg transition-colors">
+                    <div class="flex gap-3">
+                        <% if (article.image) { %>
+                            <img src="<%= article.image %>" alt="<%= article.name %>"
+                                class="w-20 h-20 object-cover rounded-lg">
+                            <% } %>
+                                <div class="flex flex-col justify-between">
+                                    <h3 class="font-medium line-clamp-2">
+                                        <%= article.name %>
+                                    </h3>
+                                    <div class="text-sm text-gray-500">
+                                        <%= article.publishedAt ? article.publishedAt.split(',')[1]?.trim() || article.publishedAt : 'No date' %>
+                                    </div>
+                                </div>
+                    </div>
+                </a>
+                <% }); %>
+        </div>
+    </div>
+</div>
