@@ -12,7 +12,7 @@ import {
   getArticles,
   getCategorizedArticles,
 } from "./getArticles-1.js";
-import { connectDB } from "./db.js";
+import { connectDB } from "./config/db.js";
 import NodeCache from "node-cache";
 import articleRoute from './routes/articleRoute.js';
 import userRoute from './routes/userRoute.js';
