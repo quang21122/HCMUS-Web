@@ -8,7 +8,7 @@ const ArticleSchema = new Schema({
     abstract: { type: String, required: true },
     content: { type: String, required: true },
     category: { type: [String] },
-    tags: { type: [[String]] },
+    tags: { type: [String] },
     isPremium: { type: Boolean, required: true },
     status: { type: String, required: true },
     publishedAt: { type: String },
