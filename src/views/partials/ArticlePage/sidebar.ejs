@@ -9,9 +9,9 @@
             </div>
             <div class="flex flex-wrap gap-2 mt-3 p-1 ">
                 <% article.tags.forEach(tag=> { %>
-                    <a href="/tags/<%= tag[0] %>"
+                    <a href="/tags/<%= tag %>"
                         class="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded-full text-xs transition-colors">
-                        #<%= tag[0] %>
+                        #<%= tag %>
                     </a>
                     <% }); %>
             </div>

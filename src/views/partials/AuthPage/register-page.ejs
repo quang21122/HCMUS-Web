@@ -1,0 +1,110 @@
+<div class="grid grid-cols-2 max-h-screen">
+    <div class="min-h-screen flex items-center justify-center">
+        <div class="bg-white/90 px-8 pt-6 pb-20 rounded-lg shadow-lg w-full max-w-xl flex flex-col">
+            <!-- Header with back button -->
+            <div class="grid grid-cols-[1fr_8fr_1fr] mb-8">
+                <a href="/">
+                    <img src="/images/left-arrow.png" alt="" class="w-8 h-8">
+                </a>
+                <div class="flex flex-col justify-center items-center space-y-2">
+                    <h1 class="text-3xl font-bold text-center text-gray-800">Đăng ký</h1>
+                </div>
+                <div class=""></div>
+            </div>
+
+            <!-- Registration Form -->
+            <form action="/auth/register" method="POST" class="space-y-6">
+                <div class="space-y-2">
+                    <label for="name" class="block text-lg font-medium text-gray-500">Tên đăng nhập:</label>
+                    <input type="text" id="name" name="name" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                </div>
+
+                <div class="space-y-2">
+                    <label for="email" class="block text-lg font-medium text-gray-500">Email:</label>
+                    <input type="email" id="email" name="email" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                </div>
+
+                <div class="space-y-2">
+                    <label for="password" class="block text-lg font-medium text-gray-500">Mật khẩu:</label>
+                    <div class="relative">
+                        <input type="password" id="password" name="password" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                    </div>
+                </div>
+                
+                <div class="space-y-2">
+                    <label for="confirmPassword" class="block text-lg font-medium text-gray-500">Nhập lại mật khẩu:</label>
+                    <div class="relative">
+                        <input type="password" id="confirmPassword" name="confirmPassword" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                    </div>
+                </div>
+
+                <div class="flex flex-row justify-start items-center space-x-2">
+                    <p class="text-lg text-gray-700">Đã có tài khoản?</p>
+                    <a href="/auth/login" class="text-lg text-gray-500 underline underline-offset-1">Đăng nhập</a>
+                </div>
+
+                <div class="flex flex-col space-y-4">
+                    <button type="submit" id="registerButton" disabled
+                        class="w-full py-3 rounded-[2rem] transition duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed enabled:bg-blue-600 enabled:hover:bg-blue-700 text-white">
+                        Đăng ký
+                    </button>
+
+                    <div class="flex flex-row items-center w-full my-4">
+                        <hr class="flex-grow border-t border-gray-500">
+                        <span class="px-4 text-gray-500">Hoặc</span>
+                        <hr class="flex-grow border-t border-gray-500">
+                    </div>
+                    
+                    <a href="/auth/google"
+                        class="w-full bg-white text-black py-3 rounded-[2rem] border border-black hover:bg-blue-500 transition duration-200 text-center flex items-center justify-center space-x-2">
+                        <!-- Google Logo SVG -->
+                        <img src="/images/google-icon.png" alt="google-icon" class="w-6 h-6">
+                        <span>Tiếp tục với Google</span>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <img src="/images/register-bg.png" alt="" class="w-full">
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const registerButton = document.getElementById('registerButton');
+
+        function validateForm() {
+            // Get values and remove whitespace
+            const name = nameInput.value.trim();
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+            const confirmPassword = confirmPasswordInput.value.trim();
+
+            // Check if all fields are filled
+            const isValid =
+                name !== '' &&
+                email !== '' &&
+                password !== '' &&
+                confirmPassword !== '' &&
+                password === confirmPassword; // Check passwords match
+
+            // Enable/disable button
+            registerButton.disabled = !isValid;
+        }
+
+        // Add listeners to all inputs
+        [nameInput, emailInput, passwordInput, confirmPasswordInput].forEach(input => {
+            input.addEventListener('input', validateForm);
+        });
+
+        // Initial check
+        validateForm();
+    });
+</script>

@@ -5,14 +5,13 @@ import livereload from "livereload";
 import connectLiveReload from "connect-livereload";
 import path from "path";
 import { fileURLToPath } from "url";
-// import { getArticles } from "./getArticles.js";
 import {
   getArticlesById,
   getArticlesSameCategory,
   getArticlesByCategory,
   getArticles,
   getCategorizedArticles,
-} from "./getArticles-1.js";
+} from "./getArticles.js";
 import { connectDB } from "./config/db.js";
 import NodeCache from "node-cache";
 import articleRoute from "./routes/articleRoute.js";
@@ -127,7 +126,7 @@ app.get("/article/:id", async (req, res) => {
     }
 
     // Get article by ID
-    const response = await getArticles1(articleId);
+    const response = await getArticlesById(articleId);
 
     if (!response.success) {
       return res.status(404).send(response.error);
