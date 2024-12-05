@@ -10,8 +10,8 @@ import {
   getArticlesSameCategory,
   getArticlesByCategory,
   getArticles,
-  getCategorizedArticles,
-} from "./getArticles.js";
+} from "./services/articleService.js";
+import { getCategories, getCategoryName } from "./services/categoriesService.js";
 import { connectDB } from "./config/db.js";
 import NodeCache from "node-cache";
 import articleRoute from "./routes/articleRoute.js";
@@ -83,7 +83,7 @@ app.get("/", async (req, res) => {
 
     // Run queries in parallel with timeout
     const result = await Promise.race([
-      Promise.all([getArticles(), getCategorizedArticles()]),
+      Promise.all([getArticles(), getCategories()]),
       timeout,
     ]);
 
@@ -133,6 +133,12 @@ app.get("/article/:id", async (req, res) => {
     }
 
     const article = response.data;
+
+    // Get category names
+    const categoryNames = await Promise.all(
+      article.category.map((catId) => getCategoryName(catId))
+    );
+
     const relatedResponse = await getArticlesSameCategory(
       article.category[0],
       articleId
@@ -146,19 +152,15 @@ app.get("/article/:id", async (req, res) => {
 
     const articleData = {
       title: article.name,
-      article,
+      article: {
+        ...article,
+        categoryNames, // Add category names array to article data
+      },
       articleSameCategory: relatedResponse.data,
     };
 
     // Cache the data
     cache.set(cacheKey, articleData);
-
-    if (req.xhr || req.headers["x-requested-with"] === "XMLHttpRequest") {
-      return res.json({
-        success: true,
-        data: articleData,
-      });
-    }
 
     res.render("pages/ArticlePage", articleData);
   } catch (error) {
@@ -169,24 +171,27 @@ app.get("/article/:id", async (req, res) => {
 
 const findCategoryFamily = (categories, targetCategory) => {
   try {
-    // Check if target is a parent category
-    const asParent = categories.find(
-      (cat) => cat.parentCategory === targetCategory
-    );
-    if (asParent) {
-      return [asParent.parentCategory, ...asParent.childCategories];
+    if (!Array.isArray(categories) || !targetCategory) {
+      console.log("Invalid input parameters");
+      return [targetCategory];
     }
 
-    // Check if target is a child category
-    const parentCat = categories.find((cat) =>
-      cat.childCategories.includes(targetCategory)
-    );
-    if (parentCat) {
-      return [parentCat.parentCategory, ...parentCat.childCategories];
+    // Find target category first
+    const target = categories.find((cat) => cat._id === targetCategory._id);
+    if (!target) {
+      return [targetCategory];
     }
 
-    // If not found, return array with just target
-    return [targetCategory];
+    if (target.parent === null) {
+      // If target is parent, find all its children
+      const children = categories.filter((cat) => cat.parent === target._id);
+      return [target, ...children];
+    } else {
+      // If target is child, find its parent and siblings
+      const parent = categories.find((cat) => cat._id === target.parent);
+      const siblings = categories.filter((cat) => cat.parent === target.parent);
+      return parent ? [parent, ...siblings] : [targetCategory];
+    }
   } catch (error) {
     console.error("findCategoryFamily error:", error);
     return [targetCategory];
@@ -195,45 +200,51 @@ const findCategoryFamily = (categories, targetCategory) => {
 
 app.get("/categories/:category", async (req, res) => {
   try {
-    const currentCategory = decodeURIComponent(req.params.category);
-    const page = parseInt(req.query.page) || 1;
-    const cacheKey = `category_${currentCategory}_page_${page}`;
+    const categoryName = req.params.category;
+    const cacheKey = `category_${categoryName}`;
 
-    // Check cache first
+    // Check cache
     const cachedData = cache.get(cacheKey);
     if (cachedData) {
       return res.render("pages/CategoriesPage", cachedData);
     }
 
-    // Run queries in parallel
-    const [categoriesResponse, articleResponse] = await Promise.all([
-      getCategorizedArticles(),
-      getArticlesByCategory(currentCategory, page),
-    ]);
+    // Get all categories first
+    const categoriesResponse = await getCategories();
+    if (!categoriesResponse.success) {
+      return res.status(500).json({ error: categoriesResponse.error });
+    }
 
-    if (!currentCategory) {
-      return res.status(400).json({
-        success: false,
-        error: "Category parameter is required",
-      });
+    // Find category by name
+    const category = categoriesResponse.data.find(
+      (cat) => cat.name === categoryName
+    );
+    if (!category) {
+      return res.status(404).send("Category not found");
+    }
+
+    // Get articles using category ID
+    const articleResponse = await getArticlesByCategory(category._id);
+    if (!articleResponse.success) {
+      return res.status(500).json({ error: articleResponse.error });
     }
 
     const categoryFamily = findCategoryFamily(
       categoriesResponse.data,
-      currentCategory
+      category
     );
 
     const pageData = {
-      title: currentCategory,
+      title: categoryName,  
       articles: articleResponse.data,
       categories: categoriesResponse.data,
-      currentCategory,
+      currentCategory: category._id,
       categoryFamily,
       pagination: articleResponse.pagination,
     };
 
     // Cache the result
-    cache.set(cacheKey, pageData, 300); // Cache for 5 minutes
+    cache.set(cacheKey, pageData, 300);
 
     res.render("pages/CategoriesPage", pageData);
   } catch (error) {

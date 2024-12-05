@@ -24,7 +24,7 @@
                 <p class="ml-2">Chuyên mục</p>
             </div>
             <div class="flex flex-wrap p-1 gap-2 mt-3">
-                <% article.category.forEach(category=> { %>
+                <% article.categoryNames.forEach(category=> { %>
                     <a href="/categories/<%= category %>"
                         class="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded-full text-xs transition-colors">
                         <%= category %>
