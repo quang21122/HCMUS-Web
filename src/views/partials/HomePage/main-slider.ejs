@@ -39,7 +39,7 @@
                                 <!-- Main Category -->
                                 <div class="flex flex-wrap gap-2">
                                     <span class="bg-gray-300 px-2 py-1 rounded-md text-sm sm:text-md text-black">
-                                        <%= article.category %>
+                                        <%= article.category[0] %>
                                     </span>
                                 </div>
                                 <% if (article.subcategories && article.subcategories.length> 0) { %>
