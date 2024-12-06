@@ -146,6 +146,8 @@ app.get("/article/:id", async (req, res) => {
       article.category.map((catId) => getCategoryName(catId))
     );
 
+    const tagsResponse = await getTags();
+
     // Get tag names
     const tagNames = await Promise.all(
       article.tags.map((tagId) => getTagName(tagId))
@@ -170,6 +172,7 @@ app.get("/article/:id", async (req, res) => {
         tagNames,
       },
       articleSameCategory: relatedResponse.data,
+      tags: tagsResponse,
     };
 
     // Cache the data
@@ -219,6 +222,8 @@ app.get("/categories/:category", async (req, res) => {
       category
     );
 
+    const tagsResponse = await getTags();
+
     const pageData = {
       title: categoryName,  
       articles: articleResponse.data,
@@ -226,6 +231,7 @@ app.get("/categories/:category", async (req, res) => {
       currentCategory: category._id,
       categoryFamily,
       pagination: articleResponse.pagination,
+      tags: tagsResponse,
     };
 
     // Cache the result

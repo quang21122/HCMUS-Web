@@ -46,105 +46,21 @@
 
                                 <!-- Tag Groups -->
                                 <div class="tag-groups overflow-hidden h-[120px]">
-                                    <div class="tag-wrapper flex transition-transform duration-300" style="width: 300%">
-                                        <!-- Set 1 -->
-                                        <div class="flex w-1/3">
-                                            <div class="w-full flex flex-col gap-4">
-                                                <!-- Frontend -->
-                                                <div class="tag-group flex flex-wrap w-full gap-2">
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#HTML</a>
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#CSS</a>
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#JavaScript</a>
-                                                </div>
-                                                <!-- Frontend Frameworks -->
-                                                <div class="tag-group flex flex-wrap w-full gap-2">
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#React</a>
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#Vue</a>
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#Angular</a>
-                                                </div>
-                                                <!-- Backend -->
-                                                <div class="tag-group flex flex-wrap w-full gap-2">
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#NodeJS</a>
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#Express</a>
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#MongoDB</a>
+                                    <div class="flex flex-wrap gap-2 w-full">
+                                        <% const tagsPerSet=7; const numberOfSets=Math.ceil(tags.length / tagsPerSet); for(let i=0; i < numberOfSets; i++) {%>
+                                            <div class="flex w-full">
+                                                <div class="w-full flex flex-wrap gap-4">
+                                                    <div class="tag-group flex flex-wrap w-full gap-2">
+                                                        <% const startIdx=i * tagsPerSet; const endIdx=Math.min(startIdx + tagsPerSet, tags.length); for(let j=startIdx; j < endIdx; j++) { %>
+                                                            <a href="/tags/<%= tags[j].name %>"
+                                                                class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 transition-colors">
+                                                                #<%= tags[j].name %>
+                                                            </a>
+                                                            <% } %>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                
-                                        <!-- Set 2 -->
-                                        <div class="flex w-1/3">
-                                            <div class="w-full flex flex-col gap-4">
-                                                <!-- Cloud -->
-                                                <div class="tag-group flex flex-wrap w-full gap-2">
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#AWS</a>
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#Azure</a>
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#GCP</a>
-                                                </div>
-                                                <!-- DevOps -->
-                                                <div class="tag-group flex flex-wrap w-full gap-2">
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#Docker</a>
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#Kubernetes</a>
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#CI/CD</a>
-                                                </div>
-                                                <!-- Languages -->
-                                                <div class="tag-group flex flex-wrap w-full gap-2">
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#Python</a>
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#Java</a>
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#Go</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                
-                                        <!-- Set 3 -->
-                                        <div class="flex w-1/3">
-                                            <div class="w-full flex flex-col gap-4">
-                                                <!-- AI/ML -->
-                                                <div class="tag-group flex flex-wrap w-full gap-2">
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#AI</a>
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#MachineLearning</a>
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#DeepLearning</a>
-                                                </div>
-                                                <!-- Mobile -->
-                                                <div class="tag-group flex flex-wrap w-full gap-2">
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#Flutter</a>
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#ReactNative</a>
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#iOS</a>
-                                                </div>
-                                                <!-- Tools -->
-                                                <div class="tag-group flex flex-wrap w-full gap-2">
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#Git</a>
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#VSCode</a>
-                                                    <a href="#"
-                                                        class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">#Terminal</a>
-                                                </div>
-                                            </div>
-                                        </div>
+                                            <% } %>
                                     </div>
                                 </div>
                                 <!-- End tag -->
@@ -163,41 +79,58 @@
 </nav>
 
 <script>
-    let currentSet = 0;
-    const wrapper = document.querySelector('.tag-wrapper');
-    const totalSets = 3;
-    const prevBtn = document.querySelector('.tag-prev');
-    const nextBtn = document.querySelector('.tag-next');
-    const searchInput = document.querySelector('input[type="text"]'); // Add reference to input
+    document.addEventListener('DOMContentLoaded', function () {
+        const tagGroups = document.querySelectorAll('.tag-group');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const dropdownContainer = document.querySelector('.group-focus-within\\:visible');
+        const searchInput = document.querySelector('input[type="text"]');
+        let currentSet = 0;
 
-    function updateButtons() {
-        prevBtn.disabled = currentSet === 0;
-        nextBtn.disabled = currentSet === totalSets - 1;
-        prevBtn.style.opacity = currentSet === 0 ? '0.5' : '1';
-        nextBtn.style.opacity = currentSet === totalSets - 1 ? '0.5' : '1';
-        wrapper.style.transform = `translateX(-${currentSet * 33.333}%)`;
-    }
+        // Hide all tag groups initially except first one
+        tagGroups.forEach((group, index) => {
+            group.style.display = index === 0 ? 'flex' : 'none';
+        });
 
-    nextBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (currentSet < totalSets - 1) {
-            currentSet++;
-            updateButtons();
+        function updateButtons() {
+            // Update button states
+            prevBtn.disabled = currentSet === 0;
+            nextBtn.disabled = currentSet === tagGroups.length - 1;
+
+            // Show/hide tag groups
+            tagGroups.forEach((group, index) => {
+                group.style.display = index === currentSet ? 'flex' : 'none';
+            });
         }
-        searchInput.focus(); // Keep focus on input
-    });
 
-    prevBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (currentSet > 0) {
-            currentSet--;
-            updateButtons();
-        }
-        searchInput.focus(); // Keep focus on input
-    });
+        // Keep focus on input when clicking inside dropdown
+        dropdownContainer.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
 
-    // Initialize button states
-    updateButtons();
+        // Handle navigation buttons
+        nextBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (currentSet < tagGroups.length - 1) {
+                currentSet++;
+                updateButtons();
+            }
+            searchInput.focus(); // Maintain focus
+        });
+
+        prevBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (currentSet > 0) {
+                currentSet--;
+                updateButtons();
+            }
+            searchInput.focus(); // Maintain focus
+        });
+
+        // Initialize button states
+        updateButtons();
+    });
 </script>
