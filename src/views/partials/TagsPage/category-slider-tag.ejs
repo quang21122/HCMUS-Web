@@ -1,0 +1,61 @@
+<div class="category-slider-container max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-4 relative">
+    <div class="category-slider navwrap" id="slider">
+        <ul id="nav" class="nav">
+            <% categories.filter(category=> !category.parent).forEach(parentCategory => { %>
+                <li class="category rounded-lg">
+                    <a href="/tags/<%= currentTag %>?category=<%= parentCategory.name %>" class="text-xs text-center text-gray-600">
+                        <%= parentCategory.name %>
+                    </a>
+                    <div class="hover:cursor-pointer h-2"></div>
+                    <ul class="dropdown bg-black opacity-70">
+                        <% categories.filter(child=> child.parent === parentCategory._id).forEach(childCategory => { %>
+                            <li>
+                                <a href="/tags/<%= currentTag %>?category=<%= childCategory.name %>" class="text-xs bg-black opacity-70">
+                                    <%= childCategory.name %>
+                                </a>
+                            </li>
+                            <% }); %>
+                    </ul>
+                </li>
+                <% }); %>
+        </ul>
+    </div>
+</div>
+
+<script>
+    (function () {
+        // detect touch
+        if ("ontouchstart" in document.documentElement) {
+            document.documentElement.className += " touch-device";
+        }
+
+        const scroller = document.querySelector(".navwrap");
+        const dropDown = document.querySelectorAll(".dropdown");
+        scroller.addEventListener("scroll", checkScroll);
+
+        function checkScroll() {
+            document.activeElement.blur();
+            scroller.classList.add("isScrolling");
+            for (let i = 0; i < dropDown.length; i++) {
+                dropDown[i].style.transform =
+                    "translateX(-" + scroller.scrollLeft + "px)";
+            }
+            scroller.classList.remove("isScrolling");
+        }
+    })();
+
+    document.addEventListener('DOMContentLoaded', function () {
+            const categoryLinks = document.querySelectorAll('.category a');
+
+            categoryLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const url = new URL(this.href);
+                    const tag = url.pathname.split('/').pop();
+                    const category = url.searchParams.get('category');
+
+                    window.location.href = `/tags/${tag}?category=${category}`;
+                });
+            });
+        });
+</script>

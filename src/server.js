@@ -10,6 +10,7 @@ import {
   getArticlesSameCategory,
   getArticlesByCategory,
   getArticles,
+  getArticlesByTag,
 } from "./services/articleService.js";
 import {
   getCategories,
@@ -103,7 +104,7 @@ app.get("/", async (req, res) => {
       title: "Trang chủ",
       articles: articlesResponse.data,
       categories: categoriesResponse.data,
-      tags: tagsResponse,
+      tags: tagsResponse.data,
     };
 
     // Cache the result
@@ -172,7 +173,7 @@ app.get("/article/:id", async (req, res) => {
         tagNames,
       },
       articleSameCategory: relatedResponse.data,
-      tags: tagsResponse,
+      tags: tagsResponse.data,
     };
 
     // Cache the data
@@ -207,6 +208,7 @@ app.get("/categories/:category", async (req, res) => {
     const category = categoriesResponse.data.find(
       (cat) => cat.name === categoryName
     );
+
     if (!category) {
       return res.status(404).send("Category not found");
     }
@@ -231,7 +233,7 @@ app.get("/categories/:category", async (req, res) => {
       currentCategory: category._id,
       categoryFamily,
       pagination: articleResponse.pagination,
-      tags: tagsResponse,
+      tags: tagsResponse.data,
     };
 
     // Cache the result
@@ -240,6 +242,55 @@ app.get("/categories/:category", async (req, res) => {
     res.render("pages/CategoriesPage", pageData);
   } catch (error) {
     console.error("Category route error:", error);
+    res.status(500).send("Server error");
+  }
+});
+
+app.get("/tags/:tag", async (req, res) => {
+  try {
+    const tagName = decodeURIComponent(req.params.tag);
+    const categoryName = req.query.category;
+    const page = parseInt(req.query.page) || 1;
+    const cacheKey = `tag_${tagName}_category_${categoryName}_page_${page}`;
+
+    // Check cache
+    const cachedData = cache.get(cacheKey);
+    if (cachedData) {
+      return res.render("pages/TagsPage", cachedData);
+    }
+
+    const categoriesResponse = await getCategories();
+
+    const category = categoriesResponse.data.find(
+      (cat) => cat.name === categoryName
+    );
+
+    const tagsResponse = await getTags();
+    const tag = tagsResponse.data.find((t) => t.name === tagName);
+
+    const articlesResponse = await getArticlesByTag(tag._id, page, 12, category);
+
+
+    if (!articlesResponse.success) {
+      return res.status(404).send(articlesResponse.error);
+    }
+
+    const pageData = {
+      title: category ? `#${tagName} - ${categoryName}` : `#${tagName}`,
+      articles: articlesResponse.data,
+      currentTag: tagName,
+      currentCategory: categoryName,
+      categories: categoriesResponse.data,
+      tags: tagsResponse.data || [],
+      pagination: articlesResponse.pagination,
+    };
+
+    // Cache the result
+    cache.set(cacheKey, pageData);
+
+    res.render("pages/TagsPage", pageData);
+  } catch (error) {
+    console.error("Tags route error:", error);
     res.status(500).send("Server error");
   }
 });

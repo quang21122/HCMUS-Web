@@ -829,10 +829,6 @@ video {
   min-height: 100vh;
 }
 
-.w-1\/3{
-  width: 33.333333%;
-}
-
 .w-10{
   width: 2.5rem;
 }
@@ -1568,12 +1564,6 @@ video {
   transition-duration: 150ms;
 }
 
-.transition-transform{
-  transition-property: transform;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-
 .duration-200{
   transition-duration: 200ms;
 }
@@ -1878,6 +1868,11 @@ ul {
 .disabled\:bg-gray-400:disabled{
   --tw-bg-opacity: 1;
   background-color: rgb(156 163 175 / var(--tw-bg-opacity, 1));
+}
+
+.disabled\:text-gray-400:disabled{
+  --tw-text-opacity: 1;
+  color: rgb(156 163 175 / var(--tw-text-opacity, 1));
 }
 
 .group:focus-within .group-focus-within\:visible{
