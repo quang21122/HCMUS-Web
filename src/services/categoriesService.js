@@ -35,3 +35,32 @@ export const getCategoryName = async (id) => {
     return "Unknown Category";
   }
 };
+
+export const findCategoryFamily = (categories, targetCategory) => {
+  try {
+    if (!Array.isArray(categories) || !targetCategory) {
+      console.log("Invalid input parameters");
+      return [targetCategory];
+    }
+
+    // Find target category first
+    const target = categories.find((cat) => cat._id === targetCategory._id);
+    if (!target) {
+      return [targetCategory];
+    }
+
+    if (target.parent === null) {
+      // If target is parent, find all its children
+      const children = categories.filter((cat) => cat.parent === target._id);
+      return [target, ...children];
+    } else {
+      // If target is child, find its parent and siblings
+      const parent = categories.find((cat) => cat._id === target.parent);
+      const siblings = categories.filter((cat) => cat.parent === target.parent);
+      return parent ? [parent, ...siblings] : [targetCategory];
+    }
+  } catch (error) {
+    console.error("findCategoryFamily error:", error);
+    return [targetCategory];
+  }
+};

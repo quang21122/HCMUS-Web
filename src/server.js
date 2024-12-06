@@ -11,13 +11,19 @@ import {
   getArticlesByCategory,
   getArticles,
 } from "./services/articleService.js";
-import { getCategories, getCategoryName } from "./services/categoriesService.js";
+import {
+  getCategories,
+  getCategoryName,
+  findCategoryFamily,
+} from "./services/categoriesService.js";
+import { getTags, getTagName } from "./services/tagsService.js";
 import { connectDB } from "./config/db.js";
 import NodeCache from "node-cache";
 import articleRoute from "./routes/articleRoute.js";
 import userRoute from "./routes/userRoute.js";
 import loginRegisterRoutes from "./strategies/local-strategy.js";
 import passport from "./config/passport.js";
+import { compareSync } from "bcrypt";
 export const PassportSetup = passport;
 
 const cache = new NodeCache({ stdTTL: 300 });
@@ -83,11 +89,11 @@ app.get("/", async (req, res) => {
 
     // Run queries in parallel with timeout
     const result = await Promise.race([
-      Promise.all([getArticles(), getCategories()]),
+      Promise.all([getArticles(), getCategories(), getTags()]),
       timeout,
     ]);
 
-    const [articlesResponse, categoriesResponse] = result;
+    const [articlesResponse, categoriesResponse, tagsResponse] = result;
 
     if (!articlesResponse.success || !categoriesResponse.success) {
       throw new Error("Failed to fetch data");
@@ -97,6 +103,7 @@ app.get("/", async (req, res) => {
       title: "Trang chủ",
       articles: articlesResponse.data,
       categories: categoriesResponse.data,
+      tags: tagsResponse,
     };
 
     // Cache the result
@@ -139,6 +146,11 @@ app.get("/article/:id", async (req, res) => {
       article.category.map((catId) => getCategoryName(catId))
     );
 
+    // Get tag names
+    const tagNames = await Promise.all(
+      article.tags.map((tagId) => getTagName(tagId))
+    );
+
     const relatedResponse = await getArticlesSameCategory(
       article.category[0],
       articleId
@@ -154,7 +166,8 @@ app.get("/article/:id", async (req, res) => {
       title: article.name,
       article: {
         ...article,
-        categoryNames, // Add category names array to article data
+        categoryNames,
+        tagNames,
       },
       articleSameCategory: relatedResponse.data,
     };
@@ -169,34 +182,6 @@ app.get("/article/:id", async (req, res) => {
   }
 });
 
-const findCategoryFamily = (categories, targetCategory) => {
-  try {
-    if (!Array.isArray(categories) || !targetCategory) {
-      console.log("Invalid input parameters");
-      return [targetCategory];
-    }
-
-    // Find target category first
-    const target = categories.find((cat) => cat._id === targetCategory._id);
-    if (!target) {
-      return [targetCategory];
-    }
-
-    if (target.parent === null) {
-      // If target is parent, find all its children
-      const children = categories.filter((cat) => cat.parent === target._id);
-      return [target, ...children];
-    } else {
-      // If target is child, find its parent and siblings
-      const parent = categories.find((cat) => cat._id === target.parent);
-      const siblings = categories.filter((cat) => cat.parent === target.parent);
-      return parent ? [parent, ...siblings] : [targetCategory];
-    }
-  } catch (error) {
-    console.error("findCategoryFamily error:", error);
-    return [targetCategory];
-  }
-};
 
 app.get("/categories/:category", async (req, res) => {
   try {
