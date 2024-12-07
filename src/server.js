@@ -295,6 +295,25 @@ app.get("/tags/:tag", async (req, res) => {
   }
 });
 
+app.get("/register-form", async (req, res) => {
+  const step = parseInt(req.query.step) || 1;
+  const role = req.query.role || req.session.role || "";
+  
+  if (step === 2 && req.query.role) {
+    req.session.role = req.query.role;
+  }
+  // Validate step is between 1-3
+  const validStep = Math.min(Math.max(step, 1), 3);
+
+
+  const pageData = {
+    title: "Register Form",
+    role,
+    step: validStep,
+  };
+  res.render("pages/RegisterForm", pageData);
+});
+
 const startServer = async () => {
   try {
     await connectDB();
