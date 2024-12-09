@@ -184,7 +184,7 @@
                 alert('Vui lòng chọn vai trò');
                 return false;
             }
-            window.location.href = `/register-form?step=2&role=${selectedRole.value}`;
+            window.location.href = `/register-form?step=2`;
             return false;
         }
 
@@ -193,9 +193,7 @@
                 form.reportValidity();
                 return false;
             }
-            const formData = new FormData(form);
-            const queryString = new URLSearchParams(formData).toString();
-            window.location.href = `/register-form?step=3&${queryString}`;
+            window.location.href = `/register-form?step=3`;
             return false;
         }
 
