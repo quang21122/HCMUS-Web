@@ -18,6 +18,7 @@ import {
   findCategoryFamily,
 } from "./services/categoriesService.js";
 import { getTags, getTagName } from "./services/tagsService.js";
+import { findUser } from "./services/userService.js";
 import { connectDB } from "./config/db.js";
 import NodeCache from "node-cache";
 import articleRoute from "./routes/articleRoute.js";
@@ -313,6 +314,34 @@ app.get("/register-form", async (req, res) => {
   };
   res.render("pages/RegisterForm", pageData);
 });
+
+app.get("/profile/:id", async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const user = await findUser(userId);
+    const categoriesResponse = await getCategories();
+    const tagsResponse = await getTags();
+
+    if (user.error) {
+      return res.status(user.status).send(user.error);
+    }
+
+    const pageData = {
+      title: "Profile",
+      user,
+      categories: categoriesResponse.data,
+      tags: tagsResponse.data,
+    }
+
+    res.render("pages/ProfilePage", pageData);
+
+  } catch (error) {
+    console.error("Profile route error:", error);
+    res.status(500).send("Server error");
+  }
+});
+
 
 const startServer = async () => {
   try {
