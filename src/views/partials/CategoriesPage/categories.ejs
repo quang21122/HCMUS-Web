@@ -1,9 +1,9 @@
 <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
     <!-- Categories List -->
     <div class="flex flex-row items-center space-x-3">
-        <a href="/categories/<%= categoryFamily[0] %>"
-            class="flex items-center text-3xl font-semibold <%= categoryFamily[0] === currentCategory ? 'text-blue-600' : 'text-black' %>">
-            <%= categoryFamily[0] %>
+        <a href="/categories/<%= categoryFamily[0].name %>"
+            class="text-3xl font-semibold <%= categoryFamily[0]._id === currentCategory ? 'text-blue-600' : 'text-black' %>">
+            <%= categoryFamily[0].name %>
         </a>
         <svg xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 320 512"
@@ -12,11 +12,11 @@
                 d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" />
         </svg>
         <!-- Child categories -->
-        <div class="flex flex-row items-center gap-6">
+        <div class="flex flex-row gap-6">
             <% categoryFamily.slice(1).forEach(childCategory=> { %>
-                <a href="/categories/<%= childCategory %>"
-                    class="text-base <%= childCategory === currentCategory ? 'text-blue-600' : 'hover:text-cyan-300 text-black' %>">
-                    <%= childCategory %>
+                <a href="/categories/<%= childCategory.name %>"
+                    class="text-base <%= childCategory._id === currentCategory ? 'text-blue-600' : 'hover:text-cyan-300 text-black' %>">
+                    <%= childCategory.name %>
                 </a>
                 <% }); %>
         </div>
@@ -45,19 +45,24 @@
                         <h3 class="font-semibold text-lg line-clamp-1">
                             <%= article.name %>
                         </h3>
-                        <div class="flex flex-row space-x-2">
+                        <div class="flex flex-row space-x-2 mb-3">
+                            <!-- Parent Category -->
                             <div class="p-1 flex text-xs justify-center border border-black rounded-xl w-[32%]">
                                 <% if (article.category && article.category.length> 0) { %>
-                                    <%= article.category[0] %>
-                                        <% } else { %>
-                                            No category
-                                            <% } %>
+                                    <% const parentCategory=categories.find(cat=> cat._id === article.category[0]); %>
+                                        <%= parentCategory ? parentCategory.name : 'Unknown Category' %>
+                                            <% } else { %>
+                                                No category
+                                                <% } %>
                             </div>
-                            <!-- Child categories -->
+                        
+                            <!-- Child Categories -->
                             <% if (article.category && article.category.length> 1) { %>
-                                <% article.category.slice(1).forEach(childCategory=> { %>
+                                <% article.category.slice(1).forEach(childId=> {
+                                    const childCategory = categories.find(cat => cat._id === childId);
+                                    %>
                                     <span class="text-xs text-cyan-500 flex justify-center items-center">
-                                        #<%= childCategory %>
+                                        #<%= childCategory ? childCategory.name : 'Unknown Category' %>
                                     </span>
                                     <% }); %>
                                         <% } %>

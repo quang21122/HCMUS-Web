@@ -2,7 +2,7 @@ import {readFile} from 'fs/promises';
 import User from '../models/User.js';
 import mongoose from "mongoose";
 
-const findUser = async (id) => {
+export const findUser = async (id) => {
     try {
         // Kiểm tra ID hợp lệ
         if (!mongoose.Types.ObjectId.isValid(id)) {

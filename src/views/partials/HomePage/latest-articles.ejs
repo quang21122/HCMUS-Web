@@ -17,7 +17,8 @@
                                                 class="object-cover w-full h-full rounded-lg">
                                             <div class="absolute top-1 left-0">
                                                 <% if (article.isPremium) { %>
-                                                    <svg class="w-6 h-6 text-yellow-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    <svg class="w-6 h-6 text-yellow-400" aria-hidden="true"
+                                                        xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                         fill="currentColor" viewBox="0 0 24 24">
                                                         <path d="M11 9a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z" />
                                                         <path fill-rule="evenodd"
@@ -36,19 +37,29 @@
                                             <%= article.name %>
                                         </h3>
                                         <div class="flex flex-row space-x-2">
-                                            <div
-                                                class="p-1 flex text-sm justify-center border border-black rounded-xl w-[32%]">
-                                                <%= article.category[0] %>
-                                            </div>
-                                            <!-- Child categories -->
-                                            <% if (article.category && article.category.length> 1) { %>
-                                                <% article.category.slice(1).forEach(childCategory=> { %>
-                                                    <span
-                                                        class="text-sm text-cyan-500 flex justify-center items-center">
-                                                        #<%= childCategory %>
-                                                    </span>
-                                                    <% }); %>
-                                                        <% } %>
+                                            <!-- Parent category -->
+                                            <% if (article.category && article.category.length> 0) { %>
+                                                <% const parentCategory=categories.find(cat=> cat._id ===
+                                                    article.category[0]); %>
+                                                    <div
+                                                        class="p-1 flex text-sm justify-center border border-black rounded-xl w-[32%]">
+                                                        <%= parentCategory ? parentCategory.name : 'Unknown Category' %>
+                                                    </div>
+                                                    <% } %>
+
+                                                        <!-- Child categories -->
+                                                        <% if (article.category && article.category.length> 1) { %>
+                                                            <% article.category.slice(1).forEach(childId=> {
+                                                                const childCategory = categories.find(cat => cat._id ===
+                                                                childId);
+                                                                %>
+                                                                <span
+                                                                    class="text-sm text-cyan-500 flex justify-center items-center">
+                                                                    #<%= childCategory ? childCategory.name : 'Unknown'
+                                                                        %>
+                                                                </span>
+                                                                <% }); %>
+                                                                    <% } %>
                                         </div>
                                         <p class="text-sm text-gray-500 line-clamp-3">
                                             <%= article.abstract || article.content %>

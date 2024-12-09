@@ -10,14 +10,22 @@ import {
   getArticlesSameCategory,
   getArticlesByCategory,
   getArticles,
-  getCategorizedArticles,
-} from "./getArticles.js";
+  getArticlesByTag,
+} from "./services/articleService.js";
+import {
+  getCategories,
+  getCategoryName,
+  findCategoryFamily,
+} from "./services/categoriesService.js";
+import { getTags, getTagName } from "./services/tagsService.js";
+import { findUser } from "./services/userService.js";
 import { connectDB } from "./config/db.js";
 import NodeCache from "node-cache";
 import articleRoute from "./routes/articleRoute.js";
 import userRoute from "./routes/userRoute.js";
 import loginRegisterRoutes from "./strategies/local-strategy.js";
 import passport from "./config/passport.js";
+import { compareSync } from "bcrypt";
 export const PassportSetup = passport;
 
 const cache = new NodeCache({ stdTTL: 300 });
@@ -83,11 +91,11 @@ app.get("/", async (req, res) => {
 
     // Run queries in parallel with timeout
     const result = await Promise.race([
-      Promise.all([getArticles(), getCategorizedArticles()]),
+      Promise.all([getArticles(), getCategories(), getTags()]),
       timeout,
     ]);
 
-    const [articlesResponse, categoriesResponse] = result;
+    const [articlesResponse, categoriesResponse, tagsResponse] = result;
 
     if (!articlesResponse.success || !categoriesResponse.success) {
       throw new Error("Failed to fetch data");
@@ -97,6 +105,7 @@ app.get("/", async (req, res) => {
       title: "Trang chủ",
       articles: articlesResponse.data,
       categories: categoriesResponse.data,
+      tags: tagsResponse.data,
     };
 
     // Cache the result
@@ -133,6 +142,19 @@ app.get("/article/:id", async (req, res) => {
     }
 
     const article = response.data;
+
+    // Get category names
+    const categoryNames = await Promise.all(
+      article.category.map((catId) => getCategoryName(catId))
+    );
+
+    const tagsResponse = await getTags();
+
+    // Get tag names
+    const tagNames = await Promise.all(
+      article.tags.map((tagId) => getTagName(tagId))
+    );
+
     const relatedResponse = await getArticlesSameCategory(
       article.category[0],
       articleId
@@ -146,19 +168,17 @@ app.get("/article/:id", async (req, res) => {
 
     const articleData = {
       title: article.name,
-      article,
+      article: {
+        ...article,
+        categoryNames,
+        tagNames,
+      },
       articleSameCategory: relatedResponse.data,
+      tags: tagsResponse.data,
     };
 
     // Cache the data
     cache.set(cacheKey, articleData);
-
-    if (req.xhr || req.headers["x-requested-with"] === "XMLHttpRequest") {
-      return res.json({
-        success: true,
-        data: articleData,
-      });
-    }
 
     res.render("pages/ArticlePage", articleData);
   } catch (error) {
@@ -167,73 +187,58 @@ app.get("/article/:id", async (req, res) => {
   }
 });
 
-const findCategoryFamily = (categories, targetCategory) => {
-  try {
-    // Check if target is a parent category
-    const asParent = categories.find(
-      (cat) => cat.parentCategory === targetCategory
-    );
-    if (asParent) {
-      return [asParent.parentCategory, ...asParent.childCategories];
-    }
-
-    // Check if target is a child category
-    const parentCat = categories.find((cat) =>
-      cat.childCategories.includes(targetCategory)
-    );
-    if (parentCat) {
-      return [parentCat.parentCategory, ...parentCat.childCategories];
-    }
-
-    // If not found, return array with just target
-    return [targetCategory];
-  } catch (error) {
-    console.error("findCategoryFamily error:", error);
-    return [targetCategory];
-  }
-};
 
 app.get("/categories/:category", async (req, res) => {
   try {
-    const currentCategory = decodeURIComponent(req.params.category);
-    const page = parseInt(req.query.page) || 1;
-    const cacheKey = `category_${currentCategory}_page_${page}`;
+    const categoryName = req.params.category;
+    const cacheKey = `category_${categoryName}`;
 
-    // Check cache first
+    // Check cache
     const cachedData = cache.get(cacheKey);
     if (cachedData) {
       return res.render("pages/CategoriesPage", cachedData);
     }
 
-    // Run queries in parallel
-    const [categoriesResponse, articleResponse] = await Promise.all([
-      getCategorizedArticles(),
-      getArticlesByCategory(currentCategory, page),
-    ]);
+    // Get all categories first
+    const categoriesResponse = await getCategories();
+    if (!categoriesResponse.success) {
+      return res.status(500).json({ error: categoriesResponse.error });
+    }
 
-    if (!currentCategory) {
-      return res.status(400).json({
-        success: false,
-        error: "Category parameter is required",
-      });
+    // Find category by name
+    const category = categoriesResponse.data.find(
+      (cat) => cat.name === categoryName
+    );
+
+    if (!category) {
+      return res.status(404).send("Category not found");
+    }
+
+    // Get articles using category ID
+    const articleResponse = await getArticlesByCategory(category._id);
+    if (!articleResponse.success) {
+      return res.status(500).json({ error: articleResponse.error });
     }
 
     const categoryFamily = findCategoryFamily(
       categoriesResponse.data,
-      currentCategory
+      category
     );
 
+    const tagsResponse = await getTags();
+
     const pageData = {
-      title: currentCategory,
+      title: categoryName,  
       articles: articleResponse.data,
       categories: categoriesResponse.data,
-      currentCategory,
+      currentCategory: category._id,
       categoryFamily,
       pagination: articleResponse.pagination,
+      tags: tagsResponse.data,
     };
 
     // Cache the result
-    cache.set(cacheKey, pageData, 300); // Cache for 5 minutes
+    cache.set(cacheKey, pageData, 300);
 
     res.render("pages/CategoriesPage", pageData);
   } catch (error) {
@@ -241,6 +246,102 @@ app.get("/categories/:category", async (req, res) => {
     res.status(500).send("Server error");
   }
 });
+
+app.get("/tags/:tag", async (req, res) => {
+  try {
+    const tagName = decodeURIComponent(req.params.tag);
+    const categoryName = req.query.category;
+    const page = parseInt(req.query.page) || 1;
+    const cacheKey = `tag_${tagName}_category_${categoryName}_page_${page}`;
+
+    // Check cache
+    const cachedData = cache.get(cacheKey);
+    if (cachedData) {
+      return res.render("pages/TagsPage", cachedData);
+    }
+
+    const categoriesResponse = await getCategories();
+
+    const category = categoriesResponse.data.find(
+      (cat) => cat.name === categoryName
+    );
+
+    const tagsResponse = await getTags();
+    const tag = tagsResponse.data.find((t) => t.name === tagName);
+
+    const articlesResponse = await getArticlesByTag(tag._id, page, 12, category);
+
+
+    if (!articlesResponse.success) {
+      return res.status(404).send(articlesResponse.error);
+    }
+
+    const pageData = {
+      title: category ? `#${tagName} - ${categoryName}` : `#${tagName}`,
+      articles: articlesResponse.data,
+      currentTag: tagName,
+      currentCategory: categoryName,
+      categories: categoriesResponse.data,
+      tags: tagsResponse.data || [],
+      pagination: articlesResponse.pagination,
+    };
+
+    // Cache the result
+    cache.set(cacheKey, pageData);
+
+    res.render("pages/TagsPage", pageData);
+  } catch (error) {
+    console.error("Tags route error:", error);
+    res.status(500).send("Server error");
+  }
+});
+
+app.get("/register-form", async (req, res) => {
+  const step = parseInt(req.query.step) || 1;
+  const role = req.query.role || req.session.role || "";
+  
+  if (step === 2 && req.query.role) {
+    req.session.role = req.query.role;
+  }
+  // Validate step is between 1-3
+  const validStep = Math.min(Math.max(step, 1), 3);
+
+
+  const pageData = {
+    title: "Register Form",
+    role,
+    step: validStep,
+  };
+  res.render("pages/RegisterForm", pageData);
+});
+
+app.get("/profile/:id", async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const user = await findUser(userId);
+    const categoriesResponse = await getCategories();
+    const tagsResponse = await getTags();
+
+    if (user.error) {
+      return res.status(user.status).send(user.error);
+    }
+
+    const pageData = {
+      title: "Profile",
+      user,
+      categories: categoriesResponse.data,
+      tags: tagsResponse.data,
+    }
+
+    res.render("pages/ProfilePage", pageData);
+
+  } catch (error) {
+    console.error("Profile route error:", error);
+    res.status(500).send("Server error");
+  }
+});
+
 
 const startServer = async () => {
   try {

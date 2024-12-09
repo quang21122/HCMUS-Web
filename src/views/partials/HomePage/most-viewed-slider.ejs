@@ -50,19 +50,22 @@
                         </p>
                         <!-- categories -->
                         <div class="flex flex-wrap flex-row gap-2 justify-start mr-auto">
-                            <% if (articles[i].category && articles[i].category.length> 1) { %>
-                                <!-- Has subcategories - show them -->
-                                <% articles[i].category.slice(1).forEach(subcategory=> { %>
+                            <% if (articles[i].subcategories && articles[i].subcategories.length> 0) { %>
+                                <!-- Has subcategories - only show subcategories -->
+                                <% articles[i].subcategories.forEach(subId=> {
+                                    const subCategory = categories.find(cat => cat._id === subId);
+                                    %>
                                     <span class="text-sm text-gray-500">
-                                        <%= subcategory %>
+                                        <%= subCategory ? subCategory.name : 'Unknown Category' %>
                                     </span>
                                     <% }); %>
-                                        <% } else if (articles[i].category && articles[i].category.length===1) { %>
-                                            <!-- No subcategories - show parent -->
-                                            <span class="text-sm text-gray-500">
-                                                <%= articles[i].category[0] %>
-                                            </span>
-                                            <% } %>
+                                        <% } else if (articles[i].category && articles[i].category.length> 0) { %>
+                                            <!-- No subcategories - show parent category -->
+                                            <% const mainCategory=categories.find(cat=> cat._id === articles[i].category[0]); %>
+                                                <span class="text-sm text-gray-500">
+                                                    <%= mainCategory ? mainCategory.name : 'Unknown Category' %>
+                                                </span>
+                                                <% } %>
                         
                                                 <span class="text-sm text-gray-500">|</span>
                                                 <span class="text-sm text-gray-500">

@@ -1,0 +1,133 @@
+<div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
+    <div class="mt-8 flex flex-col">
+        <img src="/images/bg-profile.png" alt="" class="w-full">
+
+        <div class="flex flex-row justify-between mt-6 mx-6">
+            <div class="flex flex-row items-center justify-start space-x-4">
+                <img src="/images/default-ava.png" alt="" class="w-24 h-24 rounded-full">
+                <div class="flex flex-col space-y-2">
+                    <h1 class="text-2xl font-semibold">
+                        <%= user.name %>
+                    </h1>
+                    <p class="text-gray-400 text-base">
+                        <%= user.email %>
+                    </p>
+                </div>
+            </div>
+            <div class="flex flex-row items-center space-x-4">
+                <!-- Password Change Button -->
+                <button
+                    class="h-[2.5rem] flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Đổi mật khẩu
+                </button>
+
+                <!-- Edit Profile Button -->
+                <button id="editButton" onclick="toggleEdit()"
+                    class="h-[2.5rem] flex items-center px-4 py-2 text-sm font-medium text-white bg-[#4182F9] rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Chỉnh sửa
+                </button>
+            </div>
+        </div>
+
+        <!-- Static View -->
+        <div id="staticView" class="grid grid-cols-2 gap-12 mx-4 mt-6">
+            <div class="space-y-5">
+                <div class="flex flex-col space-y-2">
+                    <div class="text-base font-medium text-black">Họ và tên</div>
+                    <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg">AAAAAA</div>
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <div class="text-base font-medium text-black">Ngày sinh</div>
+                    <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg"><%- user.dob %></div>
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <div class="text-base font-medium text-black">Email liên hệ</div>
+                    <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg"><%- user.email %></div>
+                </div>
+            </div>
+            <div class="space-y-5">
+                <div class="flex flex-col space-y-2">
+                    <div class="text-base font-medium text-black">Giới tính</div>
+                    <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg">Nam</div>
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <div class="text-base font-medium text-black">Quốc tịch</div>
+                    <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg">VN</div>
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <div class="text-base font-medium text-black">Số điện thoại</div>
+                    <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg">012344</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Edit Form -->
+        <form id="editProfileForm" style="display: none;" class="grid grid-cols-2 gap-12 mx-4 mt-6">
+            <div class="space-y-5">
+                <div class="flex flex-col space-y-2">
+                    <label class="text-base font-medium text-black">Họ và tên</label>
+                    <input type="text" name="fullName" value="<%- user.fullName %>"
+                        class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <label class="text-base font-medium text-black">Ngày sinh</label>
+                    <input type="date" name="dob" value="<%- user.dob %>"
+                        class="text-lg text-gray-900 bg-gray-100 px-4 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <label class="text-base font-medium text-black">Email liên hệ</label>
+                    <input type="email" name="email" value="<%- user.email %>"
+                        class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+            </div>
+            <div class="space-y-5">
+                <div class="flex flex-col space-y-2">
+                    <label class="text-base font-medium text-black">Giới tính</label>
+                    <select name="gender"
+                        class="text-lg text-gray-900 bg-gray-100 px-4 py-3.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="male" <%- user.gender==='male' ? 'selected' : '' %>>Nam</option>
+                        <option value="female" <%- user.gender==='female' ? 'selected' : '' %>>Nữ</option>
+                    </select>
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <label class="text-base font-medium text-black">Quốc tịch</label>
+                    <select name="nationality"
+                        class="text-lg text-gray-900 bg-gray-100 px-4 py-3.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="VN" <%- user.nationality==='VN' ? 'selected' : '' %>>Việt Nam</option>
+                        <option value="US" <%- user.nationality==='US' ? 'selected' : '' %>>Hoa Kỳ</option>
+                        <option value="JP" <%- user.nationality==='JP' ? 'selected' : '' %>>Nhật Bản</option>
+                        <option value="KR" <%- user.nationality==='KR' ? 'selected' : '' %>>Hàn Quốc</option>
+                        <option value="CN" <%- user.nationality==='CN' ? 'selected' : '' %>>Trung Quốc</option>
+                        <option value="OTHER" <%- user.nationality==='OTHER' ? 'selected' : '' %>>Khác</option>
+                    </select>
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <label class="text-base font-medium text-black">Số điện thoại</label>
+                    <input type="tel" name="phoneNumber" value="<%- user.phoneNumber %>"
+                        class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toggleEdit() {
+        const staticView = document.getElementById('staticView');
+        const editForm = document.getElementById('editProfileForm');
+        const editButton = document.getElementById('editButton');
+
+        if (staticView.style.display !== 'none') {
+            // Switch to edit mode
+            staticView.style.display = 'none';
+            editForm.style.display = 'grid';
+            editButton.textContent = 'Hoàn thành';
+        } else {
+            // Switch to view mode and save changes
+            editForm.submit();
+            staticView.style.display = 'grid';
+            editForm.style.display = 'none';
+            editButton.textContent = 'Chỉnh sửa';
+        }
+    }
+</script>

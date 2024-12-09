@@ -3,14 +3,14 @@
         <ul id="nav" class="nav">
             <% categories.filter(category=> !category.parent).forEach(parentCategory => { %>
                 <li class="category rounded-lg">
-                    <a href="/categories/<%= parentCategory.name %>" class="text-xs text-center text-gray-600">
+                    <a href="/tags/<%= currentTag %>?category=<%= parentCategory.name %>" class="text-xs text-center text-gray-600">
                         <%= parentCategory.name %>
                     </a>
                     <div class="hover:cursor-pointer h-2"></div>
                     <ul class="dropdown bg-black opacity-70">
                         <% categories.filter(child=> child.parent === parentCategory._id).forEach(childCategory => { %>
                             <li>
-                                <a href="/categories/<%= childCategory.name %>" class="text-sm bg-black opacity-70">
+                                <a href="/tags/<%= currentTag %>?category=<%= childCategory.name %>" class="text-xs bg-black opacity-70">
                                     <%= childCategory.name %>
                                 </a>
                             </li>
@@ -43,4 +43,19 @@
             scroller.classList.remove("isScrolling");
         }
     })();
+
+    document.addEventListener('DOMContentLoaded', function () {
+            const categoryLinks = document.querySelectorAll('.category a');
+
+            categoryLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const url = new URL(this.href);
+                    const tag = url.pathname.split('/').pop();
+                    const category = url.searchParams.get('category');
+
+                    window.location.href = `/tags/${tag}?category=${category}`;
+                });
+            });
+        });
 </script>

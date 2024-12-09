@@ -32,10 +32,12 @@
                                 <!-- Categories -->
                                 <div class="absolute top-0 left-0 p-2">
                                     <div class="flex flex-wrap gap-2 justify-start">
-                                        <span
-                                            class="bg-white opacity-70 px-2 py-1 rounded-md cursor-pointer text-sm text-black">
-                                            <%= firstArticle.category %>
-                                        </span>
+                                        <% if (firstArticle.category && firstArticle.category.length> 0) { %>
+                                            <% const parentCategory=categories.find(cat=> cat._id === firstArticle.category[0]); %>
+                                                <span class="bg-white opacity-70 px-2 py-1 rounded-md cursor-pointer text-sm text-black">
+                                                    <%= parentCategory ? parentCategory.name : 'Unknown Category' %>
+                                                </span>
+                                                <% } %>
                                     </div>
                                 </div>
                                 <!-- Title and Content -->
@@ -86,10 +88,12 @@
                                                                 <!-- Categories -->
                                                                 <div class="absolute top-0 left-0 p-2">
                                                                     <div class="flex flex-wrap gap-2 justify-start">
-                                                                        <span
-                                                                            class="bg-black opacity-70 px-2 py-1 rounded-md cursor-pointer text-sm text-white">
-                                                                            <%= article.category[0] %>
-                                                                        </span>
+                                                                        <% if (article.category && article.category.length> 0) { %>
+                                                                            <% const parentCategory=categories.find(cat=> cat._id === article.category[0]); %>
+                                                                                <span class="bg-black opacity-70 px-2 py-1 rounded-md cursor-pointer text-sm text-white">
+                                                                                    <%= parentCategory ? parentCategory.name : 'Unknown Category' %>
+                                                                                </span>
+                                                                                <% } %>
                                                                     </div>
                                                                 </div>
                                                             </div>

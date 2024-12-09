@@ -2,26 +2,173 @@ import { readFile } from 'fs/promises';
 import Article from '../models/Article.js';
 import mongoose from "mongoose";
 
+export const getArticles = async () => {
+  try {
+    const articles = await Article.find().lean().maxTimeMS(30000).exec();
 
-const readArticle = async (id) => {
-    try {
-        // Kiểm tra ID hợp lệ
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return { error: "Invalid ID format", status: 400 };
-        }
-        // Find the article by ID
-        const article = await Article
-            .findById(id)
-            .exec();
-        
-        // Return the article or a not found message
-        return article || { error: "Article not found", status: 404 };
+    return {
+      success: true,
+      data: articles,
+    };
+  } catch (error) {
+    console.error("getAllArticles error:", error);
+    return {
+      success: false,
+      error: error.message || "Error fetching articles",
+    };
+  }
+};
+
+export const getArticlesById = async (id) => {
+  try {
+    const article = await Article.findById(id).maxTimeMS(30000).lean().exec();
+
+    if (!article) {
+      return {
+        success: false,
+        error: "Article not found",
+      };
     }
-    catch (error) {
-        // Log the error and return a failure response
-        console.error("Error reading article:", error);
-        return { error: error.message, status: 500 };
-    }
+
+    return {
+      success: true,
+      data: article,
+    };
+  } catch (error) {
+    console.error("getArticles error:", error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+};
+
+export const getArticlesSameCategory = async (category, currentArticleId) => {
+  if (!category) {
+    return { success: false, error: "Category parameter is required" };
+  }
+
+  try {
+    const articles = await Article.aggregate([
+      {
+        $match: {
+          category: { $in: [category] },
+          _id: { $ne: currentArticleId },
+        },
+      },
+      { $sample: { size: 6 } },
+      {
+        $project: {
+          name: 1,
+          image: 1,
+          publishedAt: 1,
+        },
+      },
+    ]).exec();
+
+    return {
+      success: true,
+      data: articles,
+    };
+  } catch (error) {
+    console.error("getArticlesByCategory error:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+export const getArticlesByCategory = async (category, page = 1, limit = 12) => {
+  try {
+    const skip = (page - 1) * limit;
+
+    // Use projection to limit fields
+    const projection = {
+      name: 1,
+      image: 1,
+      abstract: 1,
+      content: 1,
+      author: 1,
+      publishedAt: 1,
+      isPremium: 1,
+      category: 1,
+    };
+
+    // Run count and find in parallel
+    const [total, articles] = await Promise.all([
+      Article.countDocuments({ category: { $in: [category] } }),
+      Article.find({ category: { $in: [category] } })
+        .select(projection)
+        .sort({ publishedAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean()
+        .exec(),
+    ]);
+
+    return {
+      success: true,
+      data: articles,
+      pagination: {
+        total,
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  } catch (error) {
+    console.error("getArticlesByCategory error:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+export const getArticlesByTag = async (
+  tag,
+  page = 1,
+  limit = 12,
+  category = null
+) => {
+  try {
+    const skip = (page - 1) * limit;
+
+    // Build query based on whether category is provided
+    const query = category
+      ? { tags: { $in: [tag] }, category: { $in: [category] } }
+      : { tags: { $in: [tag] } };
+
+    const projection = {
+      name: 1,
+      image: 1,
+      abstract: 1,
+      content: 1,
+      author: 1,
+      publishedAt: 1,
+      isPremium: 1,
+      category: 1,
+    };
+
+    // Run count and find in parallel
+    const [total, articles] = await Promise.all([
+      Article.countDocuments(query),
+      Article.find(query)
+        .select(projection)
+        .sort({ publishedAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean()
+        .exec(),
+    ]);
+
+    return {
+      success: true,
+      data: articles,
+      pagination: {
+        total,
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  } catch (error) {
+    console.error("getArticlesByTag error:", error);
+    return { success: false, error: error.message };
+  }
 };
 
 const createArticle = async (data) => {
@@ -118,4 +265,4 @@ const deleteArticle = async (id) => {
     }
 }
 
-export default { createArticle, createMultipleArticles, importArticlesFromLocal, readArticle, updateArticle, deleteArticle };
+export default { createArticle, createMultipleArticles, importArticlesFromLocal, getArticles, getArticlesById, getArticlesByCategory, getArticlesSameCategory, updateArticle, deleteArticle };
