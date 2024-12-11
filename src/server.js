@@ -342,6 +342,10 @@ app.get("/profile/:id", async (req, res) => {
   }
 });
 
+app.get("/forget-password", async (req, res) => {
+  res.render("pages/ForgetPasswordPage");
+});
+
 
 const startServer = async () => {
   try {
