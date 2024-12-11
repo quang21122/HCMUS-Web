@@ -22,7 +22,7 @@
             </div>
         </div>
 
-        <form id="registerForm" method="POST" action="/auth/register" class="space-y-6">
+        <form id="registerForm" method="POST" action="/auth/register-form" class="space-y-6">
             <!-- Step 1: Role Selection -->
             <% if(currentStep===1) { %>
                 <div class="space-y-4">
@@ -153,7 +153,7 @@
         <!-- Navigation -->
         <div class="flex flex-row items-end justify-end space-x-3">
             <% if(currentStep> 1) { %>
-                <a href="/register-form?step=<%= currentStep - 1 %>"
+                <a href="/auth/register-form?step=<%= currentStep - 1 %>"
                     class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
                     Quay lại
                 </a>
@@ -184,7 +184,7 @@
                 alert('Vui lòng chọn vai trò');
                 return false;
             }
-            window.location.href = `/register-form?step=2`;
+            window.location.href = `/auth/register-form?step=2`;
             return false;
         }
 
@@ -193,7 +193,7 @@
                 form.reportValidity();
                 return false;
             }
-            window.location.href = `/register-form?step=3`;
+            window.location.href = `/auth/register-form?step=3`;
             return false;
         }
 

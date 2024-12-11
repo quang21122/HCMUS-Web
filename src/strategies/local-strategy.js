@@ -44,32 +44,38 @@ passport.deserializeUser(async (id, done) => {
 
 // Register new user
 router.post("/register", async (req, res) => {
-  console.log("Request body:", req.body); // Add this line for debugging
-  const { email, password, name, dob, role, penName, category } = req.body;
-
-  if (!email || !password || !name || !dob || !role) {
+  const { email, password, confirmPassword, name } = req.body;
+  // Kiểm tra các trường bắt buộc
+  if (!email || !password || !confirmPassword || !name) {
     return res.status(400).json({ message: "Missing required fields" });
   }
 
-  const existingUser = await User.findOne({ email });
-  if (existingUser) {
-    return res.status(400).json({ message: "Email already registered" });
+  // Kiểm tra confirmPassword
+  if (password !== confirmPassword) {
+    return res.status(400).json({ message: "Passwords do not match" });
   }
 
   try {
+    // Kiểm tra email đã tồn tại chưa
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already registered" });
+    }
+
+    // Mã hóa mật khẩu
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Tạo user mới
     const newUser = new User({
       email,
       password: hashedPassword,
       name,
-      dob,
-      role,
-      penName,
-      category,
     });
 
     await newUser.save();
-    res.status(201).json({ message: "User registered successfully" });
+
+    // Phản hồi thành công
+    res.redirect("/auth/register-form");
   } catch (error) {
     console.error("Error registering user:", error);
     res
@@ -79,30 +85,28 @@ router.post("/register", async (req, res) => {
 });
 
 // Log in existing user
-router.post("/login", passport.authenticate("local"), (req, res) => {
-  res.json({ message: "Logged in successfully" });
+router.post("/login", (req, res, next) => {
+  passport.authenticate("local", (err, user, info) => {
+    if (err) {
+      // Handle unexpected errors
+      return next(err);
+    }
+    if (!user) {
+      // Authentication failed
+      return res.status(401).json({ message: "Authentication failed. Invalid credentials." });
+    }
+    // Successful authentication
+    req.logIn(user, (err) => {
+      if (err) {
+        return next(err);
+      }
+      const userId = user._id;
+      res.redirect(`/profile?_id=${userId}`);
+    });
+  })(req, res, next);
 });
 
-// Change password
-router.post("/change-password", async (req, res) => {
-  if (!req.isAuthenticated()) {
-    return res.status(401).json({ message: "Not authenticated" });
-  }
-  const { currentPassword, newPassword } = req.body;
-  const user = req.user;
-  const isMatch = await bcrypt.compare(currentPassword, user.password);
-  if (!isMatch) {
-    return res.status(400).json({ message: "Current password is incorrect" });
-  }
-  try {
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
-    await user.save();
-    res.json({ message: "Password changed successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Error changing password" });
-  }
-});
+
 
 // Log out user
 router.get("/logout", (req, res) => {
@@ -126,6 +130,10 @@ router.get("/register", (req, res) => {
 
 router.get("/logout", (req, res) => {
   res.send("Logging out");
+});
+
+router.get("/forget-password", async (req, res) => {
+  res.render("pages/ForgetPasswordPage");
 });
 
 router.get(

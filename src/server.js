@@ -27,6 +27,7 @@ import loginRegisterRoutes from "./strategies/local-strategy.js";
 import passport from "./config/passport.js";
 import { compareSync } from "bcrypt";
 export const PassportSetup = passport;
+import changeInProfile from "./profile/change-password.js"
 
 const cache = new NodeCache({ stdTTL: 300 });
 
@@ -121,6 +122,8 @@ app.get("/", async (req, res) => {
 app.use("/api/articles", articleRoute);
 app.use("/api/users", userRoute);
 app.use("/auth", loginRegisterRoutes);
+app.use("/profile", changeInProfile);
+
 
 // Modified article route with caching
 app.get("/article/:id", async (req, res) => {
@@ -187,7 +190,6 @@ app.get("/article/:id", async (req, res) => {
   }
 });
 
-
 app.get("/categories/:category", async (req, res) => {
   try {
     const categoryName = req.params.category;
@@ -228,7 +230,7 @@ app.get("/categories/:category", async (req, res) => {
     const tagsResponse = await getTags();
 
     const pageData = {
-      title: categoryName,  
+      title: categoryName,
       articles: articleResponse.data,
       categories: categoriesResponse.data,
       currentCategory: category._id,
@@ -269,8 +271,12 @@ app.get("/tags/:tag", async (req, res) => {
     const tagsResponse = await getTags();
     const tag = tagsResponse.data.find((t) => t.name === tagName);
 
-    const articlesResponse = await getArticlesByTag(tag._id, page, 12, category);
-
+    const articlesResponse = await getArticlesByTag(
+      tag._id,
+      page,
+      12,
+      category
+    );
 
     if (!articlesResponse.success) {
       return res.status(404).send(articlesResponse.error);
@@ -296,16 +302,15 @@ app.get("/tags/:tag", async (req, res) => {
   }
 });
 
-app.get("/register-form", async (req, res) => {
+app.get("/auth/register-form", async (req, res) => {
   const step = parseInt(req.query.step) || 1;
   const role = req.query.role || req.session.role || "";
-  
+
   if (step === 2 && req.query.role) {
     req.session.role = req.query.role;
   }
   // Validate step is between 1-3
   const validStep = Math.min(Math.max(step, 1), 3);
-
 
   const pageData = {
     title: "Register Form",
@@ -315,9 +320,10 @@ app.get("/register-form", async (req, res) => {
   res.render("pages/RegisterForm", pageData);
 });
 
-app.get("/profile/:id", async (req, res) => {
+
+app.get("/profile", async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = req.query._id;
 
     const user = await findUser(userId);
     const categoriesResponse = await getCategories();
@@ -332,19 +338,15 @@ app.get("/profile/:id", async (req, res) => {
       user,
       categories: categoriesResponse.data,
       tags: tagsResponse.data,
-    }
+    };
 
     res.render("pages/ProfilePage", pageData);
-
   } catch (error) {
     console.error("Profile route error:", error);
     res.status(500).send("Server error");
   }
 });
 
-app.get("/forget-password", async (req, res) => {
-  res.render("pages/ForgetPasswordPage");
-});
 
 
 const startServer = async () => {
