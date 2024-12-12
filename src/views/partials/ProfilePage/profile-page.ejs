@@ -34,7 +34,7 @@
             <div class="space-y-5">
                 <div class="flex flex-col space-y-2">
                     <div class="text-base font-medium text-black">Họ và tên</div>
-                    <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg">AAAAAA</div>
+                    <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg"><%- user.fullName %></div>
                 </div>
                 <div class="flex flex-col space-y-2">
                     <div class="text-base font-medium text-black">Ngày sinh</div>
@@ -48,15 +48,15 @@
             <div class="space-y-5">
                 <div class="flex flex-col space-y-2">
                     <div class="text-base font-medium text-black">Giới tính</div>
-                    <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg">Nam</div>
+                    <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg"><%- user.gender %></div>
                 </div>
                 <div class="flex flex-col space-y-2">
                     <div class="text-base font-medium text-black">Quốc tịch</div>
-                    <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg">VN</div>
+                    <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg"><%- user.country %></div>
                 </div>
                 <div class="flex flex-col space-y-2">
                     <div class="text-base font-medium text-black">Số điện thoại</div>
-                    <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg">012344</div>
+                    <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg"><%- user.phone %></div>
                 </div>
             </div>
         </div>
@@ -132,7 +132,7 @@
                 </div>
 
                 <div class="flex justify-end space-x-3 mt-6">
-                    <button type="button" onclick="goBack()" 
+                    <button type="button" onclick="togglePasswordModal()" 
                         class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300">
                         Hủy
                     </button>
@@ -146,6 +146,24 @@
 </div>
 
 <script>
+    function toggleEdit() {
+        const staticView = document.getElementById('staticView');
+        const editForm = document.getElementById('editProfileForm');
+        const editButton = document.getElementById('editButton');
+
+        if (staticView.style.display !== 'none') {
+            // Switch to edit mode
+            staticView.style.display = 'none';
+            editForm.style.display = 'grid';
+            editButton.textContent = 'Hoàn thành';
+        } else {
+            // Switch to view mode and save changes
+            editForm.submit();
+            staticView.style.display = 'grid';
+            editForm.style.display = 'none';
+            editButton.textContent = 'Chỉnh sửa';
+        }
+    }
     function togglePasswordModal() {
         const modal = document.getElementById('passwordModal');
         modal.style.display = modal.style.display === 'none' || modal.style.display === '' ? 'flex' : 'none';

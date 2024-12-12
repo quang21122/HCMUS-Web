@@ -14,7 +14,11 @@ const userSchema = new Schema({
     subscriptionExpiry: { type: Date },
     penName: { type: String },
     category: { type: String },
-    googleID: {type: String}
+    googleID: {type: String},
+    country : {type: String},
+    fullName : {type: String}, 
+    gender : {type: String},
+    phone : {type: String}
 });
 
 const User = model('User', userSchema);

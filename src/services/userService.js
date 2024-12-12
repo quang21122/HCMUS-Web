@@ -34,7 +34,11 @@ const createUser = async (data) => {
         subscriptionExpiry: data["subscriptionExpiry"] || null, // Default to 'null'
         penName: data["penName"] || "", // Default to an empty string if not provided
         category: data["category"] || "", // Default to an empty string if not provided
-        googleID: ""
+        googleID: "",
+        gender : data["gender"] || "",
+        country : data["country"] || "",
+        fullName : data["fullName"] || "",
+        phone : data["phone"] || ""
     };
 
     try {

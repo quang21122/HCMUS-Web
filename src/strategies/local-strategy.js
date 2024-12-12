@@ -3,8 +3,10 @@ import express from "express";
 import { Strategy as LocalStrategy } from "passport-local";
 import bcrypt from "bcrypt";
 import User from "../models/User.js";
+import nodemailer from "nodemailer";
 
 const router = express.Router();
+const resetTokens = new Map();
 
 passport.use(
   new LocalStrategy(
@@ -106,6 +108,80 @@ router.post("/login", (req, res, next) => {
   })(req, res, next);
 });
 
+// Gửi mã xác nhận qua email
+router.post("/send-verificationCode", async (req, res) => {
+  const { email } = req.body;
+
+  try {
+      const user = await User.findOne({ email });
+      if (!user) {
+          return res.status(404).json({ error: "Email không tồn tại." });
+      }
+
+      // Tạo mã xác nhận ngẫu nhiên
+      const verificationCode = crypto.randomInt(100000, 999999).toString();
+
+      // Lưu mã vào bộ nhớ tạm
+      resetTokens.set(email, verificationCode);
+
+      // Cấu hình gửi email
+      const transporter = nodemailer.createTransport({
+          service: "Gmail",
+          auth: {
+              user: process.env.EMAIL_USER, // Email của bạn
+              pass: process.env.EMAIL_PASS, // Mật khẩu ứng dụng
+          },
+      });
+
+      // Nội dung email
+      const mailOptions = {
+          from: process.env.EMAIL_USER,
+          to: email,
+          subject: "Mã xác nhận đổi mật khẩu",
+          text: `Mã xác nhận của bạn là: ${verificationCode}`,
+      };
+
+      // Gửi email
+      await transporter.sendMail(mailOptions);
+
+      res.status(200).json({ message: "Đã gửi mã xác nhận đến email." });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Lỗi gửi email." });
+  }
+});
+
+// Xác nhận mã và đặt lại mật khẩu
+router.post("/forgot-password", async (req, res) => {
+  const { email, verificationCode, newPassword } = req.body;
+
+  try {
+      // Kiểm tra mã xác nhận
+      const savedCode = resetTokens.get(email);
+      if (!savedCode || savedCode !== verificationCode) {
+          return res.status(400).json({ error: "Mã xác nhận không đúng." });
+      }
+
+      // Xóa mã xác nhận khỏi bộ nhớ tạm
+      resetTokens.delete(email);
+
+      // Tìm người dùng
+      const user = await User.findOne({ email });
+      if (!user) {
+          return res.status(404).json({ error: "Người dùng không tồn tại." });
+      }
+
+      // Mã hóa mật khẩu mới và lưu
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword;
+      await user.save();
+
+      res.status(200).json({ message: "Đổi mật khẩu thành công." });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Lỗi hệ thống." });
+  }
+});
 
 
 // Log out user
