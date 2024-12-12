@@ -44,32 +44,38 @@ passport.deserializeUser(async (id, done) => {
 
 // Register new user
 router.post("/register", async (req, res) => {
-  console.log("Request body:", req.body); // Add this line for debugging
-  const { email, password, name, dob, role, penName, category } = req.body;
-
-  if (!email || !password || !name || !dob || !role) {
+  const { email, password, confirmPassword, name } = req.body;
+  // Kiểm tra các trường bắt buộc
+  if (!email || !password || !confirmPassword || !name) {
     return res.status(400).json({ message: "Missing required fields" });
   }
 
-  const existingUser = await User.findOne({ email });
-  if (existingUser) {
-    return res.status(400).json({ message: "Email already registered" });
+  // Kiểm tra confirmPassword
+  if (password !== confirmPassword) {
+    return res.status(400).json({ message: "Passwords do not match" });
   }
 
   try {
+    // Kiểm tra email đã tồn tại chưa
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already registered" });
+    }
+
+    // Mã hóa mật khẩu
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Tạo user mới
     const newUser = new User({
       email,
       password: hashedPassword,
       name,
-      dob,
-      role,
-      penName,
-      category,
     });
 
     await newUser.save();
-    res.status(201).json({ message: "User registered successfully" });
+
+    // Phản hồi thành công
+    res.redirect("/auth/register-form");
   } catch (error) {
     console.error("Error registering user:", error);
     res
