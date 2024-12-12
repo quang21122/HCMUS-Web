@@ -56,6 +56,7 @@ app.use(
     secret: "your-secret-key",
     resave: false,
     saveUninitialized: false,
+    cookie: { maxAge: 60000 },
   })
 );
 
@@ -296,24 +297,76 @@ app.get("/tags/:tag", async (req, res) => {
   }
 });
 
-app.get("/register-form", async (req, res) => {
-  const step = parseInt(req.query.step) || 1;
-  const role = req.query.role || req.session.role || "";
-  
-  if (step === 2 && req.query.role) {
-    req.session.role = req.query.role;
+app.post("/register-form", (req, res) => {
+  const { step, role, formData } = req.body;
+  console.log(req.body); // Debug: Check form data
+
+  if (step === 2) {
+    // Store role in session
+    req.session.role = role;
+  } else if (step === 3) {
+    // Store step 2 form data in session
+    req.session.step2Data = formData;
   }
-  // Validate step is between 1-3
-  const validStep = Math.min(Math.max(step, 1), 3);
 
+  // Store current step in session
+  req.session.step = parseInt(step);
+  console.log("Session: ", req.session); // Debug: Check session data
 
-  const pageData = {
-    title: "Register Form",
-    role,
-    step: validStep,
-  };
-  res.render("pages/RegisterForm", pageData);
+  // Redirect to render the next step
+  res.redirect("/register-form");
 });
+
+app.get("/register-form", (req, res) => {
+  const step = req.session.step || 1;
+  const role = req.session.role || "";
+  const step2Data = req.session.step2Data || {};
+
+  res.render("pages/RegisterForm", {
+    title: "Register Form",
+    step,
+    role,
+    step2Data,
+  });
+});
+
+
+app.post("/register", (req, res) => {
+  const { role, step2Data } = req.session;
+
+  if (!role || !step2Data) {
+    return res.status(400).send("Thiếu thông tin cần thiết.");
+  }
+
+  const { name, email, dob, phone, gender, nationality, penName } = {
+    ...step2Data,
+  };
+
+  // Nếu vai trò là writer, bút danh là bắt buộc
+  if (role === "writer" && !penName) {
+    return res.status(400).send("Bút danh là bắt buộc cho vai trò Phóng viên.");
+  }
+
+  // Xử lý lưu dữ liệu vào cơ sở dữ liệu (giả lập)
+  const user = {
+    role,
+    name,
+    email,
+    dob,
+    phone,
+    gender,
+    nationality,
+    penName: role === "writer" ? penName : null,
+  };
+
+  console.log("User registered:", user);
+
+  // Xóa session sau khi đăng ký
+  req.session.destroy();
+
+  res.status(200).send("Đăng ký thành công.");
+});
+
 
 app.get("/profile/:id", async (req, res) => {
   try {
