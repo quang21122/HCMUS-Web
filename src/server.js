@@ -1,7 +1,5 @@
 import express from "express";
 import session from "express-session";
-import cookieSession from "cookie-session";
-import ejs from "ejs";
 import livereload from "livereload";
 import connectLiveReload from "connect-livereload";
 import path from "path";
@@ -26,7 +24,6 @@ import articleRoute from "./routes/articleRoute.js";
 import userRoute from "./routes/userRoute.js";
 import loginRegisterRoutes from "./strategies/local-strategy.js";
 import passport from "./config/passport.js";
-import { compareSync } from "bcrypt";
 export const PassportSetup = passport;
 import changeInProfile from "./profile/change-password.js"
 
@@ -54,28 +51,12 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
-  cookieSession({
-    name: "session",
-    keys: ["key1", "key2"], // Use strong, random keys in production
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+  session({
+    secret: "secret",
+    resave: false,
+    saveUninitialized: false,
   })
 );
-
-app.use((req, res, next) => {
-  if (req.session && !req.session.regenerate) {
-    req.session.regenerate = (cb) => {
-      req.session = req.session || {};
-      cb();
-    };
-  }
-  if (req.session && !req.session.save) {
-    req.session.save = (cb) => {
-      req.session = req.session || {};
-      cb();
-    };
-  }
-  next();
-});
 
 app.use(passport.initialize());
 app.use(passport.session());

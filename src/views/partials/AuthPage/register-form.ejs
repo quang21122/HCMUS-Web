@@ -430,10 +430,17 @@
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
+        redirect: "follow",
       });
 
       if (response.ok) {
-        window.location.href = "/auth/login";
+        const res = await fetch("/auth/login");
+        if (res.ok) {
+          window.location.href = "/auth/login";
+        } else {
+          const errorText = await response.text();
+          alert(`Đã có lỗi xảy ra: ${errorText}`);
+        }
       } else {
         const errorText = await response.text();
         alert(`Đã có lỗi xảy ra: ${errorText}`);
