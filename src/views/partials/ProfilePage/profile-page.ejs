@@ -147,23 +147,53 @@
 
 <script>
     function toggleEdit() {
+        const user = <%- JSON.stringify(user) %>; // Embed user data from server-side
         const staticView = document.getElementById('staticView');
         const editForm = document.getElementById('editProfileForm');
         const editButton = document.getElementById('editButton');
 
+        // Toggle between static and edit mode
         if (staticView.style.display !== 'none') {
             // Switch to edit mode
             staticView.style.display = 'none';
             editForm.style.display = 'grid';
             editButton.textContent = 'Hoàn thành';
         } else {
-            // Switch to view mode and save changes
-            editForm.submit();
+            // Switch back to view mode and submit the form manually with PUT request
+            const formData = new FormData(editForm);
+            const userId = user._id;
+
+            if (!userId) {
+                alert("Không tìm thấy ID người dùng.");
+                return;
+            }
+
+            fetch(`api/users?_id=${userId}`, {
+                method: 'PUT', // Send a PUT request
+                body: formData, // Include form data
+            })
+                .then((response) => response.json())
+                .then((result) => {
+                    if (result.ok) {
+                        alert(result.message);
+                        // Optionally reload or update the static view dynamically
+                        window.location.reload();
+                    } else {
+                        alert(result.error);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error updating profile:', error);
+                    alert('Có lỗi xảy ra khi cập nhật thông tin.');
+                });
+
+            // Restore the static view
             staticView.style.display = 'grid';
             editForm.style.display = 'none';
             editButton.textContent = 'Chỉnh sửa';
         }
     }
+
     function togglePasswordModal() {
         const modal = document.getElementById('passwordModal');
         modal.style.display = modal.style.display === 'none' || modal.style.display === '' ? 'flex' : 'none';

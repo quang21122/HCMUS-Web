@@ -37,12 +37,16 @@ passport.serializeUser((user, done) => {
 // Deserialize user
 passport.deserializeUser(async (id, done) => {
   try {
+    console.log("Deserializing user:", id);
     const user = await User.findById(id);
+    console.log("Found user:", user ? user.id : 'none');
     done(null, user);
-  } catch (error) {
-    done(error);
+  } catch (err) {
+    console.error("Deserialize error:", err);
+    done(err);
   }
 });
+
 
 // Register new user
 router.post("/register", async (req, res) => {
@@ -90,23 +94,28 @@ router.post("/register", async (req, res) => {
 router.post("/login", (req, res, next) => {
   passport.authenticate("local", (err, user, info) => {
     if (err) {
-      // Handle unexpected errors
       return next(err);
     }
     if (!user) {
-      // Authentication failed
-      return res.status(401).json({ message: "Authentication failed. Invalid credentials." });
+      return res.status(401).json({ message: "Authentication failed" });
     }
-    // Successful authentication
+    
     req.logIn(user, (err) => {
       if (err) {
         return next(err);
       }
-      const userId = user._id;
-      res.redirect(`/profile?_id=${userId}`);
+      
+      // Explicitly save the session before redirecting
+      req.session.save((err) => {
+        if (err) {
+          return next(err);
+        }
+        res.redirect("/profile");
+      });
     });
   })(req, res, next);
 });
+
 
 // Gửi mã xác nhận qua email
 router.post("/send-verificationCode", async (req, res) => {

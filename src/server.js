@@ -1,5 +1,6 @@
 import express from "express";
 import session from "express-session";
+import cookieSession from "cookie-session";
 import ejs from "ejs";
 import livereload from "livereload";
 import connectLiveReload from "connect-livereload";
@@ -53,13 +54,28 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
-  session({
-    secret: "your-secret-key",
-    resave: false,
-    saveUninitialized: false,
-    cookie: { maxAge: 60000 },
+  cookieSession({
+    name: "session",
+    keys: ["key1", "key2"], // Use strong, random keys in production
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
   })
 );
+
+app.use((req, res, next) => {
+  if (req.session && !req.session.regenerate) {
+    req.session.regenerate = (cb) => {
+      req.session = req.session || {};
+      cb();
+    };
+  }
+  if (req.session && !req.session.save) {
+    req.session.save = (cb) => {
+      req.session = req.session || {};
+      cb();
+    };
+  }
+  next();
+});
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -123,7 +139,7 @@ app.get("/", async (req, res) => {
 app.use("/api/articles", articleRoute);
 app.use("/api/users", userRoute);
 app.use("/auth", loginRegisterRoutes);
-app.use("/profile", changeInProfile);
+// app.use("/profile", changeInProfile);
 
 
 // Modified article route with caching
@@ -377,7 +393,11 @@ app.post("/register", (req, res) => {
 
 app.get("/profile", async (req, res) => {
   try {
-    const userId = req.query._id;
+    if (!req.isAuthenticated()) {
+      return res.redirect("/auth/login");
+    }
+
+    const userId = req.user._id;
 
     const user = await findUser(userId);
     const categoriesResponse = await getCategories();
