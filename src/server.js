@@ -1,6 +1,5 @@
 import express from "express";
 import session from "express-session";
-import ejs from "ejs";
 import livereload from "livereload";
 import connectLiveReload from "connect-livereload";
 import path from "path";
@@ -25,7 +24,6 @@ import articleRoute from "./routes/articleRoute.js";
 import userRoute from "./routes/userRoute.js";
 import loginRegisterRoutes from "./strategies/local-strategy.js";
 import passport from "./config/passport.js";
-import { compareSync } from "bcrypt";
 export const PassportSetup = passport;
 import changeInProfile from "./profile/change-password.js"
 
@@ -54,10 +52,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   session({
-    secret: "your-secret-key",
+    secret: "secret",
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 60000 },
   })
 );
 
@@ -123,7 +120,7 @@ app.get("/", async (req, res) => {
 app.use("/api/articles", articleRoute);
 app.use("/api/users", userRoute);
 app.use("/auth", loginRegisterRoutes);
-app.use("/profile", changeInProfile);
+// app.use("/profile", changeInProfile);
 
 
 // Modified article route with caching
@@ -305,7 +302,6 @@ app.get("/tags/:tag", async (req, res) => {
 
 app.post("/register-form", (req, res) => {
   const { step, role, formData } = req.body;
-  console.log(req.body); // Debug: Check form data
 
   if (step === 2) {
     // Store role in session
@@ -317,7 +313,6 @@ app.post("/register-form", (req, res) => {
 
   // Store current step in session
   req.session.step = parseInt(step);
-  console.log("Session: ", req.session); // Debug: Check session data
 
   // Redirect to render the next step
   res.redirect("/register-form");
@@ -338,13 +333,14 @@ app.get("/register-form", (req, res) => {
 
 
 app.post("/register", (req, res) => {
-  const { role, step2Data } = req.session;
+  const { penName } = req.body;
+  const { userId, role, step2Data } = req.session;
 
   if (!role || !step2Data) {
     return res.status(400).send("Thiếu thông tin cần thiết.");
   }
 
-  const { name, email, dob, phone, gender, nationality, penName } = {
+  const { fullName, email, dob, phone, gender, country } = {
     ...step2Data,
   };
 
@@ -356,16 +352,31 @@ app.post("/register", (req, res) => {
   // Xử lý lưu dữ liệu vào cơ sở dữ liệu (giả lập)
   const user = {
     role,
-    name,
+    fullName,
     email,
     dob,
     phone,
     gender,
-    nationality,
+    country,
     penName: role === "writer" ? penName : null,
   };
 
-  console.log("User registered:", user);
+  fetch(`http://localhost:3000/api/users?_id=${userId}`, 
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(user),
+    }
+  ).then((response) => {
+    if (!response.ok) {
+      throw new Error("Đăng ký thất bại.");
+    }
+  }).catch((error) => {
+    console.error("Register error:", error);
+    return res.status(500).send("Đăng ký thất bại.");
+  });
 
   // Xóa session sau khi đăng ký
   req.session.destroy();
@@ -377,7 +388,11 @@ app.post("/register", (req, res) => {
 
 app.get("/profile", async (req, res) => {
   try {
-    const userId = req.query._id;
+    if (!req.isAuthenticated()) {
+      return res.redirect("/auth/login");
+    }
+
+    const userId = req.user._id;
 
     const user = await findUser(userId);
     const categoriesResponse = await getCategories();
