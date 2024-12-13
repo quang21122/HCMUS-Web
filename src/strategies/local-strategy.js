@@ -78,10 +78,12 @@ router.post("/register", async (req, res) => {
       name,
     });
 
-    await newUser.save();
+    const user = await newUser.save();
+    
+    req.session.userId = user._id.toString();
 
     // Phản hồi thành công
-    res.redirect("/auth/register-form");
+    res.redirect("http://localhost:3000/register-form");
   } catch (error) {
     console.error("Error registering user:", error);
     res

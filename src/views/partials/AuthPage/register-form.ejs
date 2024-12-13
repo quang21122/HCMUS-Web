@@ -433,7 +433,7 @@
       });
 
       if (response.ok) {
-        window.location.href = "/login";
+        window.location.href = "/auth/login";
       } else {
         const errorText = await response.text();
         alert(`Đã có lỗi xảy ra: ${errorText}`);

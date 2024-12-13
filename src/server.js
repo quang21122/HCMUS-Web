@@ -321,7 +321,6 @@ app.get("/tags/:tag", async (req, res) => {
 
 app.post("/register-form", (req, res) => {
   const { step, role, formData } = req.body;
-  console.log(req.body); // Debug: Check form data
 
   if (step === 2) {
     // Store role in session
@@ -333,7 +332,6 @@ app.post("/register-form", (req, res) => {
 
   // Store current step in session
   req.session.step = parseInt(step);
-  console.log("Session: ", req.session); // Debug: Check session data
 
   // Redirect to render the next step
   res.redirect("/register-form");
@@ -354,13 +352,14 @@ app.get("/register-form", (req, res) => {
 
 
 app.post("/register", (req, res) => {
-  const { role, step2Data } = req.session;
+  const { penName } = req.body;
+  const { userId, role, step2Data } = req.session;
 
   if (!role || !step2Data) {
     return res.status(400).send("Thiếu thông tin cần thiết.");
   }
 
-  const { name, email, dob, phone, gender, nationality, penName } = {
+  const { fullName, email, dob, phone, gender, country } = {
     ...step2Data,
   };
 
@@ -372,16 +371,31 @@ app.post("/register", (req, res) => {
   // Xử lý lưu dữ liệu vào cơ sở dữ liệu (giả lập)
   const user = {
     role,
-    name,
+    fullName,
     email,
     dob,
     phone,
     gender,
-    nationality,
+    country,
     penName: role === "writer" ? penName : null,
   };
 
-  console.log("User registered:", user);
+  fetch(`http://localhost:3000/api/users?_id=${userId}`, 
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(user),
+    }
+  ).then((response) => {
+    if (!response.ok) {
+      throw new Error("Đăng ký thất bại.");
+    }
+  }).catch((error) => {
+    console.error("Register error:", error);
+    return res.status(500).send("Đăng ký thất bại.");
+  });
 
   // Xóa session sau khi đăng ký
   req.session.destroy();
