@@ -375,7 +375,7 @@ app.post("/register", (req, res) => {
 
 
 
-app.get("/profile/:id", async (req, res) => {
+app.get("/profile", async (req, res) => {
   try {
     const userId = req.query._id;
 
