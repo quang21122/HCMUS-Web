@@ -25,7 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       let currentIndex = 0;
       const slideWidth = slides[0].offsetWidth; // Use offsetWidth to include padding and border
-      console.log("slideWidth: ", slideWidth);
 
       nextButton.addEventListener("click", () => {
         if (currentIndex < slides.length - 1) {
@@ -35,7 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
             behavior: "smooth",
           });
         }
-        console.log("left: ", currentIndex * slideWidth + 16 * currentIndex);
       });
 
       prevButton.addEventListener("click", () => {

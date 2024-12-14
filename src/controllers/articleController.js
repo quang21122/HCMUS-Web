@@ -43,9 +43,9 @@ const importArticles = async (req, res) => {
     }
 }
 
-const readArticle = async (req, res) => {
+const readArticleById = async (req, res) => {
     try {
-        const id = req.query._id;
+        const id = req.params._id;
         // Kiểm tra nếu không có _id trong query
         if (!id) {
             return res.status(400).json({ error: "Missing _id parameter" });
@@ -67,9 +67,9 @@ const readArticle = async (req, res) => {
     }
 }
 
-const updateArticle = async (req, res) => {
+const updateArticleById = async (req, res) => {
     try {
-        const id = req.query._id;
+        const id = req.params._id;
 
         // Kiểm tra nếu không có _id trong query
         if (!id) {
@@ -94,9 +94,9 @@ const updateArticle = async (req, res) => {
     }
 }
 
-const deleteArticle = async (req, res) => {
+const deleteArticleById = async (req, res) => {
     try {
-        const id = req.query._id;
+        const id = req.params._id;
 
         // Kiểm tra nếu không có _id trong query
         if (!id) {
@@ -118,4 +118,4 @@ const deleteArticle = async (req, res) => {
     }
 }
 
-export default { createArticle, importArticles, readArticle, updateArticle, deleteArticle };
+export default { createArticle, importArticles, readArticleById, updateArticleById, deleteArticleById };
