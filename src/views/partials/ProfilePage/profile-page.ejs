@@ -168,7 +168,6 @@
             document.querySelector('input[name="phoneNumber"]').value = user.phone || '';
         } else {
             // Switch back to view mode and submit the form manually with PUT request
-            const formData = new FormData(editForm);
             const userId = user._id;
 
             if (!userId) {
@@ -176,14 +175,23 @@
                 return;
             }
 
+            const formData = new FormData(editForm);
+            const formDataJson = {};
+            formData.forEach((value, key) => {
+                formDataJson[key] = value;
+            });
+
             fetch(`api/users?_id=${userId}`, {
                 method: 'PUT', // Send a PUT request
-                body: formData, // Include form data
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formDataJson), // Include form data
             })
                 .then((response) => response.json())
                 .then((result) => {
-                    if (result.ok) {
-                        alert(result.message);
+                    if (result.acknowledged) {
+                        alert('Cập nhật thông tin thành công.');
                         // Optionally reload or update the static view dynamically
                         window.location.reload();
                     } else {
