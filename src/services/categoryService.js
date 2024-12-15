@@ -1,6 +1,4 @@
 import Category from "../models/Category.js";
-import mongoose from "mongoose";
-import { Types } from "mongoose";
 
 export const getCategories = async () => {
   try {

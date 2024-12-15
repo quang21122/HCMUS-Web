@@ -78,15 +78,14 @@ const updateUser = async (req, res) => {
             return res.status(400).json({ error: "Missing _id parameter" });
         }
         const data = req.body;
+
         const result = await userService.updateUser(id, data);
 
         if (result.error) {
             return res.status(result.status).json(result.error);
         }
 
-        return res.status(200).json({
-            data: result
-        });
+        return res.status(200).json(result);
     } catch (err) {
         return res.status(400).json({
             message: err.message

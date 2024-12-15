@@ -9,7 +9,6 @@ router.post("/", async (req, res) => {
     try {
       const { currentPassword, newPassword, confirmPassword } = req.body;
       const userId = req.query._id; // Lấy _id từ query string
-        console.log(userId);
       // Kiểm tra xem người dùng có đăng nhập không
       if (!userId) {
         return res.status(400).json({ error: "User not logged in." });

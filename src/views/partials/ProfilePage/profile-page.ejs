@@ -38,7 +38,7 @@
                 </div>
                 <div class="flex flex-col space-y-2">
                     <div class="text-base font-medium text-black">Ngày sinh</div>
-                    <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg"><%- user.dob %></div>
+                    <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg"><%- formatDate(user.dob) %></div>
                 </div>
                 <div class="flex flex-col space-y-2">
                     <div class="text-base font-medium text-black">Email liên hệ</div>
@@ -48,11 +48,12 @@
             <div class="space-y-5">
                 <div class="flex flex-col space-y-2">
                     <div class="text-base font-medium text-black">Giới tính</div>
-                    <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg"><%- user.gender %></div>
+                    <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg"><%= user.gender==='male' ? 'Nam' : 'Nữ' %></div>
                 </div>
                 <div class="flex flex-col space-y-2">
                     <div class="text-base font-medium text-black">Quốc tịch</div>
-                    <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg"><%- user.country %></div>
+                    <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg"><%= user.country==='VN' ? 'Việt Nam' : user.country==='US' ? 'Hoa Kỳ' : user.country==='JP' ? 'Nhật Bản' :
+                        user.country==='KR' ? 'Hàn Quốc' : user.country==='CN' ? 'Trung Quốc' : 'Khác' %></div>
                 </div>
                 <div class="flex flex-col space-y-2">
                     <div class="text-base font-medium text-black">Số điện thoại</div>
@@ -91,13 +92,13 @@
                 </div>
                 <div class="flex flex-col space-y-2">
                     <label class="text-base font-medium text-black">Quốc tịch</label>
-                    <select name="nationality"
+                    <select name="country"
                         class="text-lg text-gray-900 bg-gray-100 px-4 py-3.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <option value="VN" <%- user.nationality==='VN' ? 'selected' : '' %>>Việt Nam</option>
-                        <option value="US" <%- user.nationality==='US' ? 'selected' : '' %>>Hoa Kỳ</option>
-                        <option value="JP" <%- user.nationality==='JP' ? 'selected' : '' %>>Nhật Bản</option>
-                        <option value="KR" <%- user.nationality==='KR' ? 'selected' : '' %>>Hàn Quốc</option>
-                        <option value="CN" <%- user.nationality==='CN' ? 'selected' : '' %>>Trung Quốc</option>
+                        <option value="VN" <%- user.country==='VN' ? 'selected' : '' %>>Việt Nam</option>
+                        <option value="US" <%- user.country==='US' ? 'selected' : '' %>>Hoa Kỳ</option>
+                        <option value="JP" <%- user.country==='JP' ? 'selected' : '' %>>Nhật Bản</option>
+                        <option value="KR" <%- user.country==='KR' ? 'selected' : '' %>>Hàn Quốc</option>
+                        <option value="CN" <%- user.country==='CN' ? 'selected' : '' %>>Trung Quốc</option>
                         <option value="OTHER" <%- user.nationality==='OTHER' ? 'selected' : '' %>>Khác</option>
                     </select>
                 </div>
@@ -115,24 +116,24 @@
         <div class="bg-white rounded-lg p-8 w-[35rem]">
             <h2 class="text-2xl font-bold mb-8 flex justify-center items-center">Đổi mật khẩu</h2>
 
-            <form action="/profile?_id=<%= user._id %>" method="POST" id="passwordForm" class="space-y-6" >
+            <form action="/profile?_id=<%= user._id %>" method="POST" id="passwordForm" class="space-y-6">
                 <div class="space-y-2">
                     <input type="password" name="currentPassword" required placeholder="Nhập mật khẩu hiện tại"
                         class="w-full text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400">
                 </div>
-                
+
                 <div class="space-y-2">
                     <input type="password" name="newPassword" required placeholder="Nhập mật khẩu mới"
                         class="w-full text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400">
                 </div>
-                
+
                 <div class="space-y-2">
                     <input type="password" name="confirmPassword" required placeholder="Nhập lại mật khẩu mới"
                         class="w-full text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400">
                 </div>
 
                 <div class="flex justify-end space-x-3 mt-6">
-                    <button type="button" onclick="togglePasswordModal()" 
+                    <button type="button" onclick="togglePasswordModal()"
                         class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300">
                         Hủy
                     </button>
@@ -158,9 +159,15 @@
             staticView.style.display = 'none';
             editForm.style.display = 'grid';
             editButton.textContent = 'Hoàn thành';
+
+            document.querySelector('input[name="fullName"]').value = user.fullName || '';
+            document.querySelector('input[name="email"]').value = user.email || '';
+            document.querySelector('input[name="dob"]').value = user.dob ? new Date(user.dob).toISOString().split('T')[0] : '';
+            document.querySelector('select[name="gender"]').value = user.gender || '';
+            document.querySelector('select[name="country"]').value = user.country || '';
+            document.querySelector('input[name="phoneNumber"]').value = user.phone || '';
         } else {
             // Switch back to view mode and submit the form manually with PUT request
-            const formData = new FormData(editForm);
             const userId = user._id;
 
             if (!userId) {
@@ -168,14 +175,23 @@
                 return;
             }
 
+            const formData = new FormData(editForm);
+            const formDataJson = {};
+            formData.forEach((value, key) => {
+                formDataJson[key] = value;
+            });
+
             fetch(`api/users?_id=${userId}`, {
                 method: 'PUT', // Send a PUT request
-                body: formData, // Include form data
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formDataJson), // Include form data
             })
                 .then((response) => response.json())
                 .then((result) => {
-                    if (result.ok) {
-                        alert(result.message);
+                    if (result.acknowledged) {
+                        alert('Cập nhật thông tin thành công.');
                         // Optionally reload or update the static view dynamically
                         window.location.reload();
                     } else {
@@ -218,4 +234,5 @@
             alert(result.error);
         }
     }
+
 </script>
