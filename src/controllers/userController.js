@@ -72,7 +72,7 @@ const importUsers = async (req, res) => {
 const updateUser = async (req, res) => {
     try {
         const id = req.query._id;
-
+        console.log("ID : " + id);
         // Kiểm tra nếu không có _id trong query
         if (!id) {
             return res.status(400).json({ error: "Missing _id parameter" });

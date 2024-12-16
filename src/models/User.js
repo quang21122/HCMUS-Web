@@ -17,7 +17,8 @@ const userSchema = new Schema({
     country : {type: String},
     fullName : {type: String}, 
     gender : {type: String},
-    phone : {type: String}
+    phone : {type: String},
+    verified : {type : Boolean, default: false}
 });
 
 const User = model('User', userSchema);

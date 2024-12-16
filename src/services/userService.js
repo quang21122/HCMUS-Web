@@ -1,6 +1,7 @@
 import {readFile} from 'fs/promises';
 import User from '../models/User.js';
 import mongoose from "mongoose";
+import { verify } from 'crypto';
 
 export const findUser = async (id) => {
     try {
@@ -38,7 +39,8 @@ const createUser = async (data) => {
         gender : data["gender"] || "",
         country : data["country"] || "",
         fullName : data["fullName"] || "",
-        phone : data["phone"] || ""
+        phone : data["phone"] || "",
+        verify : false
     };
 
     try {
@@ -80,6 +82,10 @@ const importUsersFromLocal = async () => {
 
 const updateUser = async (id, data) => {
     try {
+        if (!data || Object.keys(data).length === 0) {
+            return { error: "No data provided", status: 400 };
+        }
+        console.log("Service's data : ", data);
         // Kiểm tra ID hợp lệ
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return { error: "Invalid ID format", status: 400 };
@@ -88,7 +94,6 @@ const updateUser = async (id, data) => {
         const updatedUser = await User
             .updateOne({ _id: id }, data)
             .exec();
-        
         // Return the updated user or a not found message
         return updatedUser || { error: "User not found", status: 404 };
     }
