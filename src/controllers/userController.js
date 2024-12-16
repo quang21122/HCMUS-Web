@@ -72,12 +72,13 @@ const importUsers = async (req, res) => {
 const updateUser = async (req, res) => {
     try {
         const id = req.query._id;
-
+        console.log("ID : " + id);
         // Kiểm tra nếu không có _id trong query
         if (!id) {
             return res.status(400).json({ error: "Missing _id parameter" });
         }
         const data = req.body;
+        console.log("Service's data:", data); // Kiểm tra dữ liệu nhận được
         const result = await userService.updateUser(id, data);
 
         if (result.error) {

@@ -15,7 +15,7 @@ import profileRoute from "./routes/web/profileRoute.js";
 import tagRoute from "./routes/web/tagRoute.js";
 import authRoute from "./routes/web/authRoute.js";
 import passport from "./config/passport.js";
-import changeInProfile from "./profile/change-password.js"
+import changeInProfile from "./profile/change-profile.js"
 
 // Create __dirname
 const __filename = fileURLToPath(import.meta.url);

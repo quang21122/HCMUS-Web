@@ -85,25 +85,25 @@
                     <label class="text-base font-medium text-black">Giới tính</label>
                     <select name="gender"
                         class="text-lg text-gray-900 bg-gray-100 px-4 py-3.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <option value="male" <%- user.gender==='male' ? 'selected' : '' %>>Nam</option>
-                        <option value="female" <%- user.gender==='female' ? 'selected' : '' %>>Nữ</option>
+                        <option value="male" <%- user.gender==='male' ? 'selected' : '' %>>male</option>
+                        <option value="female" <%- user.gender==='female' ? 'selected' : '' %>>female</option>
                     </select>
                 </div>
                 <div class="flex flex-col space-y-2">
                     <label class="text-base font-medium text-black">Quốc tịch</label>
-                    <select name="nationality"
+                    <select name="country"
                         class="text-lg text-gray-900 bg-gray-100 px-4 py-3.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <option value="VN" <%- user.nationality==='VN' ? 'selected' : '' %>>Việt Nam</option>
-                        <option value="US" <%- user.nationality==='US' ? 'selected' : '' %>>Hoa Kỳ</option>
-                        <option value="JP" <%- user.nationality==='JP' ? 'selected' : '' %>>Nhật Bản</option>
-                        <option value="KR" <%- user.nationality==='KR' ? 'selected' : '' %>>Hàn Quốc</option>
-                        <option value="CN" <%- user.nationality==='CN' ? 'selected' : '' %>>Trung Quốc</option>
-                        <option value="OTHER" <%- user.nationality==='OTHER' ? 'selected' : '' %>>Khác</option>
+                        <option value="VN" <%- user.country==='VN' ? 'selected' : '' %>>Việt Nam</option>
+                        <option value="US" <%- user.country==='US' ? 'selected' : '' %>>Hoa Kỳ</option>
+                        <option value="JP" <%- user.country==='JP' ? 'selected' : '' %>>Nhật Bản</option>
+                        <option value="KR" <%- user.country==='KR' ? 'selected' : '' %>>Hàn Quốc</option>
+                        <option value="CN" <%- user.country==='CN' ? 'selected' : '' %>>Trung Quốc</option>
+                        <option value="OTHER" <%- user.country==='OTHER' ? 'selected' : '' %>>Khác</option>
                     </select>
                 </div>
                 <div class="flex flex-col space-y-2">
                     <label class="text-base font-medium text-black">Số điện thoại</label>
-                    <input type="tel" name="phoneNumber" value="<%- user.phoneNumber %>"
+                    <input type="tel" name="phone" value="<%- user.phone %>"
                         class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
             </div>
@@ -151,48 +151,82 @@
         const staticView = document.getElementById('staticView');
         const editForm = document.getElementById('editProfileForm');
         const editButton = document.getElementById('editButton');
-
-        // Toggle between static and edit mode
+    
+        // Toggle giữa chế độ xem và chỉnh sửa
         if (staticView.style.display !== 'none') {
-            // Switch to edit mode
+            // Chuyển sang chế độ chỉnh sửa
             staticView.style.display = 'none';
             editForm.style.display = 'grid';
             editButton.textContent = 'Hoàn thành';
         } else {
-            // Switch back to view mode and submit the form manually with PUT request
+            // Chuyển lại chế độ xem và gửi dữ liệu cập nhật
             const formData = new FormData(editForm);
+            const formDataObject = {};
+    
+            formData.forEach((value, key) => {
+                // Xử lý dữ liệu trước khi gửi
+                if (key === 'dob' && value) {
+                    const date = new Date(value);
+                    // Kiểm tra xem giá trị có hợp lệ hay không
+                    if (!isNaN(date)) {
+                        formDataObject[key] = date.toISOString().split('T')[0]; // Chỉ lấy yyyy-MM-dd
+                    } else {
+                        formDataObject[key] = ''; // Giá trị không hợp lệ
+                    }
+                } else {
+                    formDataObject[key] = value;
+                }
+            });
+    
+            console.log("Form Data Object:", JSON.stringify(formDataObject));
+    
             const userId = user._id;
-
+    
             if (!userId) {
                 alert("Không tìm thấy ID người dùng.");
                 return;
             }
-
-            fetch(`api/users?_id=${userId}`, {
-                method: 'PUT', // Send a PUT request
-                body: formData, // Include form data
-            })
-                .then((response) => response.json())
+    
+            // Gọi hàm để gửi PUT request
+            updateUserProfile(userId, formDataObject)
                 .then((result) => {
+                    console.log("Server Response:", result); // Log phản hồi từ server
                     if (result.ok) {
-                        alert(result.message);
-                        // Optionally reload or update the static view dynamically
-                        window.location.reload();
+                        alert(result.message || "Cập nhật thành công!");
+                        window.location.reload(); // Tải lại trang hoặc cập nhật giao diện động
                     } else {
-                        alert(result.error);
+                        alert(result.error || "Có lỗi xảy ra.");
                     }
                 })
                 .catch((error) => {
-                    console.error('Error updating profile:', error);
-                    alert('Có lỗi xảy ra khi cập nhật thông tin.');
+                    console.error("Error updating profile:", error);
+                    alert("Có lỗi xảy ra khi cập nhật thông tin.");
                 });
-
-            // Restore the static view
+    
+            // Khôi phục giao diện xem
             staticView.style.display = 'grid';
             editForm.style.display = 'none';
             editButton.textContent = 'Chỉnh sửa';
         }
     }
+    
+    // Hàm riêng để gửi PUT request
+    async function updateUserProfile(userId, data) {
+        try {
+            const response = await fetch(`/api/users?_id=${userId}`, {
+                method: 'PUT',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+            return await response.json();
+        } catch (error) {
+            console.error("Fetch error:", error);
+            throw error;
+        }
+    }
+
 
     function togglePasswordModal() {
         const modal = document.getElementById('passwordModal');
