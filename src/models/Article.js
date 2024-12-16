@@ -12,8 +12,8 @@ const ArticleSchema = new Schema({
     isPremium: { type: Boolean, required: true },
     status: { type: String, required: true },
     publishedAt: { type: String },
-    author: { type: String },
-    editor: { type: String},
+    author: { type: [String] },
+    editor: { type: String },
     createdAt: { type: Date, default: Date.now }
 });
 
