@@ -1,12 +1,36 @@
-import passport from "passport";
-import express from "express";
-import { Strategy as LocalStrategy } from "passport-local";
+import dotenv from "dotenv";
 import bcrypt from "bcrypt";
-import User from "../models/User.js";
+import crypto from "crypto";
+import express from "express";
+import passport from "passport";
 import nodemailer from "nodemailer";
+import { v4 as uuidv4 } from "uuid";
+import { Strategy as LocalStrategy } from "passport-local";
+import User from "../models/User.js";
+import UserVerification from "../models/UserVerification.js";
+import PasswordReset from "../models/PasswordReset.js";
 
-const router = express.Router();
+dotenv.config();
 const resetTokens = new Map();
+const router = express.Router();
+
+// Cấu hình gửi email
+const transporter = nodemailer.createTransport({
+  service: "Gmail",
+  auth: {
+    user: process.env.AUTH_EMAIL, // Email của bạn
+    pass: process.env.AUTH_PASS, // Mật khẩu ứng dụng
+  },
+});
+
+transporter.verify((error, success) => {
+  if (error) {
+    console.log(error);
+  } else {
+    console.log("Ready for messages");
+    console.log(success);
+  }
+});
 
 passport.use(
   new LocalStrategy(
@@ -45,7 +69,6 @@ passport.deserializeUser(async (_id, done) => {
   }
 });
 
-
 // Register new user
 router.post("/register", async (req, res) => {
   const { email, password, confirmPassword, name } = req.body;
@@ -74,10 +97,11 @@ router.post("/register", async (req, res) => {
       email,
       password: hashedPassword,
       name,
+      verified: false,
     });
 
     const user = await newUser.save();
-    
+
     req.session.userId = user._id.toString();
 
     // Phản hồi thành công
@@ -99,12 +123,12 @@ router.post("/login", (req, res, next) => {
     if (!user) {
       return res.status(401).json({ message: "Authentication failed" });
     }
-    
+
     req.logIn(user, (err) => {
       if (err) {
         return next(err);
       }
-      
+
       // Explicitly save the session before redirecting
       req.session.save((err) => {
         if (err) {
@@ -116,82 +140,189 @@ router.post("/login", (req, res, next) => {
   })(req, res, next);
 });
 
-
-// Gửi mã xác nhận qua email
-router.post("/send-verificationCode", async (req, res) => {
+//Password reset stuff
+router.post("/requestPasswordReset", (req, res) => {
   const { email } = req.body;
+  User.find({ email })
+    .then((data) => {
+      if (data.length) {
+        //user exists
+        console.log(data[0]);
 
-  try {
-      const user = await User.findOne({ email });
-      if (!user) {
-          return res.status(404).json({ error: "Email không tồn tại." });
+        //check if user is verified
+        if (data[0].verified) {
+          res.json({
+            status: "FAILED",
+            message: "Email hasn't been verified yet. Check your inbox",
+          });
+        } else {
+          //proceed with email to reset password
+          sendResetEmail(data[0], res);
+        }
+      } else {
+        res.json({
+          status: "FAILED",
+          message: "No account with the supplied email exists",
+        });
       }
-
-      // Tạo mã xác nhận ngẫu nhiên
-      const verificationCode = crypto.randomInt(100000, 999999).toString();
-
-      // Lưu mã vào bộ nhớ tạm
-      resetTokens.set(email, verificationCode);
-
-      // Cấu hình gửi email
-      const transporter = nodemailer.createTransport({
-          service: "Gmail",
-          auth: {
-              user: process.env.EMAIL_USER, // Email của bạn
-              pass: process.env.EMAIL_PASS, // Mật khẩu ứng dụng
-          },
+    })
+    .catch((error) => {
+      console.log(error);
+      res.json({
+        status: "FAILED",
+        message: "An error occurred while checking for existing user",
       });
+    });
+});
 
-      // Nội dung email
+//send password reset email
+const sendResetEmail = ({ _id, email }, res) => {
+  const resetString = uuidv4();
+
+  //Clear all existing reset records
+  PasswordReset.deleteMany({ userId: _id })
+    .then((result) => {
+      //reset records deleted successfully
+      console.log(`/${_id}/${resetString}`);
+
+      //mail option
       const mailOptions = {
-          from: process.env.EMAIL_USER,
-          to: email,
-          subject: "Mã xác nhận đổi mật khẩu",
-          text: `Mã xác nhận của bạn là: ${verificationCode}`,
+        from: process.env.AUTH_EMAIL,
+        to: email,
+        subject: "Password Reset ",
+        html: `<p>We heard that you lost the password.</p>
+             <p>Don't worry, use the code below to reset it.</p>
+             <p>This code expires in 60 minutes.</p>
+             <p>Code <b>${resetString}</b> to proceed.</p>`,
       };
 
-      // Gửi email
-      await transporter.sendMail(mailOptions);
+      //hash the reset string
+      const saltRounds = 10;
+      bcrypt
+        .hash(resetString, saltRounds)
+        .then((hashedResetString) => {
+          //set values in password reset collection
+          const newPasswordReset = new PasswordReset({
+            userId: _id,
+            resetString: hashedResetString,
+            createdAt: Date.now(),
+            expireAt: Date.now() + 3600000,
+          });
 
-      res.status(200).json({ message: "Đã gửi mã xác nhận đến email." });
-  } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Lỗi gửi email." });
-  }
-});
+          newPasswordReset
+            .save()
+            .then(
+              transporter
+                .sendMail(mailOptions)
+                .then(() => {
+                  //reset email sent and password reset record saved
+                  res.json({
+                    status: "PENDING",
+                    message: "Password reset email sent ",
+                  });
+                })
+                .catch((error) => {
+                  console.log(error);
+                  res.json({
+                    status: "FAILED",
+                    message: "Password reset email failed ",
+                  });
+                })
+            )
+            .catch((error) => {
+              console.log(error);
+              res.json({
+                status: "FAILED",
+                message: "Couldn't save password reset data ",
+              });
+            });
+        })
+        .catch((error) => {
+          console.log(error);
+          res.json({
+            status: "FAILED",
+            message:
+              "An error occurred while hashing the password reset data! ",
+          });
+        });
+    })
+    .catch((error) => {
+      console.log(error);
+      res.json({
+        status: "FAILED",
+        message: "Clearing existing password reset records failed",
+      });
+    });
+};
 
 // Xác nhận mã và đặt lại mật khẩu
-router.post("/forgot-password", async (req, res) => {
-  const { email, verificationCode, newPassword } = req.body;
-
+router.post("/resetPassword", async (req, res) => {
   try {
-      // Kiểm tra mã xác nhận
-      const savedCode = resetTokens.get(email);
-      if (!savedCode || savedCode !== verificationCode) {
-          return res.status(400).json({ error: "Mã xác nhận không đúng." });
-      }
+      let { email, resetString, newPassword } = req.body;
 
-      // Xóa mã xác nhận khỏi bộ nhớ tạm
-      resetTokens.delete(email);
-
-      // Tìm người dùng
+      // Tìm người dùng theo email
       const user = await User.findOne({ email });
       if (!user) {
-          return res.status(404).json({ error: "Người dùng không tồn tại." });
+          return res.status(404).json({
+              status: "FAILED",
+              message: "Người dùng với email này không tồn tại",
+          });
       }
 
-      // Mã hóa mật khẩu mới và lưu
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-      user.password = hashedPassword;
-      await user.save();
+      const userId = user._id; // Lấy userId từ kết quả truy vấn
 
-      res.status(200).json({ message: "Đổi mật khẩu thành công." });
+      // Tìm trong PasswordReset bằng userId
+      const resetRecords = await PasswordReset.find({ userId });
+      if (resetRecords.length === 0) {
+          return res.status(404).json({
+              status: "FAILED",
+              message: "Yêu cầu đặt lại mật khẩu không tồn tại",
+          });
+      }
+
+      const { expireAt, resetString: hashedResetString } = resetRecords[0];
+
+      // Kiểm tra xem link đặt lại mật khẩu đã hết hạn chưa
+      if (expireAt < Date.now()) {
+          await PasswordReset.deleteOne({ userId }); // Xóa record đã hết hạn
+          return res.status(400).json({
+              status: "FAILED",
+              message: "Link đặt lại mật khẩu đã hết hạn",
+          });
+      }
+
+      // Kiểm tra resetString
+      const isResetStringValid = await bcrypt.compare(resetString, hashedResetString);
+      if (!isResetStringValid) {
+          return res.status(400).json({
+              status: "FAILED",
+              message: "Mã xác nhận không hợp lệ",
+          });
+      }
+
+      // Hash mật khẩu mới
+      const saltRounds = 10;
+      const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
+
+      // Cập nhật mật khẩu người dùng
+      await User.updateOne({ _id: userId }, { password: hashedNewPassword });
+
+      // Xóa record đặt lại mật khẩu
+      await PasswordReset.deleteOne({ userId });
+
+      // Trả về thành công
+      return res.status(200).json({
+          status: "SUCCESS",
+          message: "Đặt lại mật khẩu thành công",
+      });
   } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "Lỗi hệ thống." });
+      return res.status(500).json({
+          status: "FAILED",
+          message: "Đã xảy ra lỗi khi xử lý yêu cầu",
+      });
   }
 });
-
 
 // Log out user
 router.get("/logout", (req, res) => {
