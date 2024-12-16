@@ -14,7 +14,8 @@ const ArticleSchema = new Schema({
     publishedAt: { type: String },
     author: { type: [String] },
     editor: { type: String },
-    createdAt: { type: Date, default: Date.now }
+    createdAt: { type: Date, default: Date.now },
+    views: { type: Number, default: 0 },
 });
 
 const Article = model('articles', ArticleSchema);
