@@ -192,17 +192,19 @@ export const getArticlesByTag = async (
 
 const createArticle = async (data) => {
     const articleData = {
-        name: data["Title"],
-        image: data["Top image"],
-        abstract: data.Content.slice(0, 150), // First 150 characters as abstract
-        content: data.Content,
-        category: data["Category"], // Use category if available
-        tags: data["List tag a"] || [], // Use tags if available, or an empty array
-        isPremium: false, // Default value
-        status: "draft", // Default status
-        publishedAt: data["Date"], // Parse the provided date
-        author: data.Author,
-        editor: "", // Default to empty string as not provided
+      name: data.name,
+      image: data.image,
+      abstract: data.abstract,
+      content: data.content,
+      category: data.category,
+      tags: data.tags || [],
+      isPremium: data.isPremium || false,
+      status: data.status || "draft",
+      publishedAt: data.publishedAt,
+      author: data.author,
+      editor: data.editor || "",
+      views: data.views || 0,
+      createdAt: new Date()
     }
 
     try {
@@ -234,7 +236,7 @@ const createMultipleArticles = async (articles) => {
 
 const importArticlesFromLocal = async () => {
     // Read the local articles.json file
-    const data = await readFile('../crawler/updated_crawler-2.json', 'utf8');
+    const data = await readFile('../crawler/updated_crawler-3.json', 'utf8');
     const localArticles = JSON.parse(data);
 
     const results = await createMultipleArticles(localArticles);
