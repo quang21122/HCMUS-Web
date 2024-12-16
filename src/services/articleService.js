@@ -190,6 +190,59 @@ export const getArticlesByTag = async (
   }
 };
 
+export const getArticleCountByAuthor = async (authorId) => {
+  try {
+    const count = await Article.countDocuments({ author: authorId });
+
+    return {
+      success: true,
+      data: count,
+    };
+  } catch (error) {
+    console.error("getArticleCountByAuthor error:", error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+};
+
+export const getArticlesByAuthor = async (authorId, page = 1, limit = 12) => {
+  try {
+    const skip = (page - 1) * limit;
+
+    // Get total count for pagination
+    const totalCount = await Article.countDocuments({ author: authorId });
+
+    // Find articles with pagination
+    const articles = await Article.find({ author: authorId })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate("category")
+      .populate("tags")
+      .populate("author");
+
+    return {
+      success: true,
+      data: {
+        articles,
+        pagination: {
+          currentPage: page,
+          totalPages: Math.ceil(totalCount / limit),
+          totalItems: totalCount,
+        },
+      },
+    };
+  } catch (error) {
+    console.error("getArticlesByAuthor error:", error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+};
+
 const createArticle = async (data) => {
     const articleData = {
       name: data.name,

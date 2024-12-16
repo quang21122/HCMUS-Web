@@ -14,6 +14,7 @@ import categoryRoute from "./routes/web/categoryRoute.js";
 import profileRoute from "./routes/web/profileRoute.js";
 import tagRoute from "./routes/web/tagRoute.js";
 import authRoute from "./routes/web/authRoute.js";
+import authorRoute from "./routes/web/authorRoute.js";
 import passport from "./config/passport.js";
 import changeInProfile from "./profile/change-password.js"
 
@@ -60,6 +61,7 @@ app.use("/", categoryRoute);
 app.use("/", tagRoute);
 app.use("/", authRoute);
 app.use("/", profileRoute);
+app.use("/", authorRoute);
 app.use("/api/articles", articleAPIRoute);
 app.use("/api/users", userRoute);
 app.use("/auth", loginRegisterRoutes);
