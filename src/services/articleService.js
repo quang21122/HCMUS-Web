@@ -2,6 +2,25 @@ import { readFile } from 'fs/promises';
 import Article from '../models/Article.js';
 import mongoose from "mongoose";
 
+export const incrementArticleViews = async (articleId) => {
+  try {
+      const updatedArticle = await Article.findByIdAndUpdate(
+          articleId,
+          { $inc: { views: 1 } }, // Increment the views field by 1
+          { new: true } // Return the updated document
+      );
+
+      if (!updatedArticle) {
+          return { error: 'Article not found', status: 404 };
+      }
+
+      return { success: true, article: updatedArticle };
+  } catch (error) {
+      console.error('Error incrementing article views:', error);
+      return { error: error.message, status: 500 };
+  }
+};
+
 export const getArticles = async () => {
   try {
     const articles = await Article.find().lean().maxTimeMS(30000).exec();
@@ -265,4 +284,4 @@ const deleteArticle = async (id) => {
     }
 }
 
-export default { createArticle, createMultipleArticles, importArticlesFromLocal, getArticles, getArticlesById, getArticlesByCategory, getArticlesSameCategory, updateArticle, deleteArticle };
+export default { incrementArticleViews, createArticle, createMultipleArticles, importArticlesFromLocal, getArticles, getArticlesById, getArticlesByCategory, getArticlesSameCategory, updateArticle, deleteArticle };

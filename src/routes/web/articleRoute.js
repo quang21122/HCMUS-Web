@@ -3,6 +3,7 @@ import cache from '../../config/cache.js';
 import {
     getArticlesById,
     getArticlesSameCategory,
+    incrementArticleViews,
 } from "../../services/articleService.js";
 import { getCategoryName } from "../../services/categoryService.js";
 import { getTags, getTagName } from "../../services/tagService.js";
@@ -65,6 +66,8 @@ router.get("/article/:id", async (req, res) => {
 
         // Cache the data
         cache.set(cacheKey, articleData);
+
+        incrementArticleViews(articleId);
 
         res.render("pages/ArticlePage", articleData);
     } catch (error) {
