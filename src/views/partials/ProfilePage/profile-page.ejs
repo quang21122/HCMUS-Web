@@ -104,7 +104,7 @@
                 </div>
                 <div class="flex flex-col space-y-2">
                     <label class="text-base font-medium text-black">Số điện thoại</label>
-                    <input type="tel" name="phoneNumber" value="<%- user.phoneNumber %>"
+                    <input type="tel" name="phone" value="<%- user.phone %>"
                         class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
             </div>
@@ -165,7 +165,7 @@
             document.querySelector('input[name="dob"]').value = user.dob ? new Date(user.dob).toISOString().split('T')[0] : '';
             document.querySelector('select[name="gender"]').value = user.gender || '';
             document.querySelector('select[name="country"]').value = user.country || '';
-            document.querySelector('input[name="phoneNumber"]').value = user.phone || '';
+            document.querySelector('input[name="phone"]').value = user.phone || '';
         } else {
             // Switch back to view mode and submit the form manually with PUT request
             const userId = user._id;
