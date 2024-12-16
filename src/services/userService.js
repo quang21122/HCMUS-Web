@@ -1,6 +1,7 @@
 import {readFile} from 'fs/promises';
 import User from '../models/User.js';
 import mongoose from "mongoose";
+import { verify } from 'crypto';
 
 export const findUser = async (id) => {
     try {
@@ -38,7 +39,8 @@ const createUser = async (data) => {
         gender : data["gender"] || "",
         country : data["country"] || "",
         fullName : data["fullName"] || "",
-        phone : data["phone"] || ""
+        phone : data["phone"] || "",
+        verify : false
     };
 
     try {
