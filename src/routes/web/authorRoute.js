@@ -1,6 +1,7 @@
 import express from "express";
 import { getArticlesByAuthor } from "../../services/articleService.js";
 import { getTags } from "../../services/tagService.js";
+import { getCategories } from "../../services/categoryService.js";
 import { findUserByName } from "../../services/userService.js";
 import cache from "../../config/cache.js";
 
@@ -30,11 +31,15 @@ router.get("/author/:author", async (req, res) => {
     // Get all tags
     const tagsResponse = await getTags();
 
+    // Get all categories
+    const categoriesResponse = await getCategories();
+
     const pageData = {
       title: `Kí giả - ${author}`,
       author: userResponse.data,
       articles: articlesResponse.data.articles,
       tags: tagsResponse.data,
+      categories: categoriesResponse.data,
       pagination: articlesResponse.data.pagination,
     };
 
