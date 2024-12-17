@@ -23,6 +23,30 @@ export const findUser = async (id) => {
     }
 };
 
+export const findUserByName = async (name) => {
+  try {
+    const user = await User.findOne({ name });
+
+    if (!user) {
+      return {
+        success: false,
+        error: "User not found",
+      };
+    }
+
+    return {
+      success: true,
+      data: user,
+    };
+  } catch (error) {
+    console.error("findUserByName error:", error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+};
+
 const createUser = async (data) => {
     const userData = {
         name: data["name"],

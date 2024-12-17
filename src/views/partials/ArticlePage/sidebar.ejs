@@ -1,7 +1,23 @@
 <div class="flex flex-col space-y-6 w-full">
-    <div class="author-info bg-[#F5F5F5] rounded-xl p-4 w-full">
-
+    <div class="author-info bg-[#F5F5F5] rounded-xl p-4 flex flex-row space-x-8">
+        <div class="flex items-center gap-4">
+            <img src="/images/default-ava.png" alt="" class="w-20 h-20 rounded-xl">
+        </div>
+        <div class="flex flex-row space-x-3">
+            <% article.authors.forEach((author, index)=> { %>
+                <div class="flex flex-col space-y-4 justify-center">
+                    <a href="/author/<%= author.name %>"
+                        class="text-lg font-semibold hover:text-blue-600 transition-colors">
+                        <%= author.name %>
+                    </a>
+                    <span class="text-sm text-gray-500">
+                        <%= article.articleCount[index].data %> bài viết
+                    </span>
+                </div>
+                <% }); %>
+        </div>
     </div>
+
     <div class="category-tag-info grid grid-cols-[5.2fr_0.3fr_4.5fr] bg-[#F5F5F5] rounded-xl p-3 w-full">
         <div class="tag flex flex-col">
             <div class="border-l-4 border-red-600 text-lg font-semibold rounded-s-sm">
@@ -52,7 +68,8 @@
                                         <%= article.name %>
                                     </h3>
                                     <div class="text-sm text-gray-500">
-                                        <%= article.publishedAt ? article.publishedAt.split(',')[1]?.trim() || article.publishedAt : 'No date' %>
+                                        <%= article.publishedAt ? article.publishedAt.split(',')[1]?.trim() ||
+                                            article.publishedAt : 'No date' %>
                                     </div>
                                 </div>
                     </div>

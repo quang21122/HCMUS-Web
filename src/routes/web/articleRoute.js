@@ -4,9 +4,11 @@ import {
     getArticlesById,
     getArticlesSameCategory,
     incrementArticleViews,
+    getArticleCountByAuthor,
 } from "../../services/articleService.js";
 import { getCategoryName } from "../../services/categoryService.js";
 import { getTags, getTagName } from "../../services/tagService.js";
+import { findUser } from '../../services/userService.js';
 
 const router = express.Router();
 
@@ -53,12 +55,23 @@ router.get("/article/:id", async (req, res) => {
                 .json({ success: false, error: relatedResponse.error });
         }
 
+        // Get author details
+        const authors = await Promise.all(
+          article.author.map((authorId) => findUser(authorId))
+        );
+
+        const articleCount = await Promise.all(
+            article.author.map((authorId) => getArticleCountByAuthor(authorId))
+        );
+
         const articleData = {
             title: article.name,
             article: {
                 ...article,
                 categoryNames,
                 tagNames,
+                authors,
+                articleCount,
             },
             articleSameCategory: relatedResponse.data,
             tags: tagsResponse.data,

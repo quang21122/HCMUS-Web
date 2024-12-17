@@ -66,7 +66,7 @@
                                         </p>
                                         <div class="flex justify-between items-center">
                                             <span class="text-sm text-gray-500">
-                                                <%= article.author %> | <%= article.publishedAt ?
+                                                <%= article.authorNames.map((author) => author) %> | <%= article.publishedAt ?
                                                         article.publishedAt.split(',')[1]?.trim() || article.publishedAt
                                                         : 'No date' %>
                                             </span>
