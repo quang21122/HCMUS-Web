@@ -3,12 +3,16 @@ import cache from "../../config/cache.js";
 import { getArticles } from "../../services/articleService.js";
 import { getCategories } from "../../services/categoryService.js";
 import { getTags } from "../../services/tagService.js";
+import { findUser } from "../../services/userService.js";
 
 const router = express.Router();
 
 router.get("/", async (req, res) => {
     try {
         const cacheKey = "homepage";
+
+        const userId = req.user?._id;
+        const user = await findUser(userId);
 
         // Check cache first
         const cachedData = cache.get(cacheKey);
@@ -38,6 +42,7 @@ router.get("/", async (req, res) => {
             articles: articlesResponse.data,
             categories: categoriesResponse.data,
             tags: tagsResponse.data,
+            user,
         };
 
         // Cache the result
