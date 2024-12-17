@@ -45,7 +45,6 @@ passport.deserializeUser(async (_id, done) => {
   }
 });
 
-
 // Register new user
 router.post("/register", async (req, res) => {
   const { email, password, confirmPassword, name } = req.body;
@@ -77,7 +76,7 @@ router.post("/register", async (req, res) => {
     });
 
     const user = await newUser.save();
-    
+
     req.session.userId = user._id.toString();
 
     // Phản hồi thành công
@@ -99,64 +98,63 @@ router.post("/login", (req, res, next) => {
     if (!user) {
       return res.status(401).json({ message: "Authentication failed" });
     }
-    
+
     req.logIn(user, (err) => {
       if (err) {
         return next(err);
       }
-      
+
       // Explicitly save the session before redirecting
       req.session.save((err) => {
         if (err) {
           return next(err);
         }
-        res.redirect("/profile");
+        res.redirect("/");
       });
     });
   })(req, res, next);
 });
-
 
 // Gửi mã xác nhận qua email
 router.post("/send-verificationCode", async (req, res) => {
   const { email } = req.body;
 
   try {
-      const user = await User.findOne({ email });
-      if (!user) {
-          return res.status(404).json({ error: "Email không tồn tại." });
-      }
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ error: "Email không tồn tại." });
+    }
 
-      // Tạo mã xác nhận ngẫu nhiên
-      const verificationCode = crypto.randomInt(100000, 999999).toString();
+    // Tạo mã xác nhận ngẫu nhiên
+    const verificationCode = crypto.randomInt(100000, 999999).toString();
 
-      // Lưu mã vào bộ nhớ tạm
-      resetTokens.set(email, verificationCode);
+    // Lưu mã vào bộ nhớ tạm
+    resetTokens.set(email, verificationCode);
 
-      // Cấu hình gửi email
-      const transporter = nodemailer.createTransport({
-          service: "Gmail",
-          auth: {
-              user: process.env.EMAIL_USER, // Email của bạn
-              pass: process.env.EMAIL_PASS, // Mật khẩu ứng dụng
-          },
-      });
+    // Cấu hình gửi email
+    const transporter = nodemailer.createTransport({
+      service: "Gmail",
+      auth: {
+        user: process.env.EMAIL_USER, // Email của bạn
+        pass: process.env.EMAIL_PASS, // Mật khẩu ứng dụng
+      },
+    });
 
-      // Nội dung email
-      const mailOptions = {
-          from: process.env.EMAIL_USER,
-          to: email,
-          subject: "Mã xác nhận đổi mật khẩu",
-          text: `Mã xác nhận của bạn là: ${verificationCode}`,
-      };
+    // Nội dung email
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Mã xác nhận đổi mật khẩu",
+      text: `Mã xác nhận của bạn là: ${verificationCode}`,
+    };
 
-      // Gửi email
-      await transporter.sendMail(mailOptions);
+    // Gửi email
+    await transporter.sendMail(mailOptions);
 
-      res.status(200).json({ message: "Đã gửi mã xác nhận đến email." });
+    res.status(200).json({ message: "Đã gửi mã xác nhận đến email." });
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Lỗi gửi email." });
+    console.error(error);
+    res.status(500).json({ error: "Lỗi gửi email." });
   }
 });
 
@@ -165,33 +163,32 @@ router.post("/forgot-password", async (req, res) => {
   const { email, verificationCode, newPassword } = req.body;
 
   try {
-      // Kiểm tra mã xác nhận
-      const savedCode = resetTokens.get(email);
-      if (!savedCode || savedCode !== verificationCode) {
-          return res.status(400).json({ error: "Mã xác nhận không đúng." });
-      }
+    // Kiểm tra mã xác nhận
+    const savedCode = resetTokens.get(email);
+    if (!savedCode || savedCode !== verificationCode) {
+      return res.status(400).json({ error: "Mã xác nhận không đúng." });
+    }
 
-      // Xóa mã xác nhận khỏi bộ nhớ tạm
-      resetTokens.delete(email);
+    // Xóa mã xác nhận khỏi bộ nhớ tạm
+    resetTokens.delete(email);
 
-      // Tìm người dùng
-      const user = await User.findOne({ email });
-      if (!user) {
-          return res.status(404).json({ error: "Người dùng không tồn tại." });
-      }
+    // Tìm người dùng
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ error: "Người dùng không tồn tại." });
+    }
 
-      // Mã hóa mật khẩu mới và lưu
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-      user.password = hashedPassword;
-      await user.save();
+    // Mã hóa mật khẩu mới và lưu
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
 
-      res.status(200).json({ message: "Đổi mật khẩu thành công." });
+    res.status(200).json({ message: "Đổi mật khẩu thành công." });
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Lỗi hệ thống." });
+    console.error(error);
+    res.status(500).json({ error: "Lỗi hệ thống." });
   }
 });
-
 
 // Log out user
 router.get("/logout", (req, res) => {

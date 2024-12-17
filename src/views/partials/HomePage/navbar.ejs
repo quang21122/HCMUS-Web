@@ -10,6 +10,14 @@
                 <a href="/about" class="text-gray-600 hover:text-gray-900">Xu hướng</a>
                 <a href="/about" class="text-gray-600 hover:text-gray-900">Mới nhất</a>
                 <a href="/about" class="text-gray-600 hover:text-gray-900">Giới thiệu</a>
+                    <% if (typeof user !== 'undefined' && user) { %>
+                    <% if (user.role === 'editor') { %>
+                        <a href="/my-articles" class="text-gray-600 hover:text-gray-900">Bài Chờ Duyệt</a>
+                    <% } %>
+                    <% if (user.role === 'writer') { %>
+                        <a href="/my-articles" class="text-gray-600 hover:text-gray-900">Bài Viết Của Tôi</a>
+                    <% } %>
+                <% } %>
             </div>
             <div class="flex items-center space-x-4">
                 <div class="relative">
@@ -31,14 +39,22 @@
                                 <div class="flex flex-row justify-between">
                                     <p class="text-sm text-cyan-600 mb-2">Tìm nhãn #</p>
                                     <div class="flex flex-row text-sm mb-2">
-                                        <button class="tag-prev text-black p-1 disabled:cursor-not-allowed disabled:text-gray-400" id="prevBtn">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                        <button
+                                            class="tag-prev text-black p-1 disabled:cursor-not-allowed disabled:text-gray-400"
+                                            id="prevBtn">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24"
+                                                fill="none" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15 19l-7-7 7-7"></path>
                                             </svg>
                                         </button>
-                                        <button class="tag-next text-black p-1 disabled:cursor-not-allowed disabled:text-gray-400" id="nextBtn">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                        <button
+                                            class="tag-next text-black p-1 disabled:cursor-not-allowed disabled:text-gray-400"
+                                            id="nextBtn">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24"
+                                                fill="none" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 5l7 7-7 7"></path>
                                             </svg>
                                         </button>
                                     </div>
@@ -47,11 +63,14 @@
                                 <!-- Tag Groups -->
                                 <div class="tag-groups overflow-hidden h-[120px]">
                                     <div class="flex flex-wrap gap-2 w-full">
-                                        <% const tagsPerSet=8; const numberOfSets=Math.ceil(tags.length / tagsPerSet); for(let i=0; i < numberOfSets; i++) {%>
+                                        <% const tagsPerSet=8; const numberOfSets=Math.ceil(tags.length / tagsPerSet);
+                                            for(let i=0; i < numberOfSets; i++) {%>
                                             <div class="flex w-full">
                                                 <div class="w-full flex flex-wrap gap-4">
                                                     <div class="tag-group flex flex-wrap w-full gap-2">
-                                                        <% const startIdx=i * tagsPerSet; const endIdx=Math.min(startIdx + tagsPerSet, tags.length); for(let j=startIdx; j < endIdx; j++) { %>
+                                                        <% const startIdx=i * tagsPerSet; const endIdx=Math.min(startIdx
+                                                            + tagsPerSet, tags.length); for(let j=startIdx; j < endIdx;
+                                                            j++) { %>
                                                             <a href="/tags/<%= tags[j].name %>"
                                                                 class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 transition-colors">
                                                                 #<%= tags[j].name %>
