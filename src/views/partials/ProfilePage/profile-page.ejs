@@ -48,7 +48,7 @@
             <div class="space-y-5">
                 <div class="flex flex-col space-y-2">
                     <div class="text-base font-medium text-black">Giới tính</div>
-                    <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg"><%= user.gender==='male' ? 'Nam' : 'Nữ' %></div>
+                    <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg"><%= user.gender==='male' ? 'Nam' : user.gender==='female' ? 'Nữ' : 'None' %></div>
                 </div>
                 <div class="flex flex-col space-y-2">
                     <div class="text-base font-medium text-black">Quốc tịch</div>

@@ -52,7 +52,7 @@
                                             <%= firstArticle.content || 'No content available' %>
                                         </p>
                                         <p class="text-sm text-black">
-                                            <%= firstArticle.author  %> | <%= firstArticle.publishedAt ? firstArticle.publishedAt.split(',')[1]?.trim() || firstArticle.publishedAt : 'No date' %>
+                                            <%= firstArticle.authorNames.map((author) => author)  %> | <%= firstArticle.publishedAt ? firstArticle.publishedAt.split(',')[1]?.trim() || firstArticle.publishedAt : 'No date' %>
                                         </p>
                                     </div>
                                 </div>
@@ -111,7 +111,7 @@
                                                             </div>
                                                             <div class="flex flex-col">
                                                                 <p class="text-sm text-cyan-500 line-clamp-1">
-                                                                    <%= article.author || 'No author available' %>
+                                                                    <%= article.authorNames.map((author) => author) || 'No author available' %>
                                                                 </p>
                                                                 <p class="text-sm text-cyan-500">
                                                                     <%= article.publishedAt ? article.publishedAt.split(',')[1]?.trim() || article.publishedAt : 'No date'%>

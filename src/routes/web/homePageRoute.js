@@ -9,46 +9,55 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
     try {
-        const cacheKey = "homepage";
+      const cacheKey = "homepage";
 
-        const userId = req.user?._id;
-        const user = await findUser(userId);
+      const userId = req.user?._id;
+      const user = await findUser(userId);
 
-        // Check cache first
-        const cachedData = cache.get(cacheKey);
-        if (cachedData) {
-            return res.render("pages/HomePage", cachedData);
-        }
+      // Check cache first
+      const cachedData = cache.get(cacheKey);
+      if (cachedData) {
+        return res.render("pages/HomePage", cachedData);
+      }
 
-        // Create timeout promise
-        const timeout = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error("Request timeout")), 5000)
+      // Create timeout promise
+      const timeout = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Request timeout")), 5000)
+      );
+
+      // Run queries in parallel with timeout
+      const result = await Promise.race([
+        Promise.all([getArticles(), getCategories(), getTags()]),
+        timeout,
+      ]);
+
+      const [articlesResponse, categoriesResponse, tagsResponse] = result;
+
+      if (!articlesResponse.success || !categoriesResponse.success) {
+        throw new Error("Failed to fetch data");
+      }
+
+      // find author name for each article
+      for (let i = 0; i < articlesResponse.data.length; i++) {
+        const article = articlesResponse.data[i];
+        const authors = await Promise.all(
+          article.author.map((author) => findUser(author))
         );
+        article.authorNames = authors.map((author) => author.name);
+      }
 
-        // Run queries in parallel with timeout
-        const result = await Promise.race([
-            Promise.all([getArticles(), getCategories(), getTags()]),
-            timeout,
-        ]);
+      const pageData = {
+        title: "Trang chủ",
+        articles: articlesResponse.data,
+        categories: categoriesResponse.data,
+        tags: tagsResponse.data,
+        user: user,
+      };
 
-        const [articlesResponse, categoriesResponse, tagsResponse] = result;
+      // Cache the result
+      cache.set(cacheKey, pageData);
 
-        if (!articlesResponse.success || !categoriesResponse.success) {
-            throw new Error("Failed to fetch data");
-        }
-
-        const pageData = {
-            title: "Trang chủ",
-            articles: articlesResponse.data,
-            categories: categoriesResponse.data,
-            tags: tagsResponse.data,
-            user,
-        };
-
-        // Cache the result
-        cache.set(cacheKey, pageData);
-
-        res.render("pages/HomePage", pageData);
+      res.render("pages/HomePage", pageData);
     } catch (error) {
         console.error("Home route error:", error);
         res.status(500).send("Server error");
