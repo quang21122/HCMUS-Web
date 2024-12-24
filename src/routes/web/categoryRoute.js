@@ -5,6 +5,7 @@ import {
 } from "../../services/articleService.js";
 import { getCategories, findCategoryFamily } from "../../services/categoryService.js";
 import { getTags } from "../../services/tagService.js";
+import { findUser } from "../../services/userService.js";
 
 const router = express.Router();
 
@@ -47,6 +48,9 @@ router.get("/categories/:category", async (req, res) => {
 
         const tagsResponse = await getTags();
 
+        const userId = req.user?._id;
+        const user = req.user || (userId && (await findUser(userId))) || null;
+
         const pageData = {
             title: categoryName,
             articles: articleResponse.data,
@@ -55,6 +59,7 @@ router.get("/categories/:category", async (req, res) => {
             categoryFamily,
             pagination: articleResponse.pagination,
             tags: tagsResponse.data,
+            user: user,
         };
 
         // Cache the result

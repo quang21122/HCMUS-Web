@@ -64,6 +64,9 @@ router.get("/article/:id", async (req, res) => {
             article.author.map((authorId) => getArticleCountByAuthor(authorId))
         );
 
+        const userId = req.user?._id;
+        const user = req.user || (userId && (await findUser(userId))) || null;
+
         const articleData = {
             title: article.name,
             article: {
@@ -75,6 +78,7 @@ router.get("/article/:id", async (req, res) => {
             },
             articleSameCategory: relatedResponse.data,
             tags: tagsResponse.data,
+            user: user,
         };
 
         // Cache the data

@@ -2,7 +2,7 @@ import express from "express";
 import { getArticlesByAuthor } from "../../services/articleService.js";
 import { getTags } from "../../services/tagService.js";
 import { getCategories } from "../../services/categoryService.js";
-import { findUserByName } from "../../services/userService.js";
+import { findUserByName, findUser } from "../../services/userService.js";
 import cache from "../../config/cache.js";
 
 const router = express.Router();
@@ -34,6 +34,9 @@ router.get("/author/:author", async (req, res) => {
     // Get all categories
     const categoriesResponse = await getCategories();
 
+    const userId = req.user?._id;
+    const user = req.user || (userId && (await findUser(userId))) || null;
+
     const pageData = {
       title: `Kí giả - ${author}`,
       author: userResponse.data,
@@ -41,6 +44,7 @@ router.get("/author/:author", async (req, res) => {
       tags: tagsResponse.data,
       categories: categoriesResponse.data,
       pagination: articlesResponse.data.pagination,
+      user: user,
     };
 
     res.render("pages/AuthorPage", pageData);

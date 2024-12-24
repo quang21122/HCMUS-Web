@@ -2226,6 +2226,10 @@ ul {
     width: calc(100% / 5 - 0.9rem);
   }
 
+  .lg\:flex-row{
+    flex-direction: row;
+  }
+
   .lg\:space-x-2 > :not([hidden]) ~ :not([hidden]){
     --tw-space-x-reverse: 0;
     margin-right: calc(0.5rem * var(--tw-space-x-reverse));

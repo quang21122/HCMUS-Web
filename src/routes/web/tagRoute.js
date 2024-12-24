@@ -8,6 +8,7 @@ import {
     getCategories,
 } from "../../services/categoryService.js";
 import { getTags } from "../../services/tagService.js";
+import { findUser } from '../../services/userService.js';
 import cache from '../../config/cache.js';
 
 const router = express.Router();
@@ -45,6 +46,9 @@ router.get("/tags/:tag", async (req, res) => {
             return res.status(404).send(articlesResponse.error);
         }
 
+        const userId = req.user?._id;
+        const user = req.user || (userId && (await findUser(userId))) || null;
+
         const pageData = {
             title: category ? `#${tagName} - ${categoryName}` : `#${tagName}`,
             articles: articlesResponse.data,
@@ -53,6 +57,7 @@ router.get("/tags/:tag", async (req, res) => {
             categories: categoriesResponse.data,
             tags: tagsResponse.data || [],
             pagination: articlesResponse.pagination,
+            user: user,
         };
 
         // Cache the result
