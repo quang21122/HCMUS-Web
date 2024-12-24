@@ -1,9 +1,10 @@
 <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <div class="flex flex-col space-y-6 lg:flex-row lg:space-y-0 lg:space-x-6">
+    <div class="flex flex-col space-y-6 lg:space-y-0 lg:space-x-6">
         <div class="bg-[#F5F5F5] p-2 rounded-xl flex flex-col space-y-4">
             <img src="/images/bg-author.png" alt="" class="w-full">
             <div class="flex items-center space-x-4 relative">
-                <img src="/images/default-ava.png" alt="" class="w-16 h-16 rounded-xl">
+                <img src="https://ui-avatars.com/api/?name=<%= author.name %>&background=random&color=fff&size=40&font-size=0.5"
+                    alt="" class="w-16 h-16 rounded-xl">
                 <div class="flex flex-col justify-center space-y-2">
                     <p class="text-xl font-semibold">
                         <%= author.name %>
@@ -37,7 +38,7 @@
         <!-- Content sections -->
         <div id="articlesContent" class="">
             <!-- Articles grid here -->
-            <div class="border-l-4 border-red-600 text-lg font-semibold rounded-s-sm">
+            <div class="border-l-4 border-red-600 text-lg font-semibold rounded-s-sm mt-6">
                 <p class="ml-2">Bài viết</p>
             </div>
             <div class="grid grid-cols-4 gap-4 mt-8">
@@ -114,8 +115,8 @@
                 <% } %>
         </div>
 
-        <div id="profileContent" class="hidden grid grid-cols-2 gap-12 mx-4 ">
-            <div class="space-y-5">
+        <div id="profileContent" class="hidden grid grid-cols-2 gap-12 mx-4">
+            <div class="space-y-5 mt-6">
                 <div class="flex flex-col space-y-2">
                     <div class="text-base font-medium text-black">Họ và tên</div>
                     <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg"><%- author.fullName %></div>
@@ -130,7 +131,7 @@
                     <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg"><%- author.email %></div>
                 </div>
             </div>
-            <div class="space-y-5">
+            <div class="space-y-5 mt-6">
                 <div class="flex flex-col space-y-2">
                     <div class="text-base font-medium text-black">Giới tính</div>
                     <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg">
@@ -140,9 +141,9 @@
                 <div class="flex flex-col space-y-2">
                     <div class="text-base font-medium text-black">Quốc tịch</div>
                     <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg">
-                        <%= author.country==='VN' ? 'Việt Nam' : author.country==='US' ? 'Hoa Kỳ' : author.country==='JP'
-                            ? 'Nhật Bản' : author.country==='KR' ? 'Hàn Quốc' : author.country==='CN' ? 'Trung Quốc'
-                            : 'Khác' %>
+                        <%= author.country==='VN' ? 'Việt Nam' : author.country==='US' ? 'Hoa Kỳ' :
+                            author.country==='JP' ? 'Nhật Bản' : author.country==='KR' ? 'Hàn Quốc' :
+                            author.country==='CN' ? 'Trung Quốc' : 'Khác' %>
                     </div>
                 </div>
                 <div class="flex flex-col space-y-2">
