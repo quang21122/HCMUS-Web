@@ -140,6 +140,40 @@ router.post("/login", (req, res, next) => {
   })(req, res, next);
 });
 
+//Logout
+router.post("/logout", async (req, res, next) => {
+  try {
+    // Step 1: Logout user
+    await new Promise((resolve, reject) => {
+      req.logout((err) => {
+        if (err) return reject(err);
+        resolve();
+      });
+    });
+
+    // Step 2: Destroy session
+    await new Promise((resolve, reject) => {
+      req.session.destroy((err) => {
+        if (err) return reject(err);
+        resolve();
+      });
+    });
+
+    // Step 3: Clear cookie and redirect
+    res.clearCookie("connect.sid", {
+      path: "/",
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    });
+
+    // Step 4: Force redirect with 302 status
+    return res.status(302).redirect("/");
+  } catch (err) {
+    console.error("Logout failed:", err);
+    return res.redirect("/");
+  }
+});
+
 //Password reset stuff
 router.post("/requestPasswordReset", (req, res) => {
   const { email } = req.body;
