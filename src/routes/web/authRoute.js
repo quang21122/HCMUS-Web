@@ -46,8 +46,8 @@ router.post("/register", (req, res) => {
         ...step2Data,
     };
 
-    // Nếu vai trò là writer, bút danh là bắt buộc
-    if (role === "writer" && !penName) {
+    // Nếu vai trò là author, bút danh là bắt buộc
+    if (role === "author" && !penName) {
         return res.status(400).send("Bút danh là bắt buộc cho vai trò Phóng viên.");
     }
 
@@ -60,7 +60,7 @@ router.post("/register", (req, res) => {
         phone,
         gender,
         country,
-        penName: role === "writer" ? penName : null,
+        penName: role === "author" ? penName : null,
     };
 
     fetch(`http://localhost:3000/api/users?_id=${userId}`,
