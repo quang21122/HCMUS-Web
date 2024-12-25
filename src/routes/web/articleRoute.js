@@ -7,7 +7,7 @@ import {
     incrementArticleViews,
     getArticleCountByAuthor,
 } from "../../services/articleService.js";
-import { getCategoryName } from "../../services/categoryService.js";
+import { getCategoryName, getCategories } from "../../services/categoryService.js";
 import { getTags, getTagName } from "../../services/tagService.js";
 import { findUser } from '../../services/userService.js';
 
@@ -76,6 +76,8 @@ router.get("/article/:id", async (req, res) => {
       const userId = req.user?._id;
       const user = req.user || (userId && (await findUser(userId))) || null;
 
+      const categories = await getCategories();
+
       const articleData = {
         title: article.name,
         article: {
@@ -88,6 +90,7 @@ router.get("/article/:id", async (req, res) => {
         articleSameCategory: relatedResponse.data,
         tags: tagsResponse.data,
         user: user,
+        categories: categories.data,
       };
 
       // Cache the data
