@@ -1,15 +1,16 @@
-<div class="grid grid-cols-[7fr_3fr] max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
+<div class="grid grid-cols-[7fr_3fr] max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 relative space-x-6">
     <div>
         <h2 class="text-2xl font-semibold mb-6 text-gray-800">Create New Article</h2>
-        <form method="POST" action="/my-articles/create" enctype="multipart/form-data" class="space-y-6">
+        <form method="POST" action="/my-articles/create" enctype="multipart/form-data" class="space-y-6" id="articleForm">
             <!-- Title -->
             <div class="mb-4">
-                <label for="name" class="block text-sm font-medium text-gray-700">Title</label>
+                <label for="name" class="block text-xl font-medium text-gray-700">Tên bài viết</label>
                 <input type="text" id="name" name="name" required value="<%= article.name %>"
-                    class="mt-1 block w-full border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    class="mt-1 py-3 px-2 block w-full text-xl bg-[#F5F5F5] rounded-md focus:outline-none focus:ring-0">
             </div>
+
             <div id="upload-container"
-                class="relative flex flex-col items-center justify-center w-full h-[200px] rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors border-2 border-dashed border-gray-300">
+                class="relative mt-4 flex flex-col items-center justify-center w-full h-[200px] rounded-lg cursor-pointer bg-[#F5F5F5] hover:bg-[#f0f0f0] transition-colors border-2 border-dashed border-gray-300">
 
                 <input type="file" id="file-input" name="image" class="hidden" accept="image/*">
 
@@ -20,24 +21,25 @@
                             d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
                         <circle cx="12" cy="13" r="3" />
                     </svg>
-                    <span class="text-sm">Thêm ảnh đại diện bài viết</span>
+                    <span class="text-lg">Thêm ảnh đại diện bài viết</span>
                 </div>
 
-                <img id="preview" class="absolute inset-0 w-full h-full object-cover rounded-lg hidden">
+                <!-- Adjusted the image styling -->
+                <img id="preview" class="absolute inset-0 w-full h-full object-contain rounded-lg hidden">
+            </div>
+            
+            <!-- Content (TinyMCE Editor) -->
+            <div class="mb-4">
+                <label for="editor" class="block text-xl font-medium text-gray-700">Nội dung</label>
+                <textarea id="editor" name="content" class="mt-2 bg-white border border-gray-600 rounded-md"
+                    style="height: 300px;"></textarea>
             </div>
 
             <!-- Abstract -->
             <div class="mb-4">
-                <label for="abstract" class="block text-sm font-medium text-gray-700">Abstract</label>
+                <label for="abstract" class="block text-xl font-medium text-gray-700">Tóm tắt</label>
                 <textarea id="abstract" name="abstract" rows="3" required
-                    class="mt-1 block w-full border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"><%= article.abstract %></textarea>
-            </div>
-
-            <!-- Content (TinyMCE Editor) -->
-            <div class="mb-4">
-                <label for="editor" class="block text-sm font-medium text-gray-700">Content</label>
-                <textarea id="editor" name="content" class="mt-1 bg-white border border-gray-600 rounded-md"
-                    style="height: 300px;"></textarea>
+                    class="mt-1 py-3 px-2 block w-full text-xl bg-[#F5F5F5] rounded-md focus:outline-none focus:ring-0"><%= article.abstract %></textarea>
             </div>
 
             <!-- Premium Article -->
@@ -49,18 +51,6 @@
 
             <input type="hidden" name="tags" id="tagsInput">
             <input type="hidden" name="category" id="categoriesInput">
-
-            <!-- Buttons -->
-            <div class="flex items-center justify-end">
-                <a href="/articles"
-                    class="ml-4 text-indigo-600 hover:text-indigo-700 py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                    Cancel
-                </a>
-                <button type="submit"
-                    class="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                    Create Article
-                </button>
-            </div>
         </form>
     </div>
     <div class="rounded-xl h-[20rem] space-y-4">
@@ -86,7 +76,7 @@
                 <div>
                     <div class="flex items-center gap-2 mb-4">
                         <div class="w-1 h-4 bg-red-500"></div>
-                        <h2 class="text-xl font-medium">Nhãn</h2>
+                        <h2 class="text-lg font-medium">Nhãn</h2>
                         <button onclick="showInput('label')"
                             class="ml-auto w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
                             <span class="text-gray-600">+</span>
@@ -105,7 +95,7 @@
                 <div>
                     <div class="flex items-center gap-2 mb-4">
                         <div class="w-1 h-4 bg-red-500"></div>
-                        <h2 class="text-xl font-medium">Chuyên Mục</h2>
+                        <h2 class="text-lg font-medium">Chuyên Mục</h2>
                         <button onclick="showInput('category')"
                             class="ml-auto w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
                             <span class="text-gray-600">+</span>
@@ -120,6 +110,13 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <!-- Create Button -->
+        <div class="flex items-center justify-center mt-6 w-full">
+            <button type="submit" form="articleForm"
+                class="bg-cyan-600 hover:bg-cyan-700 text-white text-xl py-2 px-4 rounded-md shadow-sm focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 w-full">
+                Đăng Bài
+            </button>
         </div>
     </div>
 
