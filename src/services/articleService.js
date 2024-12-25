@@ -23,24 +23,41 @@ export const incrementArticleViews = async (articleId) => {
 
 export const getArticles = async () => {
   try {
-    const articles = await Article.find().lean().maxTimeMS(30000).exec();
+    const response = await Article.find({ status: "published" })
+      .populate("author")
+      .populate("category")
+      .sort({ publishedAt: -1 })
+      .lean()
+      .exec();
+
+    if (!response) {
+      throw new Error("No articles found");
+    }
 
     return {
-      success: true,
-      data: articles,
+      status: "SUCCESS",
+      message: "Articles retrieved successfully",
+      data: response,
     };
   } catch (error) {
-    console.error("getAllArticles error:", error);
+    console.error("getArticles error:", error);
     return {
-      success: false,
-      error: error.message || "Error fetching articles",
+      status: "FAILED",
+      message: error.message || "An error occurred while retrieving articles",
+      data: null,
     };
   }
 };
 
 export const getArticlesById = async (id) => {
   try {
-    const article = await Article.findById(id).maxTimeMS(30000).lean().exec();
+    const article = await Article.findOne({
+      _id: id,
+      status: "published",
+    })
+      .maxTimeMS(30000)
+      .lean()
+      .exec();
 
     if (!article) {
       return {
@@ -73,6 +90,7 @@ export const getArticlesSameCategory = async (category, currentArticleId) => {
         $match: {
           category: { $in: [category] },
           _id: { $ne: currentArticleId },
+          status: "published",
         },
       },
       { $sample: { size: 6 } },
@@ -98,8 +116,11 @@ export const getArticlesSameCategory = async (category, currentArticleId) => {
 export const getArticlesByCategory = async (category, page = 1, limit = 12) => {
   try {
     const skip = (page - 1) * limit;
+    const filter = {
+      category: { $in: [category] },
+      status: "published",
+    };
 
-    // Use projection to limit fields
     const projection = {
       name: 1,
       image: 1,
@@ -111,10 +132,9 @@ export const getArticlesByCategory = async (category, page = 1, limit = 12) => {
       category: 1,
     };
 
-    // Run count and find in parallel
     const [total, articles] = await Promise.all([
-      Article.countDocuments({ category: { $in: [category] } }),
-      Article.find({ category: { $in: [category] } })
+      Article.countDocuments(filter),
+      Article.find(filter)
         .select(projection)
         .sort({ publishedAt: -1 })
         .skip(skip)
@@ -149,8 +169,15 @@ export const getArticlesByTag = async (
 
     // Build query based on whether category is provided
     const query = category
-      ? { tags: { $in: [tag] }, category: { $in: [category] } }
-      : { tags: { $in: [tag] } };
+      ? {
+          tags: { $in: [tag] },
+          category: { $in: [category] },
+          status: "published",
+        }
+      : {
+          tags: { $in: [tag] },
+          status: "published",
+        };
 
     const projection = {
       name: 1,
@@ -192,7 +219,7 @@ export const getArticlesByTag = async (
 
 export const getArticleCountByAuthor = async (authorId) => {
   try {
-    const count = await Article.countDocuments({ author: authorId });
+    const count = await Article.countDocuments({ author: authorId, status: "published" });
 
     return {
       success: true,
@@ -207,15 +234,15 @@ export const getArticleCountByAuthor = async (authorId) => {
   }
 };
 
-export const getArticlesByAuthor = async (authorId, page = 1, limit = 12) => {
+export const getArticlesPublishedByAuthor = async (authorId, page = 1, limit = 12) => {
   try {
     const skip = (page - 1) * limit;
 
     // Get total count for pagination
-    const totalCount = await Article.countDocuments({ author: authorId });
+    const totalCount = await Article.countDocuments({ author: authorId, status: "published" });
 
     // Find articles with pagination
-    const articles = await Article.find({ author: authorId })
+    const articles = await Article.find({ author: authorId, status: "published" })
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
