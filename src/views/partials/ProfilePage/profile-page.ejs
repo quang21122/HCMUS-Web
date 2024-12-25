@@ -44,6 +44,14 @@
                     <div class="text-base font-medium text-black">Email liên hệ</div>
                     <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg"><%- user.email %></div>
                 </div>
+                <!-- Static View -->
+                <% if (user.role==='author' ) { %>
+                    <div class="flex flex-col space-y-2">
+                        <div class="text-base font-medium text-black">Bút danh</div>
+                        <div class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg"><%- user.penName || 'Chưa có bút danh' %>
+                        </div>
+                    </div>
+                    <% } %>
             </div>
             <div class="space-y-5">
                 <div class="flex flex-col space-y-2">
@@ -80,6 +88,13 @@
                     <input type="email" name="email" value="<%- user.email %>"
                         class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
+                <% if (user.role==='author' ) { %>
+                    <div class="flex flex-col space-y-2">
+                        <label class="text-base font-medium text-black">Bút danh</label>
+                        <input type="text" name="penName" value="<%- user.penName %>"
+                            class="text-lg text-gray-900 bg-gray-100 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <% } %>
             </div>
             <div class="space-y-5">
                 <div class="flex flex-col space-y-2">
@@ -166,6 +181,9 @@
             document.querySelector('select[name="gender"]').value = user.gender || '';
             document.querySelector('select[name="country"]').value = user.country || '';
             document.querySelector('input[name="phone"]').value = user.phone || '';
+            if (user.role === 'author') {
+                document.querySelector('input[name="penName"]').value = user.penName || '';
+            }
         } else {
             // Switch back to view mode and submit the form manually with PUT request
             const userId = user._id;
@@ -234,5 +252,4 @@
             alert(result.error);
         }
     }
-
 </script>
