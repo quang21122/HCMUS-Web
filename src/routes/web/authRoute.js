@@ -42,12 +42,12 @@ router.post("/register", (req, res) => {
         return res.status(400).send("Thiếu thông tin cần thiết.");
     }
 
-    const { fullName, email, dob, phone, gender, country } = {
+    const { fullName, dob, phone, gender, country } = {
         ...step2Data,
     };
 
-    // Nếu vai trò là writer, bút danh là bắt buộc
-    if (role === "writer" && !penName) {
+    // Nếu vai trò là author, bút danh là bắt buộc
+    if (role === "author" && !penName) {
         return res.status(400).send("Bút danh là bắt buộc cho vai trò Phóng viên.");
     }
 
@@ -55,12 +55,11 @@ router.post("/register", (req, res) => {
     const user = {
         role,
         fullName,
-        email,
         dob,
         phone,
         gender,
         country,
-        penName: role === "writer" ? penName : null,
+        penName: role === "author" ? penName : null,
     };
 
     fetch(`http://localhost:3000/api/users?_id=${userId}`,

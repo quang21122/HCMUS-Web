@@ -57,13 +57,13 @@
             <input
               type="radio"
               name="role"
-              value="writer"
+              value="author"
               required
               class="hidden peer/writer"
-              id="writer"
+              id="author"
             />
             <label
-              for="writer"
+              for="author"
               class="block w-full p-8 border-2 border-black rounded-lg cursor-pointer transition-all duration-200 hover:border-blue-400 peer-checked/writer:border-blue-600 peer-checked/writer:bg-blue-200"
             >
               <div class="flex items-center justify-center">
@@ -112,19 +112,6 @@
               type="text"
               id="name"
               name="fullName"
-              required
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-
-          <div class="space-y-2">
-            <label for="email" class="block text-sm font-medium text-gray-700"
-              >Email <span class="text-red-500">*</span></label
-            >
-            <input
-              type="email"
-              id="email"
-              name="email"
               required
               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             />
@@ -203,14 +190,13 @@
         <!-- Display Role -->
         <p>
           <strong>Vai trò:</strong> <%= role === "subscriber" ? "Đọc giả" : role
-          === "writer" ? "Phóng viên" : "Biên tập viên" %>
+          === "author" ? "Phóng viên" : "Biên tập viên" %>
         </p>
 
         <!-- Display Form Data -->
         <ul class="mt-4">
           <% const vietnameseKeys = {
             fullName: 'Tên',
-            email: 'Email',
             dob: 'Ngày sinh',
             phone: 'Số điện thoại',
             gender: 'Giới tính',
@@ -224,8 +210,8 @@
           }); %>
         </ul>
 
-        <!-- Additional Fields for Writer Role -->
-        <% if (role === "writer") { %>
+        <!-- Additional Fields for Author Role -->
+        <% if (role === "author") { %>
         <div class="mt-6 space-y-2">
           <label for="penName" class="block text-sm font-medium text-gray-700">
             Bút danh <span class="text-red-500">*</span>
