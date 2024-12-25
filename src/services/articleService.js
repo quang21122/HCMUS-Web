@@ -89,7 +89,7 @@ export const getArticlesSameCategory = async (category, currentArticleId) => {
       {
         $match: {
           category: { $in: [category] },
-          _id: { $ne: currentArticleId },
+          _id: { $ne: new mongoose.Types.ObjectId(currentArticleId) },
           status: "published",
         },
       },

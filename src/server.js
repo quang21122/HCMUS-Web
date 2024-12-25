@@ -3,6 +3,8 @@ import sessionMiddleware from "./config/session.js";
 import livereload from "livereload";
 import connectLiveReload from "connect-livereload";
 import path from "path";
+import session from "express-session";
+import flash from "connect-flash";
 import { fileURLToPath } from "url";
 import { connectDB } from "./config/db.js";
 import articleAPIRoute from "./routes/api/articleRoute.js";
@@ -68,6 +70,16 @@ app.use("/api/users", userRoute);
 app.use("/auth", loginRegisterRoutes);
 app.use("/profile", changeInProfile);
 app.use("/", searchRoute);
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "your-secret-key",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+app.use(flash());
 
 const startServer = async () => {
   try {
