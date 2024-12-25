@@ -18,6 +18,13 @@ const ArticleSchema = new Schema({
     views: { type: Number, default: 0 },
 });
 
+// Add text index
+ArticleSchema.index({
+  name: "text",
+  content: "text",
+  abstract: "text",
+});
+
 const Article = model('articles', ArticleSchema);
 
 export default Article;
