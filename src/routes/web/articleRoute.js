@@ -1,4 +1,5 @@
 import express from 'express';
+import puppeteer from "puppeteer";
 import cache from '../../config/cache.js';
 import {
     getArticlesById,
@@ -14,83 +15,175 @@ const router = express.Router();
 
 router.get("/article/:id", async (req, res) => {
     try {
-        const articleId = req.params.id;
-        const cacheKey = `article_${articleId}`;
+      const articleId = req.params.id;
+      const cacheKey = `article_${articleId}`;
 
-        // Check cache
-        const cachedData = cache.get(cacheKey);
-        if (cachedData) {
-            return res.render("pages/ArticlePage", cachedData);
-        }
+      // Check cache
+      const cachedData = cache.get(cacheKey);
+      if (cachedData) {
+        return res.render("pages/ArticlePage", cachedData);
+      }
 
-        // Get article by ID
-        const response = await getArticlesById(articleId);
+      // Get article by ID
+      const response = await getArticlesById(articleId);
 
-        if (!response.success) {
-            return res.status(404).send(response.error);
-        }
+      if (!response.success) {
+        return res.status(404).send(response.error);
+      }
 
-        const article = response.data;
+      const article = response.data;
 
-        // Get category names
-        const categoryNames = await Promise.all(
-            article.category.map((catId) => getCategoryName(catId))
-        );
+      // Check if article is premium and user is not authenticated
+      if (article.isPremium && !req.isAuthenticated()) {
+        return res.render("pages/login", {
+          error: "Bạn cần đăng nhập để xem bài viết premium",
+          returnTo: `/article/${articleId}`,
+        });
+      }
 
-        const tagsResponse = await getTags();
+      // Get category names
+      const categoryNames = await Promise.all(
+        article.category.map((catId) => getCategoryName(catId))
+      );
 
-        // Get tag names
-        const tagNames = await Promise.all(
-            article.tags.map((tagId) => getTagName(tagId))
-        );
+      const tagsResponse = await getTags();
 
-        const relatedResponse = await getArticlesSameCategory(
-            article.category[0],
-            articleId
-        );
+      // Get tag names
+      const tagNames = await Promise.all(
+        article.tags.map((tagId) => getTagName(tagId))
+      );
 
-        if (!relatedResponse.success) {
-            return res
-                .status(500)
-                .json({ success: false, error: relatedResponse.error });
-        }
+      const relatedResponse = await getArticlesSameCategory(
+        article.category[0],
+        articleId
+      );
 
-        // Get author details
-        const authors = await Promise.all(
-          article.author.map((authorId) => findUser(authorId))
-        );
+      if (!relatedResponse.success) {
+        return res
+          .status(500)
+          .json({ success: false, error: relatedResponse.error });
+      }
 
-        const articleCount = await Promise.all(
-            article.author.map((authorId) => getArticleCountByAuthor(authorId))
-        );
+      // Get author details
+      const authors = await Promise.all(
+        article.author.map((authorId) => findUser(authorId))
+      );
 
-        const userId = req.user?._id;
-        const user = req.user || (userId && (await findUser(userId))) || null;
+      const articleCount = await Promise.all(
+        article.author.map((authorId) => getArticleCountByAuthor(authorId))
+      );
 
-        const articleData = {
-            title: article.name,
-            article: {
-                ...article,
-                categoryNames,
-                tagNames,
-                authors,
-                articleCount,
-            },
-            articleSameCategory: relatedResponse.data,
-            tags: tagsResponse.data,
-            user: user,
-        };
+      const userId = req.user?._id;
+      const user = req.user || (userId && (await findUser(userId))) || null;
 
-        // Cache the data
-        cache.set(cacheKey, articleData);
+      const articleData = {
+        title: article.name,
+        article: {
+          ...article,
+          categoryNames,
+          tagNames,
+          authors,
+          articleCount,
+        },
+        articleSameCategory: relatedResponse.data,
+        tags: tagsResponse.data,
+        user: user,
+      };
 
-        incrementArticleViews(articleId);
+      // Cache the data
+      cache.set(cacheKey, articleData);
 
-        res.render("pages/ArticlePage", articleData);
+      incrementArticleViews(articleId);
+
+      res.render("pages/ArticlePage", articleData);
     } catch (error) {
         console.error("Route handler error:", error);
         res.status(500).json({ success: false, error: error.message });
     }
+});
+
+router.get("/article/:id/download", async (req, res) => {
+  let browser = null;
+  try {
+    const articleId = req.params.id;
+    const article = await getArticlesById(articleId);
+
+    if (!article.success) {
+      return res.status(404).send("Article not found");
+    }
+
+    browser = await puppeteer.launch({
+      headless: "new",
+      args: ["--no-sandbox"],
+    });
+
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1200, height: 800 });
+
+    // Set content with image handling
+    await page.setContent(`
+            <!DOCTYPE html>
+            <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <style>
+                        body { 
+                            font-family: Arial, sans-serif; 
+                            padding: 20px;
+                        }
+                        img {
+                            max-width: 100%;
+                            height: auto;
+                            display: block;
+                            margin: 10px auto;
+                        }
+                    </style>
+                </head>
+                <body>  
+                    <h1>${article.data.name}</h1>
+                    <img src="${article.data.image}" alt="${article.data.name}">
+                    ${article.data.content}
+                </body>
+            </html>
+        `);
+
+    // Wait for all images to load
+    await page.evaluate(async () => {
+      const images = document.getElementsByTagName("img");
+      const promises = Array.from(images).map((img) => {
+        if (img.complete) return;
+        return new Promise((resolve, reject) => {
+          img.addEventListener("load", resolve);
+          img.addEventListener("error", reject);
+        });
+      });
+      await Promise.all(promises);
+    });
+
+    const buffer = await page.pdf({
+      format: "A4",
+      printBackground: true,
+      margin: { top: "20mm", right: "20mm", bottom: "20mm", left: "20mm" },
+    });
+
+    const safeFilename = encodeURIComponent(
+      article.data.name.replace(/[^a-z0-9]/gi, "_")
+    );
+
+    res.writeHead(200, {
+      "Content-Type": "application/pdf",
+      "Content-Length": buffer.length,
+      "Content-Disposition": `attachment; filename="${safeFilename}.pdf"`,
+      "Cache-Control": "no-cache",
+    });
+
+    res.end(buffer);
+  } catch (error) {
+    console.error("PDF generation error:", error);
+    res.status(500).send("Error generating PDF");
+  } finally {
+    if (browser) await browser.close();
+  }
 });
 
 export default router;
