@@ -16,6 +16,7 @@ const ArticleSchema = new Schema({
     editor: { type: String },
     createdAt: { type: Date, default: Date.now },
     views: { type: Number, default: 0 },
+    publishedDate: Date,
 });
 
 // Add text index

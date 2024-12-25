@@ -20,6 +20,8 @@ import authorRoute from "./routes/web/authorRoute.js";
 import passport from "./config/passport.js";
 import changeInProfile from "./profile/change-profile.js";
 import searchRoute from "./routes/web/searchRoute.js";
+import newestRoute from "./routes/web/newestRoute.js";
+import trendRoute from "./routes/web/trendRoute.js";
 
 // Create __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -60,6 +62,8 @@ liveReloadServer.server.once("connection", () => {
 
 app.use("/", homePageRoute);
 app.use("/", articleRoute);
+app.use("/", trendRoute);
+app.use("/", newestRoute);
 app.use("/", categoryRoute);
 app.use("/", tagRoute);
 app.use("/", authRoute);

@@ -366,4 +366,65 @@ const deleteArticle = async (id) => {
     }
 }
 
-export default { incrementArticleViews, createArticle, createMultipleArticles, importArticlesFromLocal, getArticles, getArticlesById, getArticlesByCategory, getArticlesSameCategory, updateArticle, deleteArticle };
+export function parsePublishedAt(publishedAt) { //Trả về publishedAt dạng new Date
+    // Tách ngày tháng năm và giờ
+    const regex = /(\d{1,2})\/(\d{1,2})\/(\d{4}), (\d{2}):(\d{2}) \((GMT[+-]\d{1,2})\)/;
+    const match = publishedAt.match(regex);
+
+    if (match) {
+        const day = match[1];
+        const month = match[2] - 1; // Lưu ý: tháng trong JavaScript bắt đầu từ 0
+        const year = match[3];
+        const hours = match[4];
+        const minutes = match[5];
+
+        // Tạo đối tượng Date
+        const newDate = new Date(year, month, day, hours, minutes);
+
+        // Điều chỉnh múi giờ nếu cần
+        const gmtOffset = match[6]; // GMT+7 hoặc GMT-3,...
+        const offset = parseInt(gmtOffset.replace('GMT', ''), 10);
+        newDate.setHours(newDate.getHours() - offset);
+
+        return newDate;
+    } else {
+        return null;
+    }
+}
+
+export const getArticlesByPageWithSort = async (page = 1, limit = 12, sortBy = "publishedDate", sortOrder = -1) => {
+  try {
+    // Tính toán skip dựa trên số trang và số bài viết mỗi trang
+    const skip = (page - 1) * limit;
+
+    // Truy vấn bài viết từ cơ sở dữ liệu
+    const [total, articles] = await Promise.all([
+      Article.countDocuments({ status: "published" }), // Đếm tổng số bài viết
+      Article.find({ status: "published" }) // Tìm bài viết có trạng thái "published"
+        .sort({ [sortBy]: sortOrder }) // Sắp xếp theo trường sortBy, mặc định publishedAt giảm dần
+        .skip(skip) // Bỏ qua số bài viết dựa trên trang hiện tại
+        .limit(limit) // Giới hạn số bài viết trên mỗi trang
+        .lean() // Lấy dữ liệu dưới dạng plain JavaScript object
+        .exec(),
+    ]);
+
+    return {
+      success: true,
+      data: articles,
+      pagination: {
+        total,
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  } catch (error) {
+    console.error("getArticlesByPage error:", error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+};
+
+
+export default { incrementArticleViews, createArticle, createMultipleArticles, importArticlesFromLocal, getArticles, getArticlesById, getArticlesByCategory, getArticlesSameCategory, updateArticle, deleteArticle, parsePublishedAt, getArticlesByPageWithSort };
