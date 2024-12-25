@@ -11,6 +11,7 @@
     "jsonwebtoken": "^9.0.2",
     "livereload": "^0.9.3",
     "mongoose": "^8.8.2",
+    "multer": "^1.4.5-lts.1",
     "node-cache": "^5.1.2",
     "nodemailer": "^6.9.16",
     "nodemon": "^3.1.7",

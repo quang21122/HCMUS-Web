@@ -1,7 +1,7 @@
 <div class="grid grid-cols-[7fr_3fr] max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
     <div>
         <h2 class="text-2xl font-semibold mb-6 text-gray-800">Create New Article</h2>
-        <form method="POST" action="/my-articles/create" class="space-y-6">
+        <form method="POST" action="/my-articles/create" enctype="multipart/form-data" class="space-y-6">
             <!-- Title -->
             <div class="mb-4">
                 <label for="name" class="block text-sm font-medium text-gray-700">Title</label>
@@ -11,7 +11,7 @@
             <div id="upload-container"
                 class="relative flex flex-col items-center justify-center w-full h-[200px] rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors border-2 border-dashed border-gray-300">
 
-                <input type="file" id="file-input" class="hidden" accept="image/*">
+                <input type="file" id="file-input" name="image" class="hidden" accept="image/*">
 
                 <div id="placeholder" class="flex flex-col items-center gap-2 text-gray-500">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 24 24" fill="none"
@@ -36,13 +36,13 @@
             <!-- Content (TinyMCE Editor) -->
             <div class="mb-4">
                 <label for="editor" class="block text-sm font-medium text-gray-700">Content</label>
-                <textarea id="editor" name="content" class="mt-1 bg-white border border-gray-600 rounded-md" style="height: 300px;"></textarea>
+                <textarea id="editor" name="content" class="mt-1 bg-white border border-gray-600 rounded-md"
+                    style="height: 300px;"></textarea>
             </div>
 
             <!-- Premium Article -->
             <div class="mb-4 flex items-center">
-                <input type="checkbox" id="premium" name="isPremium" value="1" <%=article.isPremium ? 'checked' : ''
-                    %>
+                <input type="checkbox" id="premium" name="isPremium" value="1" <%=article.isPremium ? 'checked' : '' %>
                 class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                 <label for="premium" class="ml-2 text-sm text-gray-700">Premium Article</label>
             </div>
@@ -82,51 +82,52 @@
         </div>
         <div class="max-w-4xl mx-auto rounded-xl shadow-sm p-6 h-auto bg-[#F5F5F5]">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Labels Section -->
-            <div>
-                <div class="flex items-center gap-2 mb-4">
-                    <div class="w-1 h-4 bg-red-500"></div>
-                    <h2 class="text-xl font-medium">Nhãn</h2>
-                    <button onclick="showInput('label')" class="ml-auto w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
-                        <span class="text-gray-600">+</span>
-                    </button>
+                <!-- Labels Section -->
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-1 h-4 bg-red-500"></div>
+                        <h2 class="text-xl font-medium">Nhãn</h2>
+                        <button onclick="showInput('label')"
+                            class="ml-auto w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
+                            <span class="text-gray-600">+</span>
+                        </button>
+                    </div>
+                    <div id="labelInput" class="hidden mb-3">
+                        <input type="text" id="newLabel" placeholder="Enter new label"
+                            class="w-full p-2 border rounded-md text-sm" onkeypress="handleKeyPress(event, 'label')">
+                    </div>
+                    <div id="labelContainer" class="flex flex-wrap gap-2">
+                        <!-- Labels will be added here -->
+                    </div>
                 </div>
-                <div id="labelInput" class="hidden mb-3">
-                    <input type="text" id="newLabel" placeholder="Enter new label" 
-                           class="w-full p-2 border rounded-md text-sm"
-                           onkeypress="handleKeyPress(event, 'label')">
-                </div>
-                <div id="labelContainer" class="flex flex-wrap gap-2">
-                    <!-- Labels will be added here -->
-                </div>
-            </div>
 
-            <!-- Categories Section -->
-            <div>
-                <div class="flex items-center gap-2 mb-4">
-                    <div class="w-1 h-4 bg-red-500"></div>
-                    <h2 class="text-xl font-medium">Chuyên Mục</h2>
-                    <button onclick="showInput('category')" class="ml-auto w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
-                        <span class="text-gray-600">+</span>
-                    </button>
-                </div>
-                <div id="categoryInput" class="hidden mb-3">
-                    <input type="text" id="newCategory" placeholder="Enter new category" 
-                           class="w-full p-2 border rounded-md text-sm"
-                           onkeypress="handleKeyPress(event, 'category')">
-                </div>
-                <div id="categoryContainer" class="flex flex-col gap-2">
-                    <!-- Categories will be added here -->
+                <!-- Categories Section -->
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-1 h-4 bg-red-500"></div>
+                        <h2 class="text-xl font-medium">Chuyên Mục</h2>
+                        <button onclick="showInput('category')"
+                            class="ml-auto w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
+                            <span class="text-gray-600">+</span>
+                        </button>
+                    </div>
+                    <div id="categoryInput" class="hidden mb-3">
+                        <input type="text" id="newCategory" placeholder="Enter new category"
+                            class="w-full p-2 border rounded-md text-sm" onkeypress="handleKeyPress(event, 'category')">
+                    </div>
+                    <div id="categoryContainer" class="flex flex-col gap-2">
+                        <!-- Categories will be added here -->
+                    </div>
                 </div>
             </div>
-        </div>
         </div>
     </div>
 
 </div>
 
 <!-- TinyMCE CSS -->
-<script src="https://cdn.tiny.cloud/1/fitaf2bz3rvadtw7hbv673d3l9xs64dlcith8cjds35dcufs/tinymce/5/tinymce.min.js"></script>
+<script
+    src="https://cdn.tiny.cloud/1/fitaf2bz3rvadtw7hbv673d3l9xs64dlcith8cjds35dcufs/tinymce/5/tinymce.min.js"></script>
 <script>
     tinymce.init({
         selector: '#editor',
@@ -140,17 +141,17 @@
         }
     });
 
-    console.log('content:', <%- JSON.stringify(article.content) %>);
+    console.log('content:', <% - JSON.stringify(article.content) %>);
 
     <% if (article.content) { %>
-        tinymce.get('editor').setContent(<%- article.content %>);
+        tinymce.get('editor').setContent(<% - article.content %>);
     <% } %>
 
-    document.querySelector('form').onsubmit = function () {
-        document.querySelector('#content').value = tinymce.get('editor').getContent();
-        alert('Submitting form with content:', document.querySelector('#content').value);
-        return true;
-    };
+        document.querySelector('form').onsubmit = function () {
+            document.querySelector('#content').value = tinymce.get('editor').getContent();
+            alert('Submitting form with content:', document.querySelector('#content').value);
+            return true;
+        };
 </script>
 
 <script>
@@ -158,6 +159,7 @@
     const fileInput = document.getElementById('file-input');
     const placeholder = document.getElementById('placeholder');
     const preview = document.getElementById('preview');
+    let uploadedImageUrl = '';  // Variable to store the uploaded image URL
 
     // Handle click to upload
     uploadContainer.addEventListener('click', () => {
@@ -181,6 +183,7 @@
         const file = e.dataTransfer.files[0];
         if (file && file.type.startsWith('image')) {
             previewFile(file);
+            uploadImage(file);  // Upload the image after selection
         }
     });
 
@@ -189,6 +192,7 @@
         const file = e.target.files[0];
         if (file && file.type.startsWith('image')) {
             previewFile(file);
+            uploadImage(file);  // Upload the image after selection
         }
     });
 
@@ -201,6 +205,44 @@
         };
         reader.readAsDataURL(file);
     }
+
+    // Upload image to the server
+    function uploadImage(file) {
+        const formData = new FormData();
+        formData.append('image', file);
+
+        // Make a request to the backend to upload the image
+        fetch('/upload-image', {  // You need to set up an endpoint on your server to handle this
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.imageUrl) {
+                    uploadedImageUrl = data.imageUrl;  // Store the image URL returned from the server
+                    console.log('Image uploaded successfully:', uploadedImageUrl);
+                } else {
+                    console.error('Image upload failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error uploading image:', error);
+            });
+    }
+
+    // Add the uploaded image URL to the form before submitting
+    document.querySelector('form').onsubmit = function () {
+        // Add the image URL to the hidden field or another form field
+        const imageUrlField = document.createElement('input');
+        imageUrlField.type = 'hidden';
+        imageUrlField.name = 'imageUrl';
+        imageUrlField.value = uploadedImageUrl;
+        document.querySelector('form').appendChild(imageUrlField);
+
+        // Proceed with form submission
+        return true;
+    };
+
 </script>
 
 <script>
@@ -208,10 +250,10 @@
     let categories = [];
 
     // Update form submission
-    document.getElementById('articleForm').addEventListener('submit', function(e) {
+    document.getElementById('articleForm').addEventListener('submit', function (e) {
         // Update hidden inputs right before submit
         updateHiddenInputs();
-        
+
         // Debug log
         console.log('Submitting tags:', labels);
         console.log('Submitting categories:', categories);

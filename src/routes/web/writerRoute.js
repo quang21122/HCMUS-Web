@@ -5,6 +5,25 @@ import { getTags } from "../../services/tagService.js";
 import { getCategories } from "../../services/categoryService.js";
 import { findUserByName, findUser } from "../../services/userService.js";
 import cache from "../../config/cache.js";
+import multer from "multer";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// Create __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Set up multer for file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.resolve(__dirname, "../../public", "uploads")); // Adjusted path
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
 
 const router = express.Router();
 
@@ -91,12 +110,10 @@ router.get("/my-articles/create", async (req, res) => {
   }
 });
 
-router.post("/my-articles/create", async (req, res) => {
-  console.log(1111);
+router.post("/my-articles/create", upload.single("image"), async (req, res) => {
   try {
     const {
       name,
-      image,
       abstract,
       content,
       category,
@@ -106,23 +123,24 @@ router.post("/my-articles/create", async (req, res) => {
       publishedAt,
     } = req.body;
 
+    console.log(req.body);
+
     const tagsResponse = await getTags();
     const categoriesResponse = await getCategories();
 
     const userId = req.user?._id;
     const user = req.user || (userId && (await findUser(userId))) || null;
 
-    const articleCount = await getArticlesByAuthor(userId);
-
     // If user is not logged in, redirect to login page
     if (!user) {
       return res.redirect("/auth/login");
     }
 
-    console.log(req.body);
-    // Validate if required fields are present
+    const articleCount = await getArticlesByAuthor(userId);
+
+    // Check if required fields are present
     if (!name || !content || !abstract || !category || !tags) {
-      console.log(2222);
+      console.log("Vui lòng điền đầy đủ thông tin");
       return res.status(400).render("pages/CreateArticlePage", {
         title: "Tạo bài viết mới",
         errorMessage: "Vui lòng điền đầy đủ thông tin",
@@ -140,7 +158,11 @@ router.post("/my-articles/create", async (req, res) => {
       });
     }
 
-    // Prepare the article data for creation
+    // Handle image upload if present
+    console.log("file: ", req.file);
+    const image = req.file ? `/uploads/${req.file.filename}` : null;
+
+    // Prepare article data
     const articleData = {
       name,
       image,
@@ -151,14 +173,15 @@ router.post("/my-articles/create", async (req, res) => {
       isPremium,
       status,
       publishedAt,
-      author: user._id, // Link article to the user
+      author: user._id,
     };
+    console.log(articleData);
 
-    // Call the existing createArticle method
+    // Call createArticle method
     const articleResponse = await createArticle(articleData);
 
     if (!articleResponse.success) {
-      console.log(3333);
+      console.log("Có lỗi xảy ra. Vui lòng thử lại sau.");
       return res.status(500).render("pages/CreateArticlePage", {
         title: "Tạo bài viết mới",
         errorMessage: articleResponse.error,
@@ -176,25 +199,14 @@ router.post("/my-articles/create", async (req, res) => {
       });
     }
 
-    // Redirect to the list of articles or the newly created article page
+    // Redirect after article creation
     res.redirect("/my-articles");
   } catch (error) {
     console.error("Create article error:", error);
-    // res.status(500).render("pages/CreateArticlePage", {
-    //   title: "Tạo bài viết mới",
-    //   errorMessage: "Có lỗi xảy ra. Vui lòng thử lại sau.",
-    //   tags: tagsResponse.data,
-    //   categories: categoriesResponse.data,
-    //   article: {
-    //     title: "",
-    //     author: "",
-    //     abstract: "",
-    //     content: "",
-    //     is_premium: false,
-    //   },
-    //   user: user,
-    //   articleCount: articleCount,
-    // });
+    res.status(500).render("pages/CreateArticlePage", {
+      title: "Tạo bài viết mới",
+      errorMessage: "Có lỗi xảy ra. Vui lòng thử lại sau.",
+    });
   }
 });
 
