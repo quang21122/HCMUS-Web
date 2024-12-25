@@ -30,11 +30,7 @@ router.get("/", async (req, res) => {
     const user = req.user || (userId && (await findUser(userId))) || null;
 
     const [articlesResponse, categoriesResponse, tagsResponse] = result;
-
-    if (!articlesResponse.success || !categoriesResponse.success) {
-      throw new Error("Failed to fetch data");
-    }
-
+    
     // find author name for each article
     for (let i = 0; i < articlesResponse.data.length; i++) {
       const article = articlesResponse.data[i];

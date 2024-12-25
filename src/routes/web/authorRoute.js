@@ -1,5 +1,5 @@
 import express from "express";
-import { getArticlesByAuthor } from "../../services/articleService.js";
+import { getArticlesPublishedByAuthor } from "../../services/articleService.js";
 import { getTags } from "../../services/tagService.js";
 import { getCategories } from "../../services/categoryService.js";
 import { findUserByName, findUser } from "../../services/userService.js";
@@ -19,7 +19,7 @@ router.get("/author/:author", async (req, res) => {
     }
 
     // Get articles by author
-    const articlesResponse = await getArticlesByAuthor(
+    const articlesResponse = await getArticlesPublishedByAuthor(
       userResponse.data._id,
       page
     );
