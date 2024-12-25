@@ -42,7 +42,7 @@ router.post("/register", (req, res) => {
         return res.status(400).send("Thiếu thông tin cần thiết.");
     }
 
-    const { fullName, email, dob, phone, gender, country } = {
+    const { fullName, dob, phone, gender, country } = {
         ...step2Data,
     };
 
@@ -55,7 +55,6 @@ router.post("/register", (req, res) => {
     const user = {
         role,
         fullName,
-        email,
         dob,
         phone,
         gender,
