@@ -1,5 +1,6 @@
 import express from "express";
 import { getArticlesByAuthor } from "../../services/articleService.js";
+import { createArticle } from "../../services/articleService.js";
 import { getTags } from "../../services/tagService.js";
 import { getCategories } from "../../services/categoryService.js";
 import { findUserByName, findUser } from "../../services/userService.js";
@@ -87,6 +88,113 @@ router.get("/my-articles/create", async (req, res) => {
     res.render("pages/CreateArticlePage", pageData);
   } catch (error) {
     console.error("Create article page error:", error);
+  }
+});
+
+router.post("/my-articles/create", async (req, res) => {
+  console.log(1111);
+  try {
+    const {
+      name,
+      image,
+      abstract,
+      content,
+      category,
+      tags,
+      isPremium,
+      status,
+      publishedAt,
+    } = req.body;
+
+    const tagsResponse = await getTags();
+    const categoriesResponse = await getCategories();
+
+    const userId = req.user?._id;
+    const user = req.user || (userId && (await findUser(userId))) || null;
+
+    const articleCount = await getArticlesByAuthor(userId);
+
+    // If user is not logged in, redirect to login page
+    if (!user) {
+      return res.redirect("/auth/login");
+    }
+
+    console.log(req.body);
+    // Validate if required fields are present
+    if (!name || !content || !abstract || !category || !tags) {
+      console.log(2222);
+      return res.status(400).render("pages/CreateArticlePage", {
+        title: "Tạo bài viết mới",
+        errorMessage: "Vui lòng điền đầy đủ thông tin",
+        tags: tagsResponse.data,
+        categories: categoriesResponse.data,
+        article: {
+          title: "",
+          author: "",
+          abstract: "",
+          content: "",
+          is_premium: false,
+        },
+        user: user,
+        articleCount: articleCount,
+      });
+    }
+
+    // Prepare the article data for creation
+    const articleData = {
+      name,
+      image,
+      abstract,
+      content,
+      category,
+      tags,
+      isPremium,
+      status,
+      publishedAt,
+      author: user._id, // Link article to the user
+    };
+
+    // Call the existing createArticle method
+    const articleResponse = await createArticle(articleData);
+
+    if (!articleResponse.success) {
+      console.log(3333);
+      return res.status(500).render("pages/CreateArticlePage", {
+        title: "Tạo bài viết mới",
+        errorMessage: articleResponse.error,
+        tags: tagsResponse.data,
+        categories: categoriesResponse.data,
+        article: {
+          title: "",
+          author: "",
+          abstract: "",
+          content: "",
+          is_premium: false,
+        },
+        user: user,
+        articleCount: articleCount,
+      });
+    }
+
+    // Redirect to the list of articles or the newly created article page
+    res.redirect("/my-articles");
+  } catch (error) {
+    console.error("Create article error:", error);
+    // res.status(500).render("pages/CreateArticlePage", {
+    //   title: "Tạo bài viết mới",
+    //   errorMessage: "Có lỗi xảy ra. Vui lòng thử lại sau.",
+    //   tags: tagsResponse.data,
+    //   categories: categoriesResponse.data,
+    //   article: {
+    //     title: "",
+    //     author: "",
+    //     abstract: "",
+    //     content: "",
+    //     is_premium: false,
+    //   },
+    //   user: user,
+    //   articleCount: articleCount,
+    // });
   }
 });
 
