@@ -16,7 +16,8 @@ import tagRoute from "./routes/web/tagRoute.js";
 import authRoute from "./routes/web/authRoute.js";
 import authorRoute from "./routes/web/authorRoute.js";
 import passport from "./config/passport.js";
-import changeInProfile from "./profile/change-profile.js"
+import changeInProfile from "./profile/change-profile.js";
+import searchRoute from "./routes/web/searchRoute.js";
 
 // Create __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -66,6 +67,7 @@ app.use("/api/articles", articleAPIRoute);
 app.use("/api/users", userRoute);
 app.use("/auth", loginRegisterRoutes);
 app.use("/profile", changeInProfile);
+app.use("/", searchRoute);
 
 const startServer = async () => {
   try {

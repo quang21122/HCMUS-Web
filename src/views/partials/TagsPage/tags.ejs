@@ -68,7 +68,7 @@
                             <%= article.abstract || article.content %>
                         </p>
                         <p class="text-sm text-gray-500">
-                            <%= article.author %> | <%= article.publishedAt ? article.publishedAt.split(',')[1]?.trim()
+                            <%= article.authorNames %> | <%= article.publishedAt ? article.publishedAt.split(',')[1]?.trim()
                                     || article.publishedAt : 'No date' %>
                         </p>
                     </div>

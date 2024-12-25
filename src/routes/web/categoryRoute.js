@@ -5,62 +5,76 @@ import {
 } from "../../services/articleService.js";
 import { getCategories, findCategoryFamily } from "../../services/categoryService.js";
 import { getTags } from "../../services/tagService.js";
+import { findUser } from "../../services/userService.js";
 
 const router = express.Router();
 
 router.get("/categories/:category", async (req, res) => {
     try {
-        const categoryName = req.params.category;
-        const cacheKey = `category_${categoryName}`;
+      const categoryName = req.params.category;
+      const cacheKey = `category_${categoryName}`;
 
-        // Check cache
-        const cachedData = cache.get(cacheKey);
-        if (cachedData) {
-            return res.render("pages/CategoriesPage", cachedData);
-        }
+      // Check cache
+      const cachedData = cache.get(cacheKey);
+      if (cachedData) {
+        return res.render("pages/CategoriesPage", cachedData);
+      }
 
-        // Get all categories first
-        const categoriesResponse = await getCategories();
-        if (!categoriesResponse.success) {
-            return res.status(500).json({ error: categoriesResponse.error });
-        }
+      // Get all categories first
+      const categoriesResponse = await getCategories();
+      if (!categoriesResponse.success) {
+        return res.status(500).json({ error: categoriesResponse.error });
+      }
 
-        // Find category by name
-        const category = categoriesResponse.data.find(
-            (cat) => cat.name === categoryName
+      // Find category by name
+      const category = categoriesResponse.data.find(
+        (cat) => cat.name === categoryName
+      );
+
+      if (!category) {
+        return res.status(404).send("Category not found");
+      }
+
+      // Get articles using category ID
+      const articleResponse = await getArticlesByCategory(category._id);
+      if (!articleResponse.success) {
+        return res.status(500).json({ error: articleResponse.error });
+      }
+
+      const categoryFamily = findCategoryFamily(
+        categoriesResponse.data,
+        category
+      );
+
+      const tagsResponse = await getTags();
+
+      const userId = req.user?._id;
+      const user = req.user || (userId && (await findUser(userId))) || null;
+
+      // find author name for each article
+      for (let i = 0; i < articleResponse.data.length; i++) {
+        const article = articleResponse.data[i];
+        const authors = await Promise.all(
+          article.author.map((author) => findUser(author))
         );
+        article.authorNames = authors.map((author) => author.name);
+      }
 
-        if (!category) {
-            return res.status(404).send("Category not found");
-        }
+      const pageData = {
+        title: categoryName,
+        articles: articleResponse.data,
+        categories: categoriesResponse.data,
+        currentCategory: category._id,
+        categoryFamily,
+        pagination: articleResponse.pagination,
+        tags: tagsResponse.data,
+        user: user,
+      };
 
-        // Get articles using category ID
-        const articleResponse = await getArticlesByCategory(category._id);
-        if (!articleResponse.success) {
-            return res.status(500).json({ error: articleResponse.error });
-        }
+      // Cache the result
+      cache.set(cacheKey, pageData, 300);
 
-        const categoryFamily = findCategoryFamily(
-            categoriesResponse.data,
-            category
-        );
-
-        const tagsResponse = await getTags();
-
-        const pageData = {
-            title: categoryName,
-            articles: articleResponse.data,
-            categories: categoriesResponse.data,
-            currentCategory: category._id,
-            categoryFamily,
-            pagination: articleResponse.pagination,
-            tags: tagsResponse.data,
-        };
-
-        // Cache the result
-        cache.set(cacheKey, pageData, 300);
-
-        res.render("pages/CategoriesPage", pageData);
+      res.render("pages/CategoriesPage", pageData);
     } catch (error) {
         console.error("Category route error:", error);
         res.status(500).send("Server error");

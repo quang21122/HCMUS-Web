@@ -35,12 +35,21 @@ router.get("/", async (req, res) => {
       throw new Error("Failed to fetch data");
     }
 
+    // find author name for each article
+    for (let i = 0; i < articlesResponse.data.length; i++) {
+      const article = articlesResponse.data[i];
+      const authors = await Promise.all(
+        article.author.map((author) => findUser(author))
+      );
+      article.authorNames = authors.map((author) => author.name);
+    }
+
     const pageData = {
       title: "Trang chủ",
       articles: articlesResponse.data,
       categories: categoriesResponse.data,
       tags: tagsResponse.data,
-      user,
+      user: user,
     };
 
     cache.set(cacheKey, pageData);
