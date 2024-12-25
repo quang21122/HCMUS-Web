@@ -1,0 +1,322 @@
+<div class="grid grid-cols-[7fr_3fr] max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
+    <div>
+        <h2 class="text-2xl font-semibold mb-6 text-gray-800">Create New Article</h2>
+        <form method="POST" action="/articles/create" class="space-y-6">
+            <!-- Title -->
+            <div class="mb-4">
+                <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                <input type="text" id="title" name="title" required value="<%= article.title %>"
+                    class="mt-1 block w-full border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            <div id="upload-container"
+                class="relative flex flex-col items-center justify-center w-full h-[200px] rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors border-2 border-dashed border-gray-300">
+
+                <input type="file" id="file-input" class="hidden" accept="image/*">
+
+                <div id="placeholder" class="flex flex-col items-center gap-2 text-gray-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+                        <circle cx="12" cy="13" r="3" />
+                    </svg>
+                    <span class="text-sm">Thêm ảnh đại diện bài viết</span>
+                </div>
+
+                <img id="preview" class="absolute inset-0 w-full h-full object-cover rounded-lg hidden">
+            </div>
+            <!-- Author -->
+            <div class="mb-4">
+                <label for="author" class="block text-sm font-medium text-gray-700">Author</label>
+                <input type="text" id="author" name="author" required value="<%= article.author %>"
+                    class="mt-1 block w-full border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+
+            <!-- Abstract -->
+            <div class="mb-4">
+                <label for="abstract" class="block text-sm font-medium text-gray-700">Abstract</label>
+                <textarea id="abstract" name="abstract" rows="3" required
+                    class="mt-1 block w-full border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"><%= article.abstract %></textarea>
+            </div>
+
+            <!-- Content (Quill Editor) -->
+            <div class="mb-4">
+                <label for="editor" class="block text-sm font-medium text-gray-700">Content</label>
+                <div id="editor" class="mt-1 bg-white border border-gray-600 rounded-md" style="height: 300px;"></div>
+                <input type="hidden" name="content" id="content">
+            </div>
+
+            <!-- Premium Article -->
+            <div class="mb-4 flex items-center">
+                <input type="checkbox" id="premium" name="is_premium" value="1" <%=article.is_premium ? 'checked' : ''
+                    %>
+                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                <label for="premium" class="ml-2 text-sm text-gray-700">Premium Article</label>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex items-center justify-end">
+                <a href="/articles"
+                    class="ml-4 text-indigo-600 hover:text-indigo-700 py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    Cancel
+                </a>
+                <button type="submit"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    Create Article
+                </button>
+            </div>
+        </form>
+    </div>
+    <div class="  rounded-xl h-[20rem] space-y-4">
+        <div class="author-info p-4 flex flex-row space-x-4 h-[7rem] bg-[#F5F5F5]">
+            <div class="flex items-center gap-4">
+                <img src="/images/default-ava.png" alt="" class="w-20 h-20 rounded-xl">
+            </div>
+            <div class="flex flex-row space-x-3">
+                <div class="flex flex-col space-y-4 justify-center">
+                    <a href="/user/<%= user.name %>"
+                        class="text-lg font-semibold hover:text-blue-600 transition-colors">
+                        <%= user.name %>
+                    </a>
+                    <span class="text-sm text-gray-500">
+                        <%= articleCount.data.articles.length %> bài viết
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-4xl mx-auto rounded-xl shadow-sm p-6 h-auto bg-[#F5F5F5]">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Labels Section -->
+            <div>
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-1 h-4 bg-red-500"></div>
+                    <h2 class="text-xl font-medium">Nhãn</h2>
+                    <button onclick="showInput('label')" class="ml-auto w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
+                        <span class="text-gray-600">+</span>
+                    </button>
+                </div>
+                <div id="labelInput" class="hidden mb-3">
+                    <input type="text" id="newLabel" placeholder="Enter new label" 
+                           class="w-full p-2 border rounded-md text-sm"
+                           onkeypress="handleKeyPress(event, 'label')">
+                </div>
+                <div id="labelContainer" class="flex flex-wrap gap-2">
+                    <!-- Labels will be added here -->
+                </div>
+            </div>
+
+            <!-- Categories Section -->
+            <div>
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-1 h-4 bg-red-500"></div>
+                    <h2 class="text-xl font-medium">Chuyên Mục</h2>
+                    <button onclick="showInput('category')" class="ml-auto w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
+                        <span class="text-gray-600">+</span>
+                    </button>
+                </div>
+                <div id="categoryInput" class="hidden mb-3">
+                    <input type="text" id="newCategory" placeholder="Enter new category" 
+                           class="w-full p-2 border rounded-md text-sm"
+                           onkeypress="handleKeyPress(event, 'category')">
+                </div>
+                <div id="categoryContainer" class="flex flex-col gap-2">
+                    <!-- Categories will be added here -->
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Quill CSS -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+<!-- Quill JS -->
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+<script>
+    var quill = new Quill('#editor', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                ['bold', 'italic', 'underline', 'strike'],
+                ['blockquote', 'code-block'],
+                [{ 'header': 1 }, { 'header': 2 }],
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                [{ 'script': 'sub' }, { 'script': 'super' }],
+                [{ 'indent': '-1' }, { 'indent': '+1' }],
+                ['link', 'image'],
+                ['clean']
+            ]
+        }
+    });
+
+    <% if (article.content) { %>
+        quill.root.innerHTML = `<%- article.content %>`;
+    <% } %>
+
+        document.querySelector('form').onsubmit = function () {
+            document.querySelector('#content').value = quill.root.innerHTML;
+            return true;
+        };
+</script>
+<script>
+    const uploadContainer = document.getElementById('upload-container');
+    const fileInput = document.getElementById('file-input');
+    const placeholder = document.getElementById('placeholder');
+    const preview = document.getElementById('preview');
+
+    // Handle click to upload
+    uploadContainer.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    // Handle drag and drop
+    uploadContainer.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadContainer.classList.add('border-gray-500', 'bg-gray-100');
+    });
+
+    uploadContainer.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        uploadContainer.classList.remove('border-gray-500', 'bg-gray-100');
+    });
+
+    uploadContainer.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadContainer.classList.remove('border-gray-500', 'bg-gray-100');
+
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            handleImage(file);
+        }
+    });
+
+    // Handle file selection
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            handleImage(file);
+        }
+    });
+
+    // Handle image preview
+    function handleImage(file) {
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+            preview.src = e.target.result;
+            preview.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+        };
+
+        reader.readAsDataURL(file);
+
+        // You can handle the file upload here
+        console.log('Selected file:', file);
+    }
+</script>
+<script>
+    let labels = [];
+    let categories = [];
+
+    function showInput(type) {
+        const inputElement = document.getElementById(`${type}Input`);
+        inputElement.classList.remove('hidden');
+        document.getElementById(`new${type.charAt(0).toUpperCase() + type.slice(1)}`).focus();
+    }
+
+    function handleKeyPress(event, type) {
+        if (event.key === 'Enter') {
+            const input = event.target;
+            const value = input.value.trim();
+
+            if (value) {
+                if (type === 'label') {
+                    addLabel(value);
+                } else {
+                    addCategory(value);
+                }
+                input.value = '';
+                input.parentElement.classList.add('hidden');
+            }
+        }
+    }
+
+    function addLabel(text) {
+        if (!labels.includes(text)) {
+            labels.push(text);
+            renderLabels();
+        }
+    }
+
+    function addCategory(text) {
+        if (!categories.includes(text)) {
+            categories.push(text);
+            renderCategories();
+        }
+    }
+
+    function editItem(type, index) {
+        const newValue = prompt(`Edit ${type}:`, type === 'label' ? labels[index] : categories[index]);
+        if (newValue && newValue.trim()) {
+            if (type === 'label') {
+                labels[index] = newValue.trim();
+                renderLabels();
+            } else {
+                categories[index] = newValue.trim();
+                renderCategories();
+            }
+        }
+    }
+
+    function removeItem(type, index) {
+        if (type === 'label') {
+            labels.splice(index, 1);
+            renderLabels();
+        } else {
+            categories.splice(index, 1);
+            renderCategories();
+        }
+    }
+
+    function renderLabels() {
+        const labelContainer = document.getElementById('labelContainer');
+        labelContainer.innerHTML = '';
+        labels.forEach((label, index) => {
+            const labelElement = document.createElement('div');
+            labelElement.className = 'px-3 py-1 bg-gray-100 rounded-md text-sm flex items-center';
+            labelElement.innerHTML = `
+                    <span class="mr-2">#${label}</span>
+                    <button onclick="editItem('label', ${index})" class="text-gray-500 hover:text-gray-700 mr-1">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button onclick="removeItem('label', ${index})" class="text-gray-500 hover:text-red-500">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+            labelContainer.appendChild(labelElement);
+        });
+    }
+
+    function renderCategories() {
+        const categoryContainer = document.getElementById('categoryContainer');
+        categoryContainer.innerHTML = '';
+        categories.forEach((category, index) => {
+            const categoryElement = document.createElement('div');
+            categoryElement.className = 'text-gray-700 flex items-center justify-between';
+            categoryElement.innerHTML = `
+                    <span>${category}</span>
+                    <div>
+                        <button onclick="editItem('category', ${index})" class="text-gray-500 hover:text-gray-700 mr-2">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="removeItem('category', ${index})" class="text-gray-500 hover:text-red-500">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+            categoryContainer.appendChild(categoryElement);
+        });
+    }
+</script>
