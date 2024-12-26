@@ -1,108 +1,117 @@
-import express from 'express';
+import express from "express";
 import puppeteer from "puppeteer";
-import cache from '../../config/cache.js';
+import cache from "../../config/cache.js";
 import {
-    getArticlesById,
-    getArticlesSameCategory,
-    incrementArticleViews,
-    getArticleCountByAuthor,
+  getArticlesById,
+  getArticlesSameCategory,
+  incrementArticleViews,
+  getArticleCountByAuthor,
 } from "../../services/articleService.js";
-import { getCategoryName, getCategories } from "../../services/categoryService.js";
+import {
+  getCategoryName,
+  getCategories,
+} from "../../services/categoryService.js";
 import { getTags, getTagName } from "../../services/tagService.js";
-import { findUser } from '../../services/userService.js';
+import { findUser } from "../../services/userService.js";
+import { getCommentsByArticleId } from "../../services/commentService.js";
 
 const router = express.Router();
 
 router.get("/article/:id", async (req, res) => {
-    try {
-      const articleId = req.params.id;
-      const cacheKey = `article_${articleId}`;
+  try {
+    const articleId = req.params.id;
+    const cacheKey = `article_${articleId}`;
 
-      // Check cache
-      const cachedData = cache.get(cacheKey);
-      if (cachedData) {
-        return res.render("pages/ArticlePage", cachedData);
-      }
-
-      // Get article by ID
-      const response = await getArticlesById(articleId);
-
-      if (!response.success) {
-        return res.status(404).send(response.error);
-      }
-
-      const article = response.data;
-
-      // Check if article is premium and user is not authenticated
-      if (article.isPremium && !req.isAuthenticated()) {
-        return res.render("pages/login", {
-          error: "Bạn cần đăng nhập để xem bài viết premium",
-          returnTo: `/article/${articleId}`,
-        });
-      }
-
-      // Get category names
-      const categoryNames = await Promise.all(
-        article.category.map((catId) => getCategoryName(catId))
-      );
-
-      const tagsResponse = await getTags();
-
-      // Get tag names
-      const tagNames = await Promise.all(
-        article.tags.map((tagId) => getTagName(tagId))
-      );
-
-      const relatedResponse = await getArticlesSameCategory(
-        article.category[0],
-        articleId
-      );
-
-      if (!relatedResponse.success) {
-        return res
-          .status(500)
-          .json({ success: false, error: relatedResponse.error });
-      }
-
-      // Get author details
-      const authors = await Promise.all(
-        article.author.map((authorId) => findUser(authorId))
-      );
-
-      const articleCount = await Promise.all(
-        article.author.map((authorId) => getArticleCountByAuthor(authorId))
-      );
-
-      const userId = req.user?._id;
-      const user = req.user || (userId && (await findUser(userId))) || null;
-
-      const categories = await getCategories();
-
-      const articleData = {
-        title: article.name,
-        article: {
-          ...article,
-          categoryNames,
-          tagNames,
-          authors,
-          articleCount,
-        },
-        articleSameCategory: relatedResponse.data,
-        tags: tagsResponse.data,
-        user: user,
-        categories: categories.data,
-      };
-
-      // Cache the data
-      cache.set(cacheKey, articleData);
-
-      incrementArticleViews(articleId);
-
-      res.render("pages/ArticlePage", articleData);
-    } catch (error) {
-        console.error("Route handler error:", error);
-        res.status(500).json({ success: false, error: error.message });
+    // Check cache
+    const cachedData = cache.get(cacheKey);
+    if (cachedData) {
+      return res.render("pages/ArticlePage", cachedData);
     }
+
+    // Get article by ID
+    const response = await getArticlesById(articleId);
+
+    if (!response.success) {
+      return res.status(404).send(response.error);
+    }
+
+    const article = response.data;
+
+    // Check if article is premium and user is not authenticated
+    if (article.isPremium && !req.isAuthenticated()) {
+      return res.render("pages/login", {
+        error: "Bạn cần đăng nhập để xem bài viết premium",
+        returnTo: `/article/${articleId}`,
+      });
+    }
+
+    // Get category names
+    const categoryNames = await Promise.all(
+      article.category.map((catId) => getCategoryName(catId))
+    );
+
+    const tagsResponse = await getTags();
+
+    // Get tag names
+    const tagNames = await Promise.all(
+      article.tags.map((tagId) => getTagName(tagId))
+    );
+
+    const relatedResponse = await getArticlesSameCategory(
+      article.category[0],
+      articleId
+    );
+
+    if (!relatedResponse.success) {
+      return res
+        .status(500)
+        .json({ success: false, error: relatedResponse.error });
+    }
+
+    // Get author details
+    const authors = await Promise.all(
+      article.author.map((authorId) => findUser(authorId))
+    );
+
+    const articleCount = await Promise.all(
+      article.author.map((authorId) => getArticleCountByAuthor(authorId))
+    );
+
+    const userId = req.user?._id;
+    const user = req.user || (userId && (await findUser(userId))) || null;
+
+    const categories = await getCategories();
+
+    // Lấy danh sách comments bằng service
+    const comments = await getCommentsByArticleId(articleId);
+    console.log(comments)
+
+    const articleData = {
+      title: article.name,
+      article: {
+        ...article,
+        categoryNames,
+        tagNames,
+        authors,
+        articleCount,
+      },
+      articleSameCategory: relatedResponse.data,
+      tags: tagsResponse.data,
+      user: user,
+      categories: categories.data,
+      comments, // Thêm comments vào dữ liệu trả về
+    };
+
+    // Cache the data
+    cache.set(cacheKey, articleData);
+
+    incrementArticleViews(articleId);
+
+    res.render("pages/ArticlePage", articleData);
+  } catch (error) {
+    console.error("Route handler error:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
 });
 
 router.get("/article/:id/download", async (req, res) => {

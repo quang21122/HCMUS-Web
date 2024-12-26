@@ -1,0 +1,119 @@
+<div class="w-full bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-xl sm:px-6 font-semibold mb-4">Bình Luận</h2>
+
+    <!-- Comments Section -->
+    <div class="comments-list px-4">
+      <% comments.forEach((comment) => { %>
+      <div class="flex items-start mb-6 gap-3">
+        <img
+          src="https://ui-avatars.com/api/?name=<%= comment.user.name %>&background=random&color=fff&size=40&font-size=0.5"
+          alt="User Avatar"
+          class="w-8 h-8 rounded-xl"
+        />
+        <div class="flex-1">
+          <div class="flex justify-between items-center">
+            <h3 class="text-md font-medium"><%= comment.user.name %></h3>
+            <span class="text-sm text-gray-500">
+              <%= new Date(comment.createdAt).toLocaleDateString('vi-VN') %>
+            </span>
+          </div>
+          <p class="text-gray-700 mt-2"><%= comment.content %></p>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+
+    <!-- Comment Input -->
+    <div class="px-4 sm:px-6">
+      <form id="comment-form" class="mt-6">
+        <div class="flex items-start gap-3">
+          <img
+            src="https://ui-avatars.com/api/?name=<%= user ? user.name : 'Anonymous' %>&background=random&color=fff&size=40&font-size=0.5"
+            alt=""
+            class="w-8 h-8 rounded-xl"
+          />
+          <textarea
+            name="content"
+            id="comment-content"
+            rows="3"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-indigo-200"
+            placeholder="Viết Bình Luận"
+            required
+          ></textarea>
+        </div>
+        <div class="flex justify-end">
+          <button
+            type="submit"
+            class="bg-indigo-600 text-black px-6 py-2 rounded-lg hover:bg-indigo-700 transition"
+          >
+            Gửi
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document
+      .getElementById("comment-form")
+      .addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const content = document.getElementById("comment-content").value;
+
+        if (content.trim() === "") {
+          alert("Vui lòng nhập bình luận");
+          return;
+        }
+
+        // Lấy articleId từ URL
+        const urlParts = window.location.pathname.split("/");
+        const articleId = urlParts[urlParts.length - 1]; // ID bài viết ở cuối URL
+
+        try {
+          // Gửi bình luận lên server
+          const response = await fetch("/comments", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify({ content, articleId }), // Gửi nội dung và ID bài viết
+          });
+
+          if (response.ok) {
+            const newComment = await response.json();
+            displayNewComment(newComment);
+            document.getElementById("comment-content").value = ""; // Xóa nội dung sau khi gửi
+          } else {
+            const errorData = await response.json();
+            alert("Có lỗi xảy ra khi gửi bình luận: " + (errorData.message || "Unknown error"));
+          }
+        } catch (error) {
+          alert("Không thể kết nối tới server.");
+        }
+      });
+
+    function displayNewComment(comment) {
+      const commentList = document.querySelector(".comments-list");
+      const commentElement = document.createElement("div");
+      commentElement.classList.add("flex", "items-start", "mb-6", "gap-3");
+      commentElement.innerHTML = `
+        <img
+          src="https://ui-avatars.com/api/?name=${comment.user.name}&background=random&color=fff&size=40&font-size=0.5"
+          alt="User Avatar"
+          class="w-8 h-8 rounded-xl"
+        />
+        <div class="flex-1">
+          <div class="flex justify-between items-center">
+            <h3 class="text-md font-medium">${comment.user.name}</h3>
+            <span class="text-sm text-gray-500">${new Date(
+              comment.createdAt
+            ).toLocaleDateString("vi-VN")}</span>
+          </div>
+          <p class="text-gray-700 mt-2">${comment.content}</p>
+        </div>
+      `;
+      commentList.prepend(commentElement); // Thêm bình luận mới vào đầu danh sách
+    }
+  </script>

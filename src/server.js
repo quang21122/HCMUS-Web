@@ -20,6 +20,7 @@ import authorRoute from "./routes/web/authorRoute.js";
 import passport from "./config/passport.js";
 import changeInProfile from "./profile/change-profile.js";
 import searchRoute from "./routes/web/searchRoute.js";
+import commentRoute from "./routes/web/commentRoute.js"
 
 // Create __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -58,6 +59,7 @@ liveReloadServer.server.once("connection", () => {
   }, 100);
 });
 
+app.use("/", commentRoute);
 app.use("/", homePageRoute);
 app.use("/", articleRoute);
 app.use("/", categoryRoute);
