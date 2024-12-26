@@ -144,12 +144,21 @@
         let content = tinymce.get('editor').getContent();
         console.log('Original content:', content);
 
-        // Convert URLs to img tags before submission
+        // Convert image URLs to <img> tags
         content = content.replace(
             /(?:https?:\/\/[^\s<>"']+?\.(?:jpg|jpeg|gif|png|bmp|svg))/gi,
             function (url) {
-                console.log('Converting URL to img:', url);
-                return `<img src="${url}" alt="Image">`;
+                console.log('Converting image URL to <img>:', url);
+                return `<img src="${url}" alt="Image" style="width: 100% !important; height: auto;">`;
+            }
+        );
+
+        // Convert YouTube URLs to <iframe> tags
+        content = content.replace(
+            /(?:https?:\/\/(?:www\.)?youtube\.com\/watch\?v=|https?:\/\/youtu\.be\/)([a-zA-Z0-9_-]+)/gi,
+            function (url, videoId) {
+                console.log('Converting YouTube URL to <iframe>:', url);
+                return `<iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
             }
         );
 
@@ -168,33 +177,73 @@
         paste_data_images: true,
         setup: function (editor) {
             editor.on('paste', function (e) {
+                // Get pasted content
                 let content = e.clipboardData.getData('text');
+                console.log('Pasted raw content:', content);
+
                 if (content) {
-                    console.log('Pasted content:', content);
+                    // Check for YouTube URL
+                    const youtubeRegex = /https?:\/\/(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/;
+                    const match = content.match(youtubeRegex);
+
+                    if (match) {
+                        console.log('Found YouTube URL, video ID:', match[1]);
+                        // Prevent default paste
+                        e.preventDefault();
+
+                        // Insert iframe instead
+                        const iframe = `
+                            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;">
+                                <iframe 
+                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+                                    src="https://www.youtube.com/embed/${match[1]}" 
+                                    title="YouTube video player" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                    referrerpolicy="strict-origin-when-cross-origin" 
+                                    allowfullscreen>
+                                </iframe>
+                            </div>`;
+
+                        editor.insertContent(iframe);
+                    }
                 }
             });
         }
     });
 
-    // Function to convert image URLs to <img> tags
-    function convertUrlsToImages(content) {
-        // Use a regular expression to find URLs that end with an image extension and wrap them in <img> tags
-        return content.replace(/(https?:\/\/[^\s]+(?:\.jpg|\.jpeg|\.png|\.gif|\.bmp|\.svg))/g, '<img src="$1" alt="Image">');
+    // Function to convert URLs to appropriate HTML tags
+    function convertUrlsToContent(content) {
+        // Convert image URLs to <img> tags
+        content = content.replace(
+            /(https?:\/\/[^\s]+(?:\.jpg|\.jpeg|\.png|\.gif|\.bmp|\.svg))/gi,
+            '<img src="$1" alt="Image">'
+        );
+
+        // Convert YouTube URLs to <iframe> tags
+        content = content.replace(
+            /(?:https?:\/\/(?:www\.)?youtube\.com\/watch\?v=|https?:\/\/youtu\.be\/)([a-zA-Z0-9_-]+)/gi,
+            '<iframe width="560" height="315" src="https://www.youtube.com/embed/$1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
+        );
+
+        return content;
     }
 
-    console.log('content:', <% - JSON.stringify(article.content) %>);
+    console.log('Content:', <% - JSON.stringify(article.content) %>);
 
     <% if (article.content) { %>
-        // Ensure the content is processed to insert <img> tags if URLs exist
-        tinymce.get('editor').setContent(<% - article.content %>);
+        // Process and load the content into TinyMCE
+        tinymce.get('editor').setContent(convertUrlsToContent(<% - article.content %>));
     <% } %>
 
         document.querySelector('form').onsubmit = function () {
-            document.querySelector('#content').value = tinymce.get('editor').getContent();
-            alert('Submitting form with content:', document.querySelector('#content').value);
+            let processedContent = tinymce.get('editor').getContent();
+            document.querySelector('#content').value = processedContent;
+            console.log('Submitting form with content:', processedContent);
             return true;
         };
 </script>
+
 
 
 <script>
