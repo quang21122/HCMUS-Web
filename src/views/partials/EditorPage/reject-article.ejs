@@ -1,0 +1,77 @@
+<div class="grid grid-cols-[7fr_3fr] max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <!-- Main Content -->
+    <div class="mr-8">
+        <%- include('../ArticlePage/content.ejs') %>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="flex flex-col space-y-6 w-full">
+        <!-- Author Info -->
+        <div class="author-info bg-[#F5F5F5] rounded-xl p-4 flex flex-row space-x-8">
+            <div class="flex items-center gap-4">
+                <img src="/images/default-ava.png" alt="" class="w-20 h-20 rounded-xl">
+            </div>
+            <div class="flex flex-row space-x-3">
+                <% article.authors.forEach((author, index)=> { %>
+                    <div class="flex flex-col space-y-4 justify-center">
+                        <a href="/author/<%= author.name %>"
+                            class="text-lg font-semibold hover:text-blue-600 transition-colors">
+                            <%= author.name %>
+                        </a>
+                        <span class="text-sm text-gray-500">
+                            <%= article.articleCount[index].data %> bài viết
+                        </span>
+                    </div>
+                    <% }); %>
+            </div>
+        </div>
+
+        <!-- Tags and Categories Section -->
+        <div class="bg-[#F5F5F5] p-4 rounded-xl">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Tags Section -->
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-1 h-4 bg-red-500"></div>
+                        <h2 class="text-lg font-medium">Nhãn</h2>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <% article.tags.forEach(tag=> { %>
+                            <div class="px-2 py-1 bg-gray-200 rounded-full text-xs">
+                                #<%= tag.name %>
+                            </div>
+                            <% }); %>
+                    </div>
+                </div>
+
+                <!-- Categories Section -->
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-1 h-4 bg-red-500"></div>
+                        <h2 class="text-lg font-medium">Chuyên Mục</h2>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <% article.categories.forEach(category=> { %>
+                            <div class="px-2 py-1 bg-gray-200 rounded-full text-xs">
+                                <%= category.name %>
+                            </div>
+                            <% }); %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reject Reason Section -->
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-1 h-4 bg-red-500"></div>
+                    <h2 class="text-lg font-medium text-red-600">Lý do từ chối</h2>
+                </div>
+                <div class="bg-red-50 rounded-lg p-4">
+                    <p class="text-sm text-gray-700 mb-2">
+                        <%= article.rejectReason %>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

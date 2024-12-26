@@ -6,6 +6,7 @@
 
     <!-- Sidebar -->
     <div class="flex flex-col space-y-6 w-full">
+        <!-- Author Info -->
         <div class="author-info bg-[#F5F5F5] rounded-xl p-4 flex flex-row space-x-8">
             <div class="flex items-center gap-4">
                 <img src="/images/default-ava.png" alt="" class="w-20 h-20 rounded-xl">
@@ -25,62 +26,80 @@
             </div>
         </div>
 
-        <div class="bg-[#F5F5F5] p-4 rounded-xl h-[10%]">
-            <div class="category-tag-info grid grid-cols-[5.2fr_0.3fr_4.5fr] w-full">
-                <!-- Categories Section First -->
-                <div class="category flex flex-col">
-                    <div class="flex items-center justify-between mb-2 mr-4">
-                        <div class="border-l-4 border-red-600 text-base font-semibold rounded-s-sm">
-                            <p class="ml-2">Chuyên mục</p>
-                        </div>
-                        <button onclick="showCategoryModal()" class="text-gray-600 hover:text-gray-800">
-                            <i class="fas fa-plus-circle"></i>
+        <!-- Tags and Categories Section -->
+        <div class="bg-[#F5F5F5] p-4 rounded-xl">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Tags Section Second -->
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-1 h-4 bg-red-500"></div>
+                        <h2 class="text-lg font-medium">Nhãn</h2>
+                        <button onclick="toggleList('tagList')"
+                            class="ml-auto w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
+                            <span class="text-gray-600">+</span>
                         </button>
                     </div>
-                    <div class="flex flex-wrap gap-2 mt-3 p-1" id="categoryContainer">
+                    <div id="tagList" class="hidden flex flex-wrap gap-2">
+                        <% tags.forEach(tag=> { %>
+                            <button
+                                onclick="selectItem('tagsInput', '<%= tag._id %>', 'selectedTags', '#<%= tag.name %>')"
+                                class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 text-sm">
+                                #<%= tag.name %>
+                            </button>
+                            <% }); %>
+                    </div>
+                    <div id="selectedTags" class="flex flex-wrap gap-2">
+                        <% if (article.tags && article.tags.length> 0) { %>
+                            <% article.tags.forEach(tag=> { %>
+                                <div class="group relative px-2 py-1 bg-gray-200 rounded-full text-xs hover:bg-gray-300 transition-colors"
+                                    data-tag-id="<%= tag._id %>">
+                                    #<%= tag.name %>
+                                        <button onclick="removeItem('tagsInput', '<%= tag._id %>', this.parentElement)"
+                                            class="hidden group-hover:block absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-3.5 h-3.5 text-xs">
+                                            ×
+                                        </button>
+                                </div>
+                                <% }); %>
+                                    <% } %>
+                    </div>
+                </div>
+
+                <!-- Categories Section First -->
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-1 h-4 bg-red-500"></div>
+                        <h2 class="text-lg font-medium">Chuyên Mục</h2>
+                        <button onclick="toggleList('categoryList')"
+                            class="ml-auto w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
+                            <span class="text-gray-600">+</span>
+                        </button>
+                    </div>
+                    <div id="categoryList" class="hidden flex flex-wrap gap-2">
+                        <% categories.forEach(category=> { %>
+                            <button
+                                onclick="selectItem('categoriesInput', '<%= category._id %>', 'selectedCategories', '<%= category.name %>')"
+                                class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 text-sm">
+                                <%= category.name %>
+                            </button>
+                            <% }); %>
+                    </div>
+                    <div id="selectedCategories" class="flex flex-wrap gap-2">
                         <% if (article.categories && article.categories.length> 0) { %>
                             <% article.categories.forEach(category=> { %>
                                 <div class="group relative px-2 py-1 bg-gray-200 rounded-full text-xs hover:bg-gray-300 transition-colors"
                                     data-category-id="<%= category._id %>">
                                     <%= category.name %>
-                                        <button onclick="removeCategory('<%= category._id %>')"
-                                            class="hidden group-hover:block absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-4 h-4 text-xs">
+                                        <button onclick="removeItem('categoriesInput', '<%= category._id %>', this.parentElement)"
+                                            class="hidden group-hover:block absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-3.5 h-3.5 text-xs">
                                             ×
                                         </button>
                                 </div>
-                                <% }) %>
-                                    <% } %>
-                    </div>
-                </div>
-
-                <div class="w-[0.2px] bg-black h-[70%] my-auto"></div>
-
-                <!-- Tags Section Second -->
-                <div class="tag flex flex-col">
-                    <div class="flex items-center justify-between mb-2">
-                        <div class="border-l-4 border-red-600 text-base font-semibold rounded-s-sm">
-                            <p class="ml-2">Nhãn</p>
-                        </div>
-                        <button onclick="showTagModal()" class="text-gray-600 hover:text-gray-800">
-                            <i class="fas fa-plus-circle"></i>
-                        </button>
-                    </div>
-                    <div class="flex flex-wrap gap-2 mt-3 p-1" id="tagContainer">
-                        <% if (article.tags && article.tags.length> 0) { %>
-                            <% article.tags.forEach(tag=> { %>
-                                <div class="group relative px-2 py-1 bg-gray-200 rounded-full text-xs hover:bg-gray-300 transition-colors"
-                                    data-tag-id="<%= tag._id %>">
-                                    <%= tag.name %>
-                                        <button onclick="removeTag('<%= tag._id %>')"
-                                            class="hidden group-hover:block absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-4 h-4 text-xs">
-                                            ×
-                                        </button>
-                                </div>
-                                <% }) %>
+                                <% }); %>
                                     <% } %>
                     </div>
                 </div>
             </div>
+
 
             <!-- Action Buttons -->
             <div class="flex justify-end space-x-4 mt-6">
@@ -95,46 +114,6 @@
     </div>
 </div>
 
-<!-- Tag Modal -->
-<div id="tagModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
-    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg w-96">
-        <h3 class="text-lg font-bold mb-4">Thêm nhãn</h3>
-        <select multiple id="tagSelect" class="w-full p-2 border rounded mb-4 h-48">
-            <% tags.forEach(tag=> { %>
-                <option value="<%= tag._id %>">
-                    <%= tag.name %>
-                </option>
-                <% }) %>
-        </select>
-        <div class="flex justify-end space-x-2">
-            <button onclick="closeTagModal()" class="px-4 py-2 bg-gray-200 rounded">Hủy</button>
-            <button onclick="addTags()" class="px-4 py-2 bg-blue-600 text-white rounded">Thêm</button>
-        </div>
-    </div>
-</div>
-
-<!-- Category Modal -->
-<div id="categoryModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
-    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg w-96">
-        <h3 class="text-lg font-bold mb-4">Thêm chuyên mục</h3>
-        <select id="parentCategory" class="w-full p-2 border rounded mb-4" onchange="loadChildCategories()">
-            <option value="">Chọn chuyên mục cha</option>
-            <% parentCategories.forEach(category=> { %>
-                <option value="<%= category._id %>">
-                    <%= category.name %>
-                </option>
-                <% }) %>
-        </select>
-        <select multiple id="childCategories" class="w-full p-2 border rounded mb-4 h-48" disabled>
-            <option>Chọn chuyên mục cha trước</option>
-        </select>
-        <div class="flex justify-end space-x-2">
-            <button onclick="closeCategoryModal()" class="px-4 py-2 bg-gray-200 rounded">Hủy</button>
-            <button onclick="addCategories()" class="px-4 py-2 bg-blue-600 text-white rounded">Thêm</button>
-        </div>
-    </div>
-</div>
-
 <!-- Reject Modal -->
 <div id="rejectModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
     <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg w-96">
@@ -142,29 +121,87 @@
         <textarea id="rejectReason" class="w-full h-32 p-2 border rounded mb-4"
             placeholder="Nhập lý do từ chối..."></textarea>
         <div class="flex justify-end space-x-2">
-            <button onclick="closeRejectModal()" class="px-4 py-2 bg-gray-200 rounded">Hủy</button>
-            <button onclick="rejectArticle()" class="px-4 py-2 bg-red-600 text-white rounded">Xác nhận</button>
+            <button onclick="closeRejectModal()" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
+                Hủy
+            </button>
+            <button onclick="rejectArticle()" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+                Xác nhận
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Approve Modal -->
+<div id="approveModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg w-96">
+        <h3 class="text-lg font-bold mb-4">Thời gian đăng bài</h3>
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+                Chọn thời gian đăng bài
+            </label>
+            <input type="datetime-local" id="scheduleDate" class="w-full p-2 border rounded"
+                min="<%= new Date().toISOString().slice(0, 16) %>">
+        </div>
+        <div class="flex justify-end space-x-2">
+            <button onclick="closeApproveModal()" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
+                Hủy
+            </button>
+            <button onclick="confirmApprove()" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                Xác nhận
+            </button>
         </div>
     </div>
 </div>
 
 <script>
-    function showTagModal() {
-        document.getElementById('tagModal').classList.remove('hidden');
+    function toggleList(id) {
+        const list = document.getElementById(id);
+        const allLists = document.querySelectorAll('#tagList, #categoryList');
+        allLists.forEach(item => {
+            if (item.id !== id) item.classList.add('hidden');
+        });
+        list.classList.toggle('hidden');
     }
 
-    function closeTagModal() {
-        document.getElementById('tagModal').classList.add('hidden');
+    function selectItem(inputId, value, selectedContainerId, displayText) {
+        const selectedContainer = document.getElementById(selectedContainerId);
+
+        if (!document.querySelector(`#${selectedContainerId} [data-${inputId.includes('tag') ? 'tag' : 'category'}-id="${value}"]`)) {
+            const item = document.createElement('div');
+            item.className = 'group relative px-2 py-1 bg-gray-200 rounded-full text-xs hover:bg-gray-300 transition-colors';
+            item.setAttribute(`data-${inputId.includes('tag') ? 'tag' : 'category'}-id`, value);
+
+            item.innerHTML = `
+            ${displayText}
+            <button onclick="removeItem('${inputId}', '${value}', this.parentElement)"
+                    class="hidden group-hover:block absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-3.5 h-3.5 text-xs">
+                ×
+            </button>
+        `;
+
+            selectedContainer.appendChild(item);
+        }
+
+        document.getElementById(inputId === 'tagsInput' ? 'tagList' : 'categoryList').classList.add('hidden');
     }
 
-    function showCategoryModal() {
-        document.getElementById('categoryModal').classList.remove('hidden');
+    function removeItem(inputId, itemId, element) {
+        if (element) {
+            element.remove();
+        }
     }
 
-    function closeCategoryModal() {
-        document.getElementById('categoryModal').classList.add('hidden');
-    }
+    // Click outside to close dropdowns
+    document.addEventListener('click', function (event) {
+        if (!event.target.closest('[id$="List"], button')) {
+            document.querySelectorAll('#tagList, #categoryList').forEach(list => {
+                list.classList.add('hidden');
+            });
+        }
+    });
+</script>
 
+<script>
     function showRejectModal() {
         document.getElementById('rejectModal').classList.remove('hidden');
     }
@@ -173,136 +210,112 @@
         document.getElementById('rejectModal').classList.add('hidden');
     }
 
-    async function loadChildCategories() {
-        const parentId = document.getElementById('parentCategory').value;
-        const childSelect = document.getElementById('childCategories');
+    async function rejectArticle() {
+            const reason = document.getElementById('rejectReason').value.trim();
+            if (!reason) {
+                alert('Vui lòng nhập lý do từ chối');
+                return;
+            }
 
-        if (!parentId) {
-            childSelect.disabled = true;
-            childSelect.innerHTML = '<option>Chọn chuyên mục cha trước</option>';
+            try {
+                const response = await fetch(`/editor/reject/<%= article._id %>`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reason: reason }) // Make sure reason is properly named in request body
+                });
+
+                if (response.ok) {
+                    window.location.href = '/editor?status=rejected';
+                } else {
+                    throw new Error('Failed to reject article');
+                }
+            } catch (error) {
+                console.error('Error rejecting article:', error);
+                alert('Có lỗi xảy ra khi từ chối bài viết');
+            }
+        }
+
+    async function approveArticle() {
+            try {
+                // Get all selected tags and categories
+                const selectedTags = Array.from(document.querySelectorAll('#selectedTags [data-tag-id]'))
+                    .map(el => el.dataset.tagId);
+
+                const selectedCategories = Array.from(document.querySelectorAll('#selectedCategories [data-category-id]'))
+                    .map(el => el.dataset.categoryId);
+
+                // Send approval request with metadata
+                const response = await fetch(`/editor/approve/<%= article._id %>`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        tags: selectedTags,
+                        categories: selectedCategories,
+                        status: 'published'
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to approve article');
+                }
+
+                // Redirect back to editor page
+                window.location.href = '/editor?status=published';
+
+            } catch (error) {
+                console.error('Error approving article:', error);
+                alert('Có lỗi xảy ra khi duyệt bài viết');
+            }
+        }
+</script>
+
+<script>
+    function showApproveModal() {
+        document.getElementById('approveModal').classList.remove('hidden');
+    }
+
+    function closeApproveModal() {
+        document.getElementById('approveModal').classList.add('hidden');
+    }
+
+    async function confirmApprove() {
+        const scheduleDate = document.getElementById('scheduleDate').value;
+        if (!scheduleDate) {
+            alert('Vui lòng chọn thời gian đăng bài');
             return;
         }
 
-        // Filter child categories from existing categories data
-        const categories = <% - JSON.stringify(categories) %>;
-        const childCategories = categories.filter(cat => cat.parent === parentId);
-
-        if (childCategories.length > 0) {
-            childSelect.innerHTML = childCategories
-                .map(child => `<option value="${child._id}">${child.name}</option>`)
-                .join('');
-            childSelect.disabled = false;
-        } else {
-            childSelect.innerHTML = '<option>Không có chuyên mục con</option>';
-            childSelect.disabled = true;
-        }
-    }
-
-    async function addCategories() {
         try {
-            const selectedCategories = Array.from(document.getElementById('childCategories').selectedOptions)
-                .map(option => ({
-                    id: option.value,
-                    name: option.text
-                }));
+            // Get selected tags and categories
+            const selectedTags = Array.from(document.querySelectorAll('#selectedTags [data-tag-id]'))
+                .map(el => el.dataset.tagId);
 
-            console.log('Selected categories:', selectedCategories); // Debug log
+            const selectedCategories = Array.from(document.querySelectorAll('#selectedCategories [data-category-id]'))
+                .map(el => el.dataset.categoryId);
 
-            const container = document.getElementById('categoryContainer');
-
-            selectedCategories.forEach(category => {
-                if (!document.querySelector(`[data-category-id="${category.id}"]`)) {
-                    container.innerHTML += `
-                    <div class="group relative px-2 py-1 bg-gray-200 rounded-full text-xs hover:bg-gray-300 transition-colors"
-                         data-category-id="${category.id}">
-                        ${category.name}
-                        <button onclick="removeCategory('${category.id}')"
-                                class="hidden group-hover:block absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-4 h-4 text-xs">
-                            ×
-                        </button>
-                    </div>`;
-                }
-            });
-
-            closeCategoryModal();
-        } catch (error) {
-            console.error('Error adding categories:', error);
-        }
-    }
-
-    function removeCategory(categoryId) {
-        const element = document.querySelector(`[data-category-id="${categoryId}"]`);
-        if (element) {
-            element.remove();
-        }
-    }
-
-    async function addTags() {
-        const selected = Array.from(document.getElementById('tagSelect').selectedOptions)
-            .map(option => ({ id: option.value, name: option.text }));
-
-        const container = document.getElementById('tagContainer');
-        selected.forEach(tag => {
-            if (!document.querySelector(`[data-tag-id="${tag.id}"]`)) {
-                container.innerHTML += `
-                <div class="group relative bg-gray-200 px-3 py-1 rounded-full text-sm" data-tag-id="${tag.id}">
-                    ${tag.name}
-                    <button onclick="removeTag('${tag.id}')" 
-                            class="hidden group-hover:block absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-4 h-4 text-xs">
-                        ×
-                    </button>
-                </div>`;
-            }
-        });
-        closeTagModal();
-    }
-
-    function removeTag(tagId) {
-        document.querySelector(`[data-tag-id="${tagId}"]`).remove();
-    }
-
-    async function approveArticle() {
-        const tags = Array.from(document.querySelectorAll('#tagContainer [data-tag-id]'))
-            .map(el => el.dataset.tagId);
-        const categories = Array.from(document.querySelectorAll('#categoryContainer [data-category-id]'))
-            .map(el => el.dataset.categoryId);
-
-        try {
             const response = await fetch(`/editor/approve/<%= article._id %>`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tags, categories })
+                body: JSON.stringify({
+                    tags: selectedTags,
+                    categories: selectedCategories,
+                    scheduleDate: scheduleDate
+                })
             });
 
-            if (response.ok) {
-                window.location.href = '/editor?status=published';
-            }
+            if (!response.ok) throw new Error('Failed to approve article');
+
+            window.location.href = '/editor?status=published';
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error approving article:', error);
+            alert('Có lỗi xảy ra khi duyệt bài viết');
         }
     }
 
-    async function rejectArticle() {
-        const reason = document.getElementById('rejectReason').value;
-        if (!reason.trim()) {
-            alert('Vui lòng nhập lý do từ chối');
-            return;
-        }
-
-        try {
-            const response = await fetch(`/editor/reject/<%= article._id %>`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ reason })
-            });
-
-            if (response.ok) {
-                window.location.href = '/editor?status=rejected';
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    }
+    // Update approve button to show modal
+    document.querySelector('button[onclick="approveArticle()"]')
+        .setAttribute('onclick', 'showApproveModal()');
 </script>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
