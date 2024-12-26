@@ -70,7 +70,7 @@ router.get("/my-articles", async (req, res) => {
   }
 });
 
-// get my-article/create
+// GET my-article/create
 
 router.get("/my-articles/create", async (req, res) => {
   try {
@@ -127,6 +127,8 @@ router.post("/my-articles/create", upload.single("image"), async (req, res) => {
 
     const tagsResponse = await getTags();
     const categoriesResponse = await getCategories();
+    // console.log(tagsResponse.data);
+    // console.log(categoriesResponse.data);
 
     const userId = req.user?._id;
     const user = req.user || (userId && (await findUser(userId))) || null;
@@ -158,8 +160,14 @@ router.post("/my-articles/create", upload.single("image"), async (req, res) => {
       });
     }
 
+    // convert tags and category to array
+    const tagsArray = tags.split(",");
+    const categoryArray = category.split(",");
+    console.log(tagsArray);
+    console.log(categoryArray);
+
     // Handle image upload if present
-    console.log("file: ", req.file);
+    // console.log("file: ", req.file);
     const image = req.file ? `/uploads/${req.file.filename}` : null;
 
     // Prepare article data
@@ -168,8 +176,8 @@ router.post("/my-articles/create", upload.single("image"), async (req, res) => {
       image,
       abstract,
       content,
-      category,
-      tags,
+      tags: tagsArray,
+      category: categoryArray,
       isPremium,
       status,
       publishedAt,

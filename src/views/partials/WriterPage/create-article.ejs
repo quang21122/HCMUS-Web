@@ -1,7 +1,7 @@
 <div class="grid grid-cols-[7fr_3fr] max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 relative space-x-6">
     <div>
-        <h2 class="text-2xl font-semibold mb-6 text-gray-800">Create New Article</h2>
-        <form method="POST" action="/my-articles/create" enctype="multipart/form-data" class="space-y-6" id="articleForm">
+        <form method="POST" action="/my-articles/create" enctype="multipart/form-data" class="space-y-6"
+            id="articleForm">
             <!-- Title -->
             <div class="mb-4">
                 <label for="name" class="block text-xl font-medium text-gray-700">Tên bài viết</label>
@@ -27,7 +27,7 @@
                 <!-- Adjusted the image styling -->
                 <img id="preview" class="absolute inset-0 w-full h-full object-contain rounded-lg hidden">
             </div>
-            
+
             <!-- Content (TinyMCE Editor) -->
             <div class="mb-4">
                 <label for="editor" class="block text-xl font-medium text-gray-700">Nội dung</label>
@@ -72,43 +72,55 @@
         </div>
         <div class="max-w-4xl mx-auto rounded-xl shadow-sm p-6 h-auto bg-[#F5F5F5]">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <!-- Labels Section -->
+                <!-- Tags Section -->
                 <div>
                     <div class="flex items-center gap-2 mb-4">
                         <div class="w-1 h-4 bg-red-500"></div>
                         <h2 class="text-lg font-medium">Nhãn</h2>
-                        <button onclick="showInput('label')"
+                        <button onclick="toggleList('tagList')"
                             class="ml-auto w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
                             <span class="text-gray-600">+</span>
                         </button>
                     </div>
-                    <div id="labelInput" class="hidden mb-3">
-                        <input type="text" id="newLabel" placeholder="Enter new label"
-                            class="w-full p-2 border rounded-md text-sm" onkeypress="handleKeyPress(event, 'label')">
+                    <div id="tagList" class="hidden flex flex-wrap gap-2">
+                        <% tags.forEach(tag=> { %>
+                            <button
+                                onclick="selectItem('tagsInput', '<%= tag._id %>', 'selectedTags', '#<%= tag.name %>')"
+                                class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 text-sm">
+                                #<%= tag.name %>
+                            </button>
+                            <% }); %>
                     </div>
-                    <div id="labelContainer" class="flex flex-wrap gap-2">
-                        <!-- Labels will be added here -->
+                    <div id="selectedTags" class="mt-4 flex flex-wrap gap-2">
+                        <!-- Selected tags will be shown here -->
                     </div>
                 </div>
+
 
                 <!-- Categories Section -->
                 <div>
                     <div class="flex items-center gap-2 mb-4">
                         <div class="w-1 h-4 bg-red-500"></div>
                         <h2 class="text-lg font-medium">Chuyên Mục</h2>
-                        <button onclick="showInput('category')"
+                        <button onclick="toggleList('categoryList')"
                             class="ml-auto w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
                             <span class="text-gray-600">+</span>
                         </button>
                     </div>
-                    <div id="categoryInput" class="hidden mb-3">
-                        <input type="text" id="newCategory" placeholder="Enter new category"
-                            class="w-full p-2 border rounded-md text-sm" onkeypress="handleKeyPress(event, 'category')">
+                    <div id="categoryList" class="hidden flex flex-wrap gap-2">
+                        <% categories.forEach(category=> { %>
+                            <button
+                                onclick="selectItem('categoriesInput', '<%= category._id %>', 'selectedCategories', '<%= category.name %>')"
+                                class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 text-sm">
+                                <%= category.name %>
+                            </button>
+                            <% }); %>
                     </div>
-                    <div id="categoryContainer" class="flex flex-col gap-2">
-                        <!-- Categories will be added here -->
+                    <div id="selectedCategories" class="mt-4 flex flex-wrap gap-2">
+                        <!-- Selected categories will be shown here -->
                     </div>
                 </div>
+
             </div>
         </div>
         <!-- Create Button -->
@@ -241,125 +253,72 @@
     };
 
 </script>
-
 <script>
-    let labels = [];
-    let categories = [];
-
-    // Update form submission
-    document.getElementById('articleForm').addEventListener('submit', function (e) {
-        // Update hidden inputs right before submit
-        updateHiddenInputs();
-
-        // Debug log
-        console.log('Submitting tags:', labels);
-        console.log('Submitting categories:', categories);
-    });
-
-    function updateHiddenInputs() {
-        document.getElementById('tagsInput').value = JSON.stringify(labels);
-        document.getElementById('categoriesInput').value = JSON.stringify(categories);
+    // Function to toggle the visibility of tag or category list
+    function toggleList(id) {
+        const list = document.getElementById(id);
+        list.classList.toggle('hidden');
     }
 
-    function showInput(type) {
-        const inputElement = document.getElementById(`${type}Input`);
-        inputElement.classList.remove('hidden');
-        document.getElementById(`new${type.charAt(0).toUpperCase() + type.slice(1)}`).focus();
-    }
+    // Function to select an item (tag or category)
+    function selectItem(inputId, value, selectedContainerId, displayText) {
+        // Get the input element and current values
+        const inputElement = document.getElementById(inputId);
+        let currentValues = inputElement.value ? inputElement.value.split(',') : [];
 
-    function handleKeyPress(event, type) {
-        if (event.key === 'Enter') {
-            const input = event.target;
-            const value = input.value.trim();
+        // Avoid duplicates
+        if (!currentValues.includes(value)) {
+            currentValues.push(value);
+            inputElement.value = currentValues.join(',');
 
-            if (value) {
-                if (type === 'label') {
-                    addLabel(value);
-                } else {
-                    addCategory(value);
-                }
-                input.value = '';
-                input.parentElement.classList.add('hidden');
-            }
+            // Add the selected item visually
+            const selectedContainer = document.getElementById(selectedContainerId);
+            const item = document.createElement('span');
+            item.className = 'px-3 py-1 bg-blue-200 rounded-lg text-sm inline-flex items-center mr-2 mb-2';
+
+            // Create the text content for the selected item
+            const text = document.createElement('span');
+            text.textContent = displayText;
+
+            // Create a remove button
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = '×';
+            removeBtn.className = 'ml-2 text-red-600 hover:text-red-800 text-lg';
+            removeBtn.onclick = function () {
+                // Remove the item
+                item.remove();
+                // Remove the item from the input value
+                currentValues = currentValues.filter(val => val !== value);
+                inputElement.value = currentValues.join(',');
+            };
+
+            item.appendChild(text);
+            item.appendChild(removeBtn);
+            selectedContainer.appendChild(item);
         }
+        // Close the list after selection
+        const listId = inputId === 'tagsInput' ? 'tagList' : 'categoryList';
+        document.getElementById(listId).classList.add('hidden');
     }
 
-    function addLabel(text) {
-        if (!labels.includes(text)) {
-            labels.push(text);
-            renderLabels();
-            updateHiddenInputs();
-        }
-    }
 
-    function addCategory(text) {
-        if (!categories.includes(text)) {
-            categories.push(text);
-            renderCategories();
-            updateHiddenInputs();
-        }
-    }
+    // Function to remove an item from the selected list
+    function removeItem(inputId, itemId, itemElement) {
+        const inputField = document.getElementById(inputId);
 
-    function editItem(type, index) {
-        const newValue = prompt(`Edit ${type}:`, type === 'label' ? labels[index] : categories[index]);
-        if (newValue && newValue.trim()) {
-            if (type === 'label') {
-                labels[index] = newValue.trim();
-                renderLabels();
-            } else {
-                categories[index] = newValue.trim();
-                renderCategories();
-            }
-        }
-    }
+        // Update the input field values
+        let currentValues = inputField.value.split(',');
+        currentValues = currentValues.filter(value => value !== itemId);
+        inputField.value = currentValues.join(',');
 
-    function removeItem(type, index) {
-        if (type === 'label') {
-            labels.splice(index, 1);
-            renderLabels();
-        } else {
-            categories.splice(index, 1);
-            renderCategories();
-        }
+        // Remove the item from the display section
+        itemElement.remove();
     }
+    document.querySelector('form').onsubmit = function () {
+        // You can add other form validations or operations here if needed
+        console.log('Submitting form with tags:', document.getElementById('tagsInput').value);
+        console.log('Submitting form with categories:', document.getElementById('categoriesInput').value);
+        return true;  // Proceed with form submission
+    };
 
-    function renderLabels() {
-        const labelContainer = document.getElementById('labelContainer');
-        labelContainer.innerHTML = '';
-        labels.forEach((label, index) => {
-            const labelElement = document.createElement('div');
-            labelElement.className = 'px-3 py-1 bg-gray-100 rounded-md text-sm flex items-center';
-            labelElement.innerHTML = `
-                    <span class="mr-2">#${label}</span>
-                    <button onclick="editItem('label', ${index})" class="text-gray-500 hover:text-gray-700 mr-1">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button onclick="removeItem('label', ${index})" class="text-gray-500 hover:text-red-500">
-                        <i class="fas fa-times"></i>
-                    </button>
-                `;
-            labelContainer.appendChild(labelElement);
-        });
-    }
-
-    function renderCategories() {
-        const categoryContainer = document.getElementById('categoryContainer');
-        categoryContainer.innerHTML = '';
-        categories.forEach((category, index) => {
-            const categoryElement = document.createElement('div');
-            categoryElement.className = 'text-gray-700 flex items-center justify-between';
-            categoryElement.innerHTML = `
-                    <span>${category}</span>
-                    <div>
-                        <button onclick="editItem('category', ${index})" class="text-gray-500 hover:text-gray-700 mr-2">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button onclick="removeItem('category', ${index})" class="text-gray-500 hover:text-red-500">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                `;
-            categoryContainer.appendChild(categoryElement);
-        });
-    }
 </script>
