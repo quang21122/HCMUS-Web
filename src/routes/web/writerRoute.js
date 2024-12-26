@@ -29,23 +29,6 @@ const router = express.Router();
 
 router.get("/my-articles", async (req, res) => {
   try {
-    // const author = req.user.username;
-    // const page = parseInt(req.query.page) || 1;
-
-    // const userResponse = await findUserByName(author);
-    // if (!userResponse.success) {
-    //   return res.status(404).render("pages/404");
-    // }
-
-    // const articlesResponse = await getArticlesByAuthor(
-    //   userResponse.data._id,
-    //   page
-    // );
-
-    // if (!articlesResponse.success) {
-    //   return res.status(500).json({ error: articlesResponse.error });
-    // }
-
     // Get all tags
     const tagsResponse = await getTags();
 
@@ -55,12 +38,17 @@ router.get("/my-articles", async (req, res) => {
     const userId = req.user?._id;
     const user = req.user || (userId && (await findUser(userId))) || null;
 
+    if (!user) {
+      return res.redirect("/auth/login");
+    }
+
+    const articleCount = await getArticlesByAuthor(userId);
+
     const pageData = {
       title: `Bài viết của tôi`,
       tags: tagsResponse.data,
       categories: categoriesResponse.data,
-      //   articles: articlesResponse.data.articles,
-      //   pagination: articlesResponse.data.pagination,
+      articles: articleCount.data.articles,
       user: user,
     };
 
@@ -101,8 +89,6 @@ router.get("/my-articles/create", async (req, res) => {
       user: user,
       articleCount: articleCount,
     };
-    console.log(pageData);
-    console.log(articleCount.data);
 
     res.render("pages/CreateArticlePage", pageData);
   } catch (error) {
@@ -123,12 +109,8 @@ router.post("/my-articles/create", upload.single("image"), async (req, res) => {
       publishedAt,
     } = req.body;
 
-    console.log(req.body);
-
     const tagsResponse = await getTags();
     const categoriesResponse = await getCategories();
-    // console.log(tagsResponse.data);
-    // console.log(categoriesResponse.data);
 
     const userId = req.user?._id;
     const user = req.user || (userId && (await findUser(userId))) || null;
@@ -163,8 +145,6 @@ router.post("/my-articles/create", upload.single("image"), async (req, res) => {
     // convert tags and category to array
     const tagsArray = tags.split(",");
     const categoryArray = category.split(",");
-    console.log(tagsArray);
-    console.log(categoryArray);
 
     // Handle image upload if present
     // console.log("file: ", req.file);
@@ -183,7 +163,6 @@ router.post("/my-articles/create", upload.single("image"), async (req, res) => {
       publishedAt,
       author: user._id,
     };
-    console.log(articleData);
 
     // Call createArticle method
     const articleResponse = await createArticle(articleData);
