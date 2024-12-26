@@ -49,11 +49,11 @@ export const getArticles = async () => {
   }
 };
 
-export const getArticlesById = async (id) => {
+export const getArticlesById = async (id, status) => {
   try {
     const article = await Article.findOne({
       _id: id,
-      status: "published",
+      status: status,
     })
       .maxTimeMS(30000)
       .lean()
@@ -113,12 +113,12 @@ export const getArticlesSameCategory = async (category, currentArticleId) => {
   }
 };
 
-export const getArticlesByCategory = async (category, page = 1, limit = 12) => {
+export const getArticlesByCategory = async (category, page = 1, limit = 12, status) => {
   try {
     const skip = (page - 1) * limit;
     const filter = {
       category: { $in: [category] },
-      status: "published",
+      status: status || "published",
     };
 
     const projection = {
@@ -130,6 +130,7 @@ export const getArticlesByCategory = async (category, page = 1, limit = 12) => {
       publishedAt: 1,
       isPremium: 1,
       category: 1,
+      status: 1,
     };
 
     const [total, articles] = await Promise.all([

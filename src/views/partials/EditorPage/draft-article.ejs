@@ -1,0 +1,308 @@
+<div class="grid grid-cols-[7fr_3fr] max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <!-- Main Content -->
+    <div class="mr-8">
+        <%- include('../ArticlePage/content.ejs') %>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="flex flex-col space-y-6 w-full">
+        <div class="author-info bg-[#F5F5F5] rounded-xl p-4 flex flex-row space-x-8">
+            <div class="flex items-center gap-4">
+                <img src="/images/default-ava.png" alt="" class="w-20 h-20 rounded-xl">
+            </div>
+            <div class="flex flex-row space-x-3">
+                <% article.authors.forEach((author, index)=> { %>
+                    <div class="flex flex-col space-y-4 justify-center">
+                        <a href="/author/<%= author.name %>"
+                            class="text-lg font-semibold hover:text-blue-600 transition-colors">
+                            <%= author.name %>
+                        </a>
+                        <span class="text-sm text-gray-500">
+                            <%= article.articleCount[index].data %> bài viết
+                        </span>
+                    </div>
+                    <% }); %>
+            </div>
+        </div>
+
+        <div class="bg-[#F5F5F5] p-4 rounded-xl h-[10%]">
+            <div class="category-tag-info grid grid-cols-[5.2fr_0.3fr_4.5fr] w-full">
+                <!-- Categories Section First -->
+                <div class="category flex flex-col">
+                    <div class="flex items-center justify-between mb-2 mr-4">
+                        <div class="border-l-4 border-red-600 text-base font-semibold rounded-s-sm">
+                            <p class="ml-2">Chuyên mục</p>
+                        </div>
+                        <button onclick="showCategoryModal()" class="text-gray-600 hover:text-gray-800">
+                            <i class="fas fa-plus-circle"></i>
+                        </button>
+                    </div>
+                    <div class="flex flex-wrap gap-2 mt-3 p-1" id="categoryContainer">
+                        <% if (article.categories && article.categories.length> 0) { %>
+                            <% article.categories.forEach(category=> { %>
+                                <div class="group relative px-2 py-1 bg-gray-200 rounded-full text-xs hover:bg-gray-300 transition-colors"
+                                    data-category-id="<%= category._id %>">
+                                    <%= category.name %>
+                                        <button onclick="removeCategory('<%= category._id %>')"
+                                            class="hidden group-hover:block absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-4 h-4 text-xs">
+                                            ×
+                                        </button>
+                                </div>
+                                <% }) %>
+                                    <% } %>
+                    </div>
+                </div>
+
+                <div class="w-[0.2px] bg-black h-[70%] my-auto"></div>
+
+                <!-- Tags Section Second -->
+                <div class="tag flex flex-col">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="border-l-4 border-red-600 text-base font-semibold rounded-s-sm">
+                            <p class="ml-2">Nhãn</p>
+                        </div>
+                        <button onclick="showTagModal()" class="text-gray-600 hover:text-gray-800">
+                            <i class="fas fa-plus-circle"></i>
+                        </button>
+                    </div>
+                    <div class="flex flex-wrap gap-2 mt-3 p-1" id="tagContainer">
+                        <% if (article.tags && article.tags.length> 0) { %>
+                            <% article.tags.forEach(tag=> { %>
+                                <div class="group relative px-2 py-1 bg-gray-200 rounded-full text-xs hover:bg-gray-300 transition-colors"
+                                    data-tag-id="<%= tag._id %>">
+                                    <%= tag.name %>
+                                        <button onclick="removeTag('<%= tag._id %>')"
+                                            class="hidden group-hover:block absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-4 h-4 text-xs">
+                                            ×
+                                        </button>
+                                </div>
+                                <% }) %>
+                                    <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-end space-x-4 mt-6">
+                <button onclick="approveArticle()" class="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                    Duyệt bài
+                </button>
+                <button onclick="showRejectModal()" class="px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+                    Từ chối
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tag Modal -->
+<div id="tagModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg w-96">
+        <h3 class="text-lg font-bold mb-4">Thêm nhãn</h3>
+        <select multiple id="tagSelect" class="w-full p-2 border rounded mb-4 h-48">
+            <% tags.forEach(tag=> { %>
+                <option value="<%= tag._id %>">
+                    <%= tag.name %>
+                </option>
+                <% }) %>
+        </select>
+        <div class="flex justify-end space-x-2">
+            <button onclick="closeTagModal()" class="px-4 py-2 bg-gray-200 rounded">Hủy</button>
+            <button onclick="addTags()" class="px-4 py-2 bg-blue-600 text-white rounded">Thêm</button>
+        </div>
+    </div>
+</div>
+
+<!-- Category Modal -->
+<div id="categoryModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg w-96">
+        <h3 class="text-lg font-bold mb-4">Thêm chuyên mục</h3>
+        <select id="parentCategory" class="w-full p-2 border rounded mb-4" onchange="loadChildCategories()">
+            <option value="">Chọn chuyên mục cha</option>
+            <% parentCategories.forEach(category=> { %>
+                <option value="<%= category._id %>">
+                    <%= category.name %>
+                </option>
+                <% }) %>
+        </select>
+        <select multiple id="childCategories" class="w-full p-2 border rounded mb-4 h-48" disabled>
+            <option>Chọn chuyên mục cha trước</option>
+        </select>
+        <div class="flex justify-end space-x-2">
+            <button onclick="closeCategoryModal()" class="px-4 py-2 bg-gray-200 rounded">Hủy</button>
+            <button onclick="addCategories()" class="px-4 py-2 bg-blue-600 text-white rounded">Thêm</button>
+        </div>
+    </div>
+</div>
+
+<!-- Reject Modal -->
+<div id="rejectModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg w-96">
+        <h3 class="text-lg font-bold mb-4">Lý do từ chối</h3>
+        <textarea id="rejectReason" class="w-full h-32 p-2 border rounded mb-4"
+            placeholder="Nhập lý do từ chối..."></textarea>
+        <div class="flex justify-end space-x-2">
+            <button onclick="closeRejectModal()" class="px-4 py-2 bg-gray-200 rounded">Hủy</button>
+            <button onclick="rejectArticle()" class="px-4 py-2 bg-red-600 text-white rounded">Xác nhận</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showTagModal() {
+        document.getElementById('tagModal').classList.remove('hidden');
+    }
+
+    function closeTagModal() {
+        document.getElementById('tagModal').classList.add('hidden');
+    }
+
+    function showCategoryModal() {
+        document.getElementById('categoryModal').classList.remove('hidden');
+    }
+
+    function closeCategoryModal() {
+        document.getElementById('categoryModal').classList.add('hidden');
+    }
+
+    function showRejectModal() {
+        document.getElementById('rejectModal').classList.remove('hidden');
+    }
+
+    function closeRejectModal() {
+        document.getElementById('rejectModal').classList.add('hidden');
+    }
+
+    async function loadChildCategories() {
+        const parentId = document.getElementById('parentCategory').value;
+        const childSelect = document.getElementById('childCategories');
+
+        if (!parentId) {
+            childSelect.disabled = true;
+            childSelect.innerHTML = '<option>Chọn chuyên mục cha trước</option>';
+            return;
+        }
+
+        // Filter child categories from existing categories data
+        const categories = <% - JSON.stringify(categories) %>;
+        const childCategories = categories.filter(cat => cat.parent === parentId);
+
+        if (childCategories.length > 0) {
+            childSelect.innerHTML = childCategories
+                .map(child => `<option value="${child._id}">${child.name}</option>`)
+                .join('');
+            childSelect.disabled = false;
+        } else {
+            childSelect.innerHTML = '<option>Không có chuyên mục con</option>';
+            childSelect.disabled = true;
+        }
+    }
+
+    async function addCategories() {
+        try {
+            const selectedCategories = Array.from(document.getElementById('childCategories').selectedOptions)
+                .map(option => ({
+                    id: option.value,
+                    name: option.text
+                }));
+
+            console.log('Selected categories:', selectedCategories); // Debug log
+
+            const container = document.getElementById('categoryContainer');
+
+            selectedCategories.forEach(category => {
+                if (!document.querySelector(`[data-category-id="${category.id}"]`)) {
+                    container.innerHTML += `
+                    <div class="group relative px-2 py-1 bg-gray-200 rounded-full text-xs hover:bg-gray-300 transition-colors"
+                         data-category-id="${category.id}">
+                        ${category.name}
+                        <button onclick="removeCategory('${category.id}')"
+                                class="hidden group-hover:block absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-4 h-4 text-xs">
+                            ×
+                        </button>
+                    </div>`;
+                }
+            });
+
+            closeCategoryModal();
+        } catch (error) {
+            console.error('Error adding categories:', error);
+        }
+    }
+
+    function removeCategory(categoryId) {
+        const element = document.querySelector(`[data-category-id="${categoryId}"]`);
+        if (element) {
+            element.remove();
+        }
+    }
+
+    async function addTags() {
+        const selected = Array.from(document.getElementById('tagSelect').selectedOptions)
+            .map(option => ({ id: option.value, name: option.text }));
+
+        const container = document.getElementById('tagContainer');
+        selected.forEach(tag => {
+            if (!document.querySelector(`[data-tag-id="${tag.id}"]`)) {
+                container.innerHTML += `
+                <div class="group relative bg-gray-200 px-3 py-1 rounded-full text-sm" data-tag-id="${tag.id}">
+                    ${tag.name}
+                    <button onclick="removeTag('${tag.id}')" 
+                            class="hidden group-hover:block absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-4 h-4 text-xs">
+                        ×
+                    </button>
+                </div>`;
+            }
+        });
+        closeTagModal();
+    }
+
+    function removeTag(tagId) {
+        document.querySelector(`[data-tag-id="${tagId}"]`).remove();
+    }
+
+    async function approveArticle() {
+        const tags = Array.from(document.querySelectorAll('#tagContainer [data-tag-id]'))
+            .map(el => el.dataset.tagId);
+        const categories = Array.from(document.querySelectorAll('#categoryContainer [data-category-id]'))
+            .map(el => el.dataset.categoryId);
+
+        try {
+            const response = await fetch(`/editor/approve/<%= article._id %>`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tags, categories })
+            });
+
+            if (response.ok) {
+                window.location.href = '/editor?status=published';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    async function rejectArticle() {
+        const reason = document.getElementById('rejectReason').value;
+        if (!reason.trim()) {
+            alert('Vui lòng nhập lý do từ chối');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/editor/reject/<%= article._id %>`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reason })
+            });
+
+            if (response.ok) {
+                window.location.href = '/editor?status=rejected';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+</script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">

@@ -1,0 +1,100 @@
+<div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <!-- Editor Header -->
+    <div class="mb-8">
+        <h1 class="text-2xl text-left font-bold text-gray-900"><%= categoryName %>
+        </h1>
+    </div>
+
+    <!-- Status Tabs -->
+    <!-- Status Tabs -->
+    <div class="mb-8 border-b border-gray-200">
+        <nav class="-mb-px flex justify-center space-x-8" aria-label="Tabs">
+            <button onclick="changeTab('published')"
+                class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg <%= activeTab === 'published' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' %>">
+                Đã duyệt
+            </button>
+            <button onclick="changeTab('draft')"
+                class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg <%= activeTab === 'draft' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' %>">
+                Chờ duyệt
+            </button>
+            <button onclick="changeTab('rejected')"
+                class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg <%= activeTab === 'rejected' ? 'border-red-500 text-red-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' %>">
+                Từ chối
+            </button>
+        </nav>
+    </div>
+
+    <!-- Articles Grid -->
+    <div class="grid grid-cols-4 gap-4">
+        <% if (articles && articles.length> 0) { %>
+            <% articles.forEach(article=> { %>
+                <a href="<%= article.status === "draft" ? `/editor/article/${article._id}` : `/article/${article._id}` %>" class="block hover:shadow-lg transition-all duration-300">
+                    <div class="bg-white rounded-lg shadow overflow-hidden p-2">
+                        <!-- Image -->
+                        <div class="relative w-full h-48">
+                            <img src="<%= article.image %>" alt="<%= article.name %>"
+                                class="w-full h-full object-cover rounded-xl">
+                            <% if (article.isPremium) { %>
+                                <div class="absolute top-2 left-2">
+                                    <svg class="w-6 h-6 text-yellow-400" aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M11 9a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z" />
+                                        <path fill-rule="evenodd"
+                                            d="M9.896 3.051a2.681 2.681 0 0 1 4.208 0c.147.186.38.282.615.255a2.681 2.681 0 0 1 2.976 2.975.681.681 0 0 0 .254.615 2.681 2.681 0 0 1 0 4.208.682.682 0 0 0-.254.615 2.681 2.681 0 0 1-2.976 2.976.681.681 0 0 0-.615.254 2.682 2.682 0 0 1-4.208 0 .681.681 0 0 0-.614-.255 2.681 2.681 0 0 1-2.976-2.975.681.681 0 0 0-.255-.615 2.681 2.681 0 0 1 0-4.208.681.681 0 0 0 .255-.615 2.681 2.681 0 0 1 2.976-2.975.681.681 0 0 0 .614-.255Z" />
+                                    </svg>
+                                </div>
+                                <% } %>
+                        </div>
+                        <!-- Content -->
+                        <div class="flex flex-col space-y-4 mt-2 ml-2">
+                            <h3 class="font-semibold text-lg line-clamp-1">
+                                <%= article.name %>
+                            </h3>
+                            <p class="text-sm text-gray-500 line-clamp-3">
+                                <%= article.abstract %>
+                            </p>
+                            <div class="flex items-center text-sm text-gray-500">
+                                <span>
+                                    <%= article.authorNames ? article.authorNames.join(', ') : ' Unknown Author' %> | <%= article.publishedAt ? article.publishedAt.split(',')[1]?.trim() || article.publishedAt : 'No date' %>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <% }) %>
+                    <% } else { %>
+                        <div class="col-span-4 text-center py-8 text-gray-500">
+                            Không có bài viết nào
+                        </div>
+                        <% } %>
+    </div>
+
+    <!-- Pagination -->
+    <% if (pagination && pagination.totalPages> 1) { %>
+        <div class="flex justify-center mt-8 gap-2">
+            <% for(let i=1; i <=pagination.totalPages; i++) { %>
+                <button data-page="<%= i %>" data-status="<%= activeTab %>"
+                    class="pagination-btn px-4 py-2 rounded <%= i === pagination.currentPage ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300' %>">
+                    <%= i %>
+                </button>
+                <% } %>
+        </div>
+        <% } %>
+</div>
+
+<script>
+    function changeTab(status) {
+        window.location.href = `/editor?status=${status}`;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const buttons = document.querySelectorAll('.pagination-btn');
+        buttons.forEach(button => {
+            button.addEventListener('click', function () {
+                const page = this.dataset.page;
+                const status = this.dataset.status;
+                window.location.href = `/editor?status=${status}&page=${page}`;
+            });
+        });
+    });
+</script>
