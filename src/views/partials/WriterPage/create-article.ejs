@@ -137,22 +137,55 @@
 <!-- TinyMCE CSS -->
 <script
     src="https://cdn.tiny.cloud/1/fitaf2bz3rvadtw7hbv673d3l9xs64dlcith8cjds35dcufs/tinymce/5/tinymce.min.js"></script>
+
 <script>
+    document.querySelector('form').onsubmit = function () {
+        // Get editor content
+        let content = tinymce.get('editor').getContent();
+        console.log('Original content:', content);
+
+        // Convert URLs to img tags before submission
+        content = content.replace(
+            /(?:https?:\/\/[^\s<>"']+?\.(?:jpg|jpeg|gif|png|bmp|svg))/gi,
+            function (url) {
+                console.log('Converting URL to img:', url);
+                return `<img src="${url}" alt="Image">`;
+            }
+        );
+
+        // Set processed content
+        document.querySelector('#content').value = content;
+        console.log('Processed content:', content);
+
+        return true;
+    };
+
     tinymce.init({
         selector: '#editor',
-        plugins: 'link image code',
+        plugins: 'link image code paste',
         toolbar: 'undo redo | formatselect | bold italic | link image | code',
         height: 300,
+        paste_data_images: true,
         setup: function (editor) {
-            editor.on('change', function () {
-                document.getElementById('content').value = editor.getContent();
+            editor.on('paste', function (e) {
+                let content = e.clipboardData.getData('text');
+                if (content) {
+                    console.log('Pasted content:', content);
+                }
             });
         }
     });
 
+    // Function to convert image URLs to <img> tags
+    function convertUrlsToImages(content) {
+        // Use a regular expression to find URLs that end with an image extension and wrap them in <img> tags
+        return content.replace(/(https?:\/\/[^\s]+(?:\.jpg|\.jpeg|\.png|\.gif|\.bmp|\.svg))/g, '<img src="$1" alt="Image">');
+    }
+
     console.log('content:', <% - JSON.stringify(article.content) %>);
 
     <% if (article.content) { %>
+        // Ensure the content is processed to insert <img> tags if URLs exist
         tinymce.get('editor').setContent(<% - article.content %>);
     <% } %>
 
@@ -162,6 +195,7 @@
             return true;
         };
 </script>
+
 
 <script>
     const uploadContainer = document.getElementById('upload-container');
