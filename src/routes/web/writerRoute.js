@@ -1,5 +1,5 @@
 import express from "express";
-import { getArticlesByAuthor } from "../../services/articleService.js";
+import { getArticlesPublishedByAuthor } from "../../services/articleService.js";
 import { createArticle } from "../../services/articleService.js";
 import { getTags } from "../../services/tagService.js";
 import { getCategories } from "../../services/categoryService.js";
@@ -42,7 +42,7 @@ router.get("/my-articles", async (req, res) => {
       return res.redirect("/auth/login");
     }
 
-    const articleCount = await getArticlesByAuthor(userId);
+    const articleCount = await getArticlesPublishedByAuthor(userId);
 
     const pageData = {
       title: `Bài viết của tôi`,
