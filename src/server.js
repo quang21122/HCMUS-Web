@@ -25,6 +25,7 @@ import trendRoute from "./routes/web/trendRoute.js";
 import editorRoute from "./routes/web/editorRoute.js";
 import writerRoute from "./routes/web/writerRoute.js";
 import multer from "multer";
+import commentRoute from "./routes/web/commentRoute.js"
 
 // Create __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -89,6 +90,7 @@ liveReloadServer.server.once("connection", () => {
   }, 100);
 });
 
+app.use("/", commentRoute);
 app.use("/", homePageRoute);
 app.use("/", articleRoute);
 app.use("/", trendRoute);

@@ -1,18 +1,12 @@
 import { Schema, model } from 'mongoose';
 
 const CommentSchema = new Schema({
-    id: {
-        type: Schema.Types.ObjectId,
-        auto: true,
-        required: true, 
-        unique: true
-    },
     article: {
-        type: String,
+        type: Schema.Types.ObjectId, // Tham chiếu đến bài viết
         required: true
     },
     user: {
-        type: String,
+        type: Schema.Types.ObjectId, // Tham chiếu đến user
         required: true
     },
     content: {
@@ -24,6 +18,10 @@ const CommentSchema = new Schema({
         default: Date.now
     }
 });
+
+// Xóa chỉ mục duy nhất cho combination của article và user
+CommentSchema.index({ article: 1, user: 1 }, { unique: false }); // Đảm bảo rằng không có chỉ mục duy nhất ở đây
+
 
 const Comment = model('Comment', CommentSchema);
 

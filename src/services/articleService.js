@@ -49,11 +49,10 @@ export const getArticles = async () => {
   }
 };
 
-export const getArticlesById = async (id, status) => {
+export const getArticlesById = async (id) => {
   try {
     const article = await Article.findOne({
       _id: id,
-      status: status,
     })
       .maxTimeMS(30000)
       .lean()
