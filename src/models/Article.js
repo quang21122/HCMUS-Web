@@ -15,7 +15,8 @@ const ArticleSchema = new Schema({
     author: { type: [String] },
     editor: { type: String },
     createdAt: { type: Date, default: Date.now },
-    views: { type: Number, default: 0 },
+  views: { type: Number, default: 0 },
+    rejectReason: { type: String },
 });
 
 // Add text index

@@ -25,7 +25,7 @@ router.get("/article/:id", async (req, res) => {
       }
 
       // Get article by ID
-      const response = await getArticlesById(articleId);
+      const response = await getArticlesById(articleId, "published");
 
       if (!response.success) {
         return res.status(404).send(response.error);
@@ -109,7 +109,7 @@ router.get("/article/:id/download", async (req, res) => {
   let browser = null;
   try {
     const articleId = req.params.id;
-    const article = await getArticlesById(articleId);
+    const article = await getArticlesById(articleId, "published");
 
     if (!article.success) {
       return res.status(404).send("Article not found");

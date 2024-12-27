@@ -9,10 +9,9 @@
             <div class="hidden md:flex items-center space-x-8">
                 <a href="/about" class="text-gray-600 hover:text-gray-900">Xu hướng</a>
                 <a href="/about" class="text-gray-600 hover:text-gray-900">Mới nhất</a>
-                <a href="/about" class="text-gray-600 hover:text-gray-900">Giới thiệu</a>
                     <% if (typeof user !== 'undefined' && user) { %>
                     <% if (user.role === 'editor') { %>
-                        <a href="/my-articles" class="text-gray-600 hover:text-gray-900">Bài Chờ Duyệt</a>
+                        <a href="/editor" class="text-gray-600 hover:text-gray-900">Bài Chờ Duyệt</a>
                     <% } %>
                     <% if (user.role === 'author') { %>
                         <a href="/my-articles" class="text-gray-600 hover:text-gray-900">Bài Viết Của Tôi</a>
