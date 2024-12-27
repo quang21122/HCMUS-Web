@@ -1,7 +1,10 @@
 import express from "express";
-import { getArticlesByAuthor } from "../../services/articleService.js";
+import {
+  getArticlesByAuthor,
+  getArticlesById,
+} from "../../services/articleService.js";
 import { getArticleCountByAuthor } from "../../services/articleService.js";
-import { createArticle } from "../../services/articleService.js";
+import { createArticle, updateArticle } from "../../services/articleService.js";
 import { getTags } from "../../services/tagService.js";
 import { getCategories } from "../../services/categoryService.js";
 import { findUserByName, findUser } from "../../services/userService.js";
@@ -193,6 +196,145 @@ router.post("/my-articles/create", upload.single("image"), async (req, res) => {
     console.error("Create article error:", error);
     res.status(500).render("pages/CreateArticlePage", {
       title: "Tạo bài viết mới",
+      errorMessage: "Có lỗi xảy ra. Vui lòng thử lại sau.",
+    });
+  }
+});
+
+router.get("/my-articles/edit", async (req, res) => {
+  try {
+    const articleId = req.query.id;
+    const tagsResponse = await getTags();
+    const categoriesResponse = await getCategories();
+
+    const userId = req.user?._id;
+    const user = req.user || (userId && (await findUser(userId))) || null;
+
+    if (!user) {
+      return res.redirect("/auth/login");
+    }
+
+    const articleCount = await getArticleCountByAuthor(userId);
+
+    const articleResponse = await getArticlesById(articleId);
+
+    if (!articleResponse.success) {
+      return res.status(404).render("pages/404Page", {
+        title: "Không tìm thấy trang",
+      });
+    }
+
+    const pageData = {
+      title: "Chỉnh sửa bài viết",
+      tags: tagsResponse.data,
+      categories: categoriesResponse.data,
+      article: articleResponse.data,
+      user: user,
+      articleCount: articleCount,
+    };
+
+    res.render("pages/EditArticlePage", pageData);
+  } catch (error) {
+    console.error("Edit article page error:", error);
+  }
+});
+
+router.post("/my-articles/edit", upload.single("image"), async (req, res) => {
+  try {
+    const {
+      name,
+      abstract,
+      content,
+      category,
+      tags,
+      isPremium,
+      status,
+      publishedAt,
+    } = req.body;
+    console.log("req.body: ", req.body);
+
+    const articleId = req.query.id;
+
+    const tagsResponse = await getTags();
+    const categoriesResponse = await getCategories();
+
+    const userId = req.user?._id;
+    const user = req.user || (userId && (await findUser(userId))) || null;
+
+    if (!user) {
+      return res.redirect("/auth/login");
+    }
+
+    const articleCount = await getArticleCountByAuthor(userId);
+
+    const articleResponse = await getArticlesById(articleId);
+
+    if (!articleResponse.success) {
+      return res.status(404).render("pages/404Page", {
+        title: "Không tìm thấy trang",
+      });
+    }
+
+    // if (articleResponse.data.author._id.toString() !== userId.toString()) {
+    //   return res.status(403).render("pages/403Page", {
+    //     title: "Không có quyền truy cập",
+    //   });
+    // }
+
+    if (!name || !content || !abstract || !category || !tags) {
+      return res.status(400).render("pages/EditArticlePage", {
+        title: "Chỉnh sửa bài viết",
+        errorMessage: "Vui lòng điền đầy đủ thông tin",
+        tags: tagsResponse.data,
+        categories: categoriesResponse.data,
+        article: articleResponse.data,
+        user: user,
+        articleCount: articleCount,
+      });
+    }
+
+    // const tagsArray = tags.split(",");
+    // const categoryArray = category.split(",");
+
+    const image = req.file
+      ? `/uploads/${req.file.filename}`
+      : articleResponse.data.image;
+    console.log("image: ", image);
+
+    const articleData = {
+      name,
+      image,
+      abstract,
+      content,
+      tags: JSON.parse(tags),
+      category: JSON.parse(category),
+      isPremium,
+      status,
+      publishedAt,
+    };
+    console.log("articleData: ", articleData);
+
+    const updateResponse = await updateArticle(articleId, articleData);
+    console.log("updateResponse: ", updateResponse);
+
+    if (!updateResponse.matchedCount) {
+      console.log("Có lỗi xảy ra. Vui lòng thử lại sau.");
+      return res.status(500).render("pages/EditArticlePage", {
+        title: "Chỉnh sửa bài viết",
+        errorMessage: updateResponse.error,
+        tags: tagsResponse.data,
+        categories: categoriesResponse.data,
+        article: articleResponse.data,
+        user: user,
+        articleCount: articleCount,
+      });
+    }
+
+    res.redirect("/my-articles");
+  } catch (error) {
+    console.error("Edit article error:", error);
+    res.status(500).render("pages/EditArticlePage", {
+      title: "Chỉnh sửa bài viết",
       errorMessage: "Có lỗi xảy ra. Vui lòng thử lại sau.",
     });
   }

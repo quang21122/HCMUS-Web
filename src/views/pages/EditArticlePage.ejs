@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/tailwind.css">
+    <script src="http://localhost:35729/livereload.js"></script>
+</head>
+
+<body>
+    <% function formatDate(dateStr) { 
+        const date=new Date(dateStr); 
+        const day=date.getDate().toString().padStart(2, '0'); 
+        const month=(date.getMonth() + 1).toString().padStart(2, '0' ); 
+        const year=date.getFullYear(); 
+        return `${day}/${month}/${year}`; } 
+    %>
+
+    <%- include('../partials/HomePage/navbar.ejs') %>
+    <%- include('../partials/WriterPage/edit-article.ejs', {formatDate}) %>
+</body>
+
+</html>

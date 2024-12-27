@@ -20,9 +20,6 @@
             <a href="" id="menu-xuat-ban" class="text-gray-700 hover:text-gray-900 font-medium">
                 Xuất Bản
             </a>
-            <a href="" id="menu-duoc-duyet" class="text-gray-700 hover:text-gray-900 font-medium">
-                Được Duyệt
-            </a>
             <a href="" id="menu-tu-choi" class="text-gray-700 hover:text-gray-900 font-medium">
                 Từ Chối
             </a>
@@ -40,7 +37,7 @@
     </div>
     <div class="grid grid-cols-4 gap-4 mt-8">
         <% articles.forEach(article=> { %>
-            <a href="/article/<%= article._id %>" class="block hover:shadow-lg transition-all duration-300">
+            <div class="block hover:shadow-lg transition-all duration-300">
                 <div class="bg-white rounded-lg shadow overflow-hidden p-2">
                     <!-- Image -->
                     <div class="relative w-full h-48">
@@ -93,6 +90,10 @@
                                     article.publishedAt : 'No date' %>
                         </p>
                     </div>
+                    <!-- Edit button -->
+                    <div class="flex justify-end mt-1">
+                        <a href="/my-articles/edit?id=<%= article._id %>" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md">Edit</a>
+                    </div>
                 </div>
             </a>
             <% }); %>
@@ -128,7 +129,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Status mapping
     const statusMap = {
         'menu-xuat-ban': 'published',
-        'menu-duoc-duyet': 'approved', 
         'menu-tu-choi': 'rejected',
         'menu-cho-duyet': 'draft'
     };
@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Render filtered articles
             articlesContainer.innerHTML = filteredArticles.map(article => `
-                <a href="/article/${article._id}" class="block hover:shadow-lg transition-all duration-300">
+                <div class="block hover:shadow-lg transition-all duration-300">
                     <div class="bg-white rounded-lg shadow overflow-hidden p-2">
                         <div class="relative w-full h-48">
                             <img src="${article.image}" alt="${article.name}" class="w-full h-full object-cover rounded-xl">
@@ -178,8 +178,11 @@ document.addEventListener('DOMContentLoaded', function() {
                             <h3 class="font-semibold text-lg line-clamp-1">${article.name}</h3>
                             <p class="text-sm text-gray-500 line-clamp-3">${article.abstract || article.content}</p>
                         </div>
+                        <div class="flex justify-end mt-1">
+                            <a href="/my-articles/edit?id=${article._id}" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md">Edit</a>
+                        </div>
                     </div>
-                </a>
+                </div>
             `).join('');
         });
     });
