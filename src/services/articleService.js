@@ -1,23 +1,23 @@
-import { readFile } from 'fs/promises';
-import Article from '../models/Article.js';
+import { readFile } from "fs/promises";
+import Article from "../models/Article.js";
 import mongoose from "mongoose";
 
 export const incrementArticleViews = async (articleId) => {
   try {
-      const updatedArticle = await Article.findByIdAndUpdate(
-          articleId,
-          { $inc: { views: 1 } }, // Increment the views field by 1
-          { new: true } // Return the updated document
-      );
+    const updatedArticle = await Article.findByIdAndUpdate(
+      articleId,
+      { $inc: { views: 1 } }, // Increment the views field by 1
+      { new: true } // Return the updated document
+    );
 
-      if (!updatedArticle) {
-          return { error: 'Article not found', status: 404 };
-      }
+    if (!updatedArticle) {
+      return { error: "Article not found", status: 404 };
+    }
 
-      return { success: true, article: updatedArticle };
+    return { success: true, article: updatedArticle };
   } catch (error) {
-      console.error('Error incrementing article views:', error);
-      return { error: error.message, status: 500 };
+    console.error("Error incrementing article views:", error);
+    return { error: error.message, status: 500 };
   }
 };
 
@@ -272,59 +272,59 @@ export const getArticlesPublishedByAuthor = async (authorId, page = 1, limit = 1
   }
 };
 
-const createArticle = async (data) => {
-    const articleData = {
-      name: data.name,
-      image: data.image,
-      abstract: data.abstract,
-      content: data.content,
-      category: data.category,
-      tags: data.tags || [],
-      isPremium: data.isPremium || false,
-      status: data.status || "draft",
-      publishedAt: data.publishedAt,
-      author: data.author,
-      editor: data.editor || "",
-      views: data.views || 0,
-      createdAt: new Date()
-    }
+export const createArticle = async (data) => {
+  const articleData = {
+    name: data.name,
+    image: data.image,
+    abstract: data.abstract,
+    content: data.content,
+    category: data.category,
+    tags: data.tags || [],
+    isPremium: data.isPremium || false,
+    status: data.status || "draft",
+    publishedAt: data.publishedAt,
+    author: data.author,
+    editor: data.editor || "",
+    views: data.views || 0,
+    createdAt: new Date(),
+  };
 
-    try {
-        // Create a new article instance using the Article model
-        const newArticle = new Article(articleData);
+  try {
+    // Create a new article instance using the Article model
+    const newArticle = new Article(articleData);
 
-        // Save the article to the database
-        const savedArticle = await newArticle.save();
+    // Save the article to the database
+    const savedArticle = await newArticle.save();
 
-        // Return the saved article or a success message
-        return { success: true, article: savedArticle };
-    } catch (error) {
-        // Log the error and return a failure response
-        console.error("Error creating article:", error);
-        return { error: error.message, status: 500 };
-    }
+    // Return the saved article or a success message
+    return { success: true, article: savedArticle };
+  } catch (error) {
+    // Log the error and return a failure response
+    console.error("Error creating article:", error);
+    return { error: error.message, status: 500 };
+  }
 };
 
-const createMultipleArticles = async (articles) => {
-    const results = [];
+export const createMultipleArticles = async (articles) => {
+  const results = [];
 
-    for (const article of articles) {
-        const result = await createArticle(article);
-        results.push(result);
-    }
+  for (const article of articles) {
+    const result = await createArticle(article);
+    results.push(result);
+  }
 
-    return results;
-}
+  return results;
+};
 
-const importArticlesFromLocal = async () => {
-    // Read the local articles.json file
-    const data = await readFile('../crawler/updated_crawler-3.json', 'utf8');
-    const localArticles = JSON.parse(data);
+export const importArticlesFromLocal = async () => {
+  // Read the local articles.json file
+  const data = await readFile("../crawler/updated_crawler-3.json", "utf8");
+  const localArticles = JSON.parse(data);
 
-    const results = await createMultipleArticles(localArticles);
+  const results = await createMultipleArticles(localArticles);
 
-    return results;
-}
+  return results;
+};
 
 export const updateArticle = async (id, data) => {
     try {
@@ -339,34 +339,30 @@ export const updateArticle = async (id, data) => {
         
         // Return the updated article or a not found message
         return updatedArticle || { error: "Article not found", status: 404 };
-    }
-    catch (error) {
-        // Log the error and return a failure response
-        console.error("Error updating article:", error);
-        return { error: error.message, status: 500 };
-    }
-}
+  } catch (error) {
+    // Log the error and return a failure response
+    console.error("Error updating article:", error);
+    return { error: error.message, status: 500 };
+  }
+};
 
-const deleteArticle = async (id) => {
-    try {
-        // Kiểm tra xem id có phải là ObjectId hợp lệ không
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return { error: "Invalid ID format", status: 400 };
-        }
-        // Find the article by ID and delete it
-        const deletedArticle = await Article
-            .deleteOne({ _id: id })
-            .exec();
-        
-        // Return the deleted article or a not found message
-        return deletedArticle || { error: "Article not found", status: 404 };
+export const deleteArticle = async (id) => {
+  try {
+    // Kiểm tra xem id có phải là ObjectId hợp lệ không
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return { error: "Invalid ID format", status: 400 };
     }
-    catch (error) {
-        // Log the error and return a failure response
-        console.error("Error deleting article:", error);
-        return { error: error.message, status: 500 };
-    }
-}
+    // Find the article by ID and delete it
+    const deletedArticle = await Article.deleteOne({ _id: id }).exec();
+
+    // Return the deleted article or a not found message
+    return deletedArticle || { error: "Article not found", status: 404 };
+  } catch (error) {
+    // Log the error and return a failure response
+    console.error("Error deleting article:", error);
+    return { error: error.message, status: 500 };
+  }
+};
 
 export function parsePublishedAt(publishedAt) { //Trả về publishedAt dạng new Date
     // Tách ngày tháng năm và giờ
@@ -428,5 +424,20 @@ export const getArticlesByPageWithSort = async (page = 1, limit = 12, sortBy = "
   }
 };
 
-
-export default { incrementArticleViews, createArticle, createMultipleArticles, importArticlesFromLocal, getArticles, getArticlesById, getArticlesByCategory, getArticlesSameCategory, updateArticle, deleteArticle, parsePublishedAt, getArticlesByPageWithSort };
+export default {
+  incrementArticleViews,
+  getArticles,
+  getArticlesById,
+  getArticlesSameCategory,
+  getArticlesByCategory,
+  getArticlesByTag,
+  getArticleCountByAuthor,
+  getArticlesPublishedByAuthor,
+  createArticle,
+  createMultipleArticles,
+  importArticlesFromLocal,
+  updateArticle,
+  deleteArticle,
+  parsePublishedAt,
+  getArticlesByPageWithSort
+}

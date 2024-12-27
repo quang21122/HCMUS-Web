@@ -23,6 +23,8 @@ import searchRoute from "./routes/web/searchRoute.js";
 import newestRoute from "./routes/web/newestRoute.js";
 import trendRoute from "./routes/web/trendRoute.js";
 import editorRoute from "./routes/web/editorRoute.js";
+import writerRoute from "./routes/web/writerRoute.js";
+import multer from "multer";
 
 // Create __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -35,6 +37,32 @@ liveReloadServer.watch([
 ]);
 
 const app = express();
+app.use(express.static("public"));
+
+// Set up multer for file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, "public", "uploads"));
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+// Endpoint for uploading images
+app.post("/upload-image", upload.single("image"), (req, res) => {
+  if (req.file) {
+    const imageUrl = `/uploads/${req.file.filename}`; // Path to the uploaded image
+    res.json({ success: true, imageUrl: imageUrl });
+  } else {
+    res.status(400).json({ success: false, message: "No image uploaded" });
+  }
+});
+
+// Serve static files (e.g., uploaded images)
+app.use("/uploads", express.static("uploads"));
 
 // Set EJS as the view engine
 app.set("view engine", "ejs");
@@ -86,6 +114,7 @@ app.use(
 );
 
 app.use(flash());
+app.use("/", writerRoute);
 
 const startServer = async () => {
   try {
