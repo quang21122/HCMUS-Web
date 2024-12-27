@@ -1,0 +1,321 @@
+<div class="grid grid-cols-[7fr_3fr] max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <!-- Main Content -->
+    <div class="mr-8">
+        <%- include('../ArticlePage/content.ejs') %>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="flex flex-col space-y-6 w-full">
+        <!-- Author Info -->
+        <div class="author-info bg-[#F5F5F5] rounded-xl p-4 flex flex-row space-x-8">
+            <div class="flex items-center gap-4">
+                <img src="/images/default-ava.png" alt="" class="w-20 h-20 rounded-xl">
+            </div>
+            <div class="flex flex-row space-x-3">
+                <% article.authors.forEach((author, index)=> { %>
+                    <div class="flex flex-col space-y-4 justify-center">
+                        <a href="/author/<%= author.name %>"
+                            class="text-lg font-semibold hover:text-blue-600 transition-colors">
+                            <%= author.name %>
+                        </a>
+                        <span class="text-sm text-gray-500">
+                            <%= article.articleCount[index].data %> bài viết
+                        </span>
+                    </div>
+                    <% }); %>
+            </div>
+        </div>
+
+        <!-- Tags and Categories Section -->
+        <div class="bg-[#F5F5F5] p-4 rounded-xl">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Tags Section Second -->
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-1 h-4 bg-red-500"></div>
+                        <h2 class="text-lg font-medium">Nhãn</h2>
+                        <button onclick="toggleList('tagList')"
+                            class="ml-auto w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
+                            <span class="text-gray-600">+</span>
+                        </button>
+                    </div>
+                    <div id="tagList" class="hidden flex flex-wrap gap-2">
+                        <% tags.forEach(tag=> { %>
+                            <button
+                                onclick="selectItem('tagsInput', '<%= tag._id %>', 'selectedTags', '#<%= tag.name %>')"
+                                class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 text-sm">
+                                #<%= tag.name %>
+                            </button>
+                            <% }); %>
+                    </div>
+                    <div id="selectedTags" class="flex flex-wrap gap-2">
+                        <% if (article.tags && article.tags.length> 0) { %>
+                            <% article.tags.forEach(tag=> { %>
+                                <div class="group relative px-2 py-1 bg-gray-200 rounded-full text-xs hover:bg-gray-300 transition-colors"
+                                    data-tag-id="<%= tag._id %>">
+                                    #<%= tag.name %>
+                                        <button onclick="removeItem('tagsInput', '<%= tag._id %>', this.parentElement)"
+                                            class="hidden group-hover:block absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-3.5 h-3.5 text-xs">
+                                            ×
+                                        </button>
+                                </div>
+                                <% }); %>
+                                    <% } %>
+                    </div>
+                </div>
+
+                <!-- Categories Section First -->
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-1 h-4 bg-red-500"></div>
+                        <h2 class="text-lg font-medium">Chuyên Mục</h2>
+                        <button onclick="toggleList('categoryList')"
+                            class="ml-auto w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
+                            <span class="text-gray-600">+</span>
+                        </button>
+                    </div>
+                    <div id="categoryList" class="hidden flex flex-wrap gap-2">
+                        <% categories.forEach(category=> { %>
+                            <button
+                                onclick="selectItem('categoriesInput', '<%= category._id %>', 'selectedCategories', '<%= category.name %>')"
+                                class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 text-sm">
+                                <%= category.name %>
+                            </button>
+                            <% }); %>
+                    </div>
+                    <div id="selectedCategories" class="flex flex-wrap gap-2">
+                        <% if (article.categories && article.categories.length> 0) { %>
+                            <% article.categories.forEach(category=> { %>
+                                <div class="group relative px-2 py-1 bg-gray-200 rounded-full text-xs hover:bg-gray-300 transition-colors"
+                                    data-category-id="<%= category._id %>">
+                                    <%= category.name %>
+                                        <button onclick="removeItem('categoriesInput', '<%= category._id %>', this.parentElement)"
+                                            class="hidden group-hover:block absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-3.5 h-3.5 text-xs">
+                                            ×
+                                        </button>
+                                </div>
+                                <% }); %>
+                                    <% } %>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Action Buttons -->
+            <div class="flex justify-end space-x-4 mt-6">
+                <button onclick="approveArticle()" class="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                    Duyệt bài
+                </button>
+                <button onclick="showRejectModal()" class="px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+                    Từ chối
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reject Modal -->
+<div id="rejectModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg w-96">
+        <h3 class="text-lg font-bold mb-4">Lý do từ chối</h3>
+        <textarea id="rejectReason" class="w-full h-32 p-2 border rounded mb-4"
+            placeholder="Nhập lý do từ chối..."></textarea>
+        <div class="flex justify-end space-x-2">
+            <button onclick="closeRejectModal()" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
+                Hủy
+            </button>
+            <button onclick="rejectArticle()" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+                Xác nhận
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Approve Modal -->
+<div id="approveModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg w-96">
+        <h3 class="text-lg font-bold mb-4">Thời gian đăng bài</h3>
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+                Chọn thời gian đăng bài
+            </label>
+            <input type="datetime-local" id="scheduleDate" class="w-full p-2 border rounded"
+                min="<%= new Date().toISOString().slice(0, 16) %>">
+        </div>
+        <div class="flex justify-end space-x-2">
+            <button onclick="closeApproveModal()" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
+                Hủy
+            </button>
+            <button onclick="confirmApprove()" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                Xác nhận
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleList(id) {
+        const list = document.getElementById(id);
+        const allLists = document.querySelectorAll('#tagList, #categoryList');
+        allLists.forEach(item => {
+            if (item.id !== id) item.classList.add('hidden');
+        });
+        list.classList.toggle('hidden');
+    }
+
+    function selectItem(inputId, value, selectedContainerId, displayText) {
+        const selectedContainer = document.getElementById(selectedContainerId);
+
+        if (!document.querySelector(`#${selectedContainerId} [data-${inputId.includes('tag') ? 'tag' : 'category'}-id="${value}"]`)) {
+            const item = document.createElement('div');
+            item.className = 'group relative px-2 py-1 bg-gray-200 rounded-full text-xs hover:bg-gray-300 transition-colors';
+            item.setAttribute(`data-${inputId.includes('tag') ? 'tag' : 'category'}-id`, value);
+
+            item.innerHTML = `
+            ${displayText}
+            <button onclick="removeItem('${inputId}', '${value}', this.parentElement)"
+                    class="hidden group-hover:block absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-3.5 h-3.5 text-xs">
+                ×
+            </button>
+        `;
+
+            selectedContainer.appendChild(item);
+        }
+
+        document.getElementById(inputId === 'tagsInput' ? 'tagList' : 'categoryList').classList.add('hidden');
+    }
+
+    function removeItem(inputId, itemId, element) {
+        if (element) {
+            element.remove();
+        }
+    }
+
+    // Click outside to close dropdowns
+    document.addEventListener('click', function (event) {
+        if (!event.target.closest('[id$="List"], button')) {
+            document.querySelectorAll('#tagList, #categoryList').forEach(list => {
+                list.classList.add('hidden');
+            });
+        }
+    });
+</script>
+
+<script>
+    function showRejectModal() {
+        document.getElementById('rejectModal').classList.remove('hidden');
+    }
+
+    function closeRejectModal() {
+        document.getElementById('rejectModal').classList.add('hidden');
+    }
+
+    async function rejectArticle() {
+            const reason = document.getElementById('rejectReason').value.trim();
+            if (!reason) {
+                alert('Vui lòng nhập lý do từ chối');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/editor/reject/<%= article._id %>`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reason: reason }) // Make sure reason is properly named in request body
+                });
+
+                if (response.ok) {
+                    window.location.href = '/editor?status=rejected';
+                } else {
+                    throw new Error('Failed to reject article');
+                }
+            } catch (error) {
+                console.error('Error rejecting article:', error);
+                alert('Có lỗi xảy ra khi từ chối bài viết');
+            }
+        }
+
+    async function approveArticle() {
+            try {
+                // Get all selected tags and categories
+                const selectedTags = Array.from(document.querySelectorAll('#selectedTags [data-tag-id]'))
+                    .map(el => el.dataset.tagId);
+
+                const selectedCategories = Array.from(document.querySelectorAll('#selectedCategories [data-category-id]'))
+                    .map(el => el.dataset.categoryId);
+
+                // Send approval request with metadata
+                const response = await fetch(`/editor/approve/<%= article._id %>`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        tags: selectedTags,
+                        categories: selectedCategories,
+                        status: 'published'
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to approve article');
+                }
+
+                // Redirect back to editor page
+                window.location.href = '/editor?status=published';
+
+            } catch (error) {
+                console.error('Error approving article:', error);
+                alert('Có lỗi xảy ra khi duyệt bài viết');
+            }
+        }
+</script>
+
+<script>
+    function showApproveModal() {
+        document.getElementById('approveModal').classList.remove('hidden');
+    }
+
+    function closeApproveModal() {
+        document.getElementById('approveModal').classList.add('hidden');
+    }
+
+    async function confirmApprove() {
+        const scheduleDate = document.getElementById('scheduleDate').value;
+        if (!scheduleDate) {
+            alert('Vui lòng chọn thời gian đăng bài');
+            return;
+        }
+
+        try {
+            // Get selected tags and categories
+            const selectedTags = Array.from(document.querySelectorAll('#selectedTags [data-tag-id]'))
+                .map(el => el.dataset.tagId);
+
+            const selectedCategories = Array.from(document.querySelectorAll('#selectedCategories [data-category-id]'))
+                .map(el => el.dataset.categoryId);
+
+            const response = await fetch(`/editor/approve/<%= article._id %>`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    tags: selectedTags,
+                    categories: selectedCategories,
+                    scheduleDate: scheduleDate
+                })
+            });
+
+            if (!response.ok) throw new Error('Failed to approve article');
+
+            window.location.href = '/editor?status=published';
+        } catch (error) {
+            console.error('Error approving article:', error);
+            alert('Có lỗi xảy ra khi duyệt bài viết');
+        }
+    }
+
+    // Update approve button to show modal
+    document.querySelector('button[onclick="approveArticle()"]')
+        .setAttribute('onclick', 'showApproveModal()');
+</script>
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">

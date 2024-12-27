@@ -22,6 +22,7 @@ import changeInProfile from "./profile/change-profile.js";
 import searchRoute from "./routes/web/searchRoute.js";
 import newestRoute from "./routes/web/newestRoute.js";
 import trendRoute from "./routes/web/trendRoute.js";
+import editorRoute from "./routes/web/editorRoute.js";
 
 // Create __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -74,6 +75,7 @@ app.use("/api/users", userRoute);
 app.use("/auth", loginRegisterRoutes);
 app.use("/profile", changeInProfile);
 app.use("/", searchRoute);
+app.use("/editor", editorRoute);
 
 app.use(
   session({
