@@ -29,23 +29,15 @@
         <div class="flex items-start gap-3">
           <img
             src="https://ui-avatars.com/api/?name=<%= user ? user.name : 'Anonymous' %>&background=random&color=fff&size=40&font-size=0.5"
-            alt=""
-            class="w-8 h-8 rounded-xl"
-          />
-          <textarea
-            name="content"
-            id="comment-content"
-            rows="3"
-            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-indigo-200"
-            placeholder="Viết Bình Luận"
-            required
+            alt="" class="w-8 h-8 rounded-xl" />
+          <textarea name="content" id="comment-content" rows="3"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring focus:ring-indigo-200 <%= !user ? 'bg-gray-100' : '' %>"
+            placeholder="<%= user ? 'Viết Bình Luận' : 'Đăng nhập để bình luận' %>" required <%=!user ? 'disabled' : '' %>
           ></textarea>
         </div>
-        <div class="flex justify-end">
-          <button
-            type="submit"
-            class="bg-indigo-600 text-black px-6 py-2 rounded-lg hover:bg-indigo-700 transition"
-          >
+        <div class="flex justify-end mt-4">
+          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            <%=!user ? 'disabled' : '' %>>
             Gửi
           </button>
         </div>
@@ -53,67 +45,68 @@
     </div>
   </div>
 
-  <script>
-    document
-      .getElementById("comment-form")
-      .addEventListener("submit", async function (event) {
-        event.preventDefault();
+<script>
+  document.getElementById("comment-form")
+    .addEventListener("submit", async function (event) {
+      event.preventDefault();
 
-        const content = document.getElementById("comment-content").value;
+      const content = document.getElementById("comment-content").value;
+      if (content.trim() === "") {
+        alert("Vui lòng nhập bình luận");
+        return;
+      }
 
-        if (content.trim() === "") {
-          alert("Vui lòng nhập bình luận");
-          return;
+      const urlParts = window.location.pathname.split("/");
+      const articleId = urlParts[urlParts.length - 1];
+
+      try {
+        const response = await fetch("/comments", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({ content, articleId }),
+        });
+
+        if (response.ok) {
+          const newComment = await response.json();
+          // Use comment with user info from response
+          displayNewComment(newComment);
+          document.getElementById("comment-content").value = "";
+        } else {
+          const errorData = await response.json();
+          alert("Có lỗi xảy ra khi gửi bình luận: " + (errorData.message || "Unknown error"));
         }
+      } catch (error) {
+        alert("Không thể kết nối tới server.");
+      }
+    });
 
-        // Lấy articleId từ URL
-        const urlParts = window.location.pathname.split("/");
-        const articleId = urlParts[urlParts.length - 1]; // ID bài viết ở cuối URL
-
-        try {
-          // Gửi bình luận lên server
-          const response = await fetch("/comments", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-            body: JSON.stringify({ content, articleId }), // Gửi nội dung và ID bài viết
-          });
-
-          if (response.ok) {
-            const newComment = await response.json();
-            displayNewComment(newComment);
-            document.getElementById("comment-content").value = ""; // Xóa nội dung sau khi gửi
-          } else {
-            const errorData = await response.json();
-            alert("Có lỗi xảy ra khi gửi bình luận: " + (errorData.message || "Unknown error"));
-          }
-        } catch (error) {
-          alert("Không thể kết nối tới server.");
-        }
-      });
-
-    function displayNewComment(comment) {
+  function displayNewComment(comment) {
       const commentList = document.querySelector(".comments-list");
       const commentElement = document.createElement("div");
       commentElement.classList.add("flex", "items-start", "mb-6", "gap-3");
+
+      // Add fallback for username with proper null checks
+      const userName = comment.user?.name || 'Người dùng';
+
       commentElement.innerHTML = `
-        <img
-          src="https://ui-avatars.com/api/?name=${comment.user.name}&background=random&color=fff&size=40&font-size=0.5"
-          alt="User Avatar"
-          class="w-8 h-8 rounded-xl"
-        />
-        <div class="flex-1">
-          <div class="flex justify-between items-center">
-            <h3 class="text-md font-medium">${comment.user.name}</h3>
-            <span class="text-sm text-gray-500">${new Date(
-              comment.createdAt
-            ).toLocaleDateString("vi-VN")}</span>
-          </div>
-          <p class="text-gray-700 mt-2">${comment.content}</p>
-        </div>
-      `;
-      commentList.prepend(commentElement); // Thêm bình luận mới vào đầu danh sách
+    <img
+      src="https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random&color=fff&size=40&font-size=0.5"
+      alt="User Avatar"
+      class="w-8 h-8 rounded-xl"
+    />
+    <div class="flex-1">
+      <div class="flex justify-between items-center">
+        <h3 class="text-md font-medium">${userName}</h3>
+        <span class="text-sm text-gray-500">
+          ${new Date(comment.createdAt).toLocaleDateString("vi-VN")}
+        </span>
+      </div>
+      <p class="text-gray-700 mt-2">${comment.content}</p>
+    </div>
+  `;
+      commentList.prepend(commentElement);
     }
-  </script>
+</script>
