@@ -1,6 +1,6 @@
 import { readFile } from "fs/promises";
 import Article from "../models/Article.js";
-import mongoose from "mongoose";
+import mongoose, { get } from "mongoose";
 
 export const incrementArticleViews = async (articleId) => {
   try {
@@ -112,7 +112,12 @@ export const getArticlesSameCategory = async (category, currentArticleId) => {
   }
 };
 
-export const getArticlesByCategory = async (category, page = 1, limit = 12, status) => {
+export const getArticlesByCategory = async (
+  category,
+  page = 1,
+  limit = 12,
+  status
+) => {
   try {
     const skip = (page - 1) * limit;
     const filter = {
@@ -220,7 +225,10 @@ export const getArticlesByTag = async (
 
 export const getArticleCountByAuthor = async (authorId) => {
   try {
-    const count = await Article.countDocuments({ author: authorId, status: "published" });
+    const count = await Article.countDocuments({
+      author: authorId,
+      status: "published",
+    });
 
     return {
       success: true,
@@ -235,15 +243,61 @@ export const getArticleCountByAuthor = async (authorId) => {
   }
 };
 
-export const getArticlesPublishedByAuthor = async (authorId, page = 1, limit = 12) => {
+export const getArticlesByAuthor = async (authorId, page = 1, limit = 12) => {
   try {
     const skip = (page - 1) * limit;
 
     // Get total count for pagination
-    const totalCount = await Article.countDocuments({ author: authorId, status: "published" });
+    const totalCount = await Article.countDocuments({ author: authorId });
 
     // Find articles with pagination
-    const articles = await Article.find({ author: authorId, status: "published" })
+    const articles = await Article.find({ author: authorId })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate("category")
+      .populate("tags")
+      .populate("author");
+
+    return {
+      success: true,
+      data: {
+        articles,
+        pagination: {
+          currentPage: page,
+          totalPages: Math.ceil(totalCount / limit),
+          totalItems: totalCount,
+        },
+      },
+    };
+  } catch (error) {
+    console.error("getArticlesByAuthor error:", error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+};
+
+export const getArticlesPublishedByAuthor = async (
+  authorId,
+  page = 1,
+  limit = 12
+) => {
+  try {
+    const skip = (page - 1) * limit;
+
+    // Get total count for pagination
+    const totalCount = await Article.countDocuments({
+      author: authorId,
+      status: "published",
+    });
+
+    // Find articles with pagination
+    const articles = await Article.find({
+      author: authorId,
+      status: "published",
+    })
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
@@ -326,18 +380,16 @@ export const importArticlesFromLocal = async () => {
 };
 
 export const updateArticle = async (id, data) => {
-    try {
-        // Kiểm tra ID hợp lệ
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return { error: "Invalid ID format", status: 400 };
-        }
-        // Find the article by ID and update with the provided data
-        const updatedArticle = await Article
-            .updateOne({ _id: id }, data)
-            .exec();
-        
-        // Return the updated article or a not found message
-        return updatedArticle || { error: "Article not found", status: 404 };
+  try {
+    // Kiểm tra ID hợp lệ
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return { error: "Invalid ID format", status: 400 };
+    }
+    // Find the article by ID and update with the provided data
+    const updatedArticle = await Article.updateOne({ _id: id }, data).exec();
+
+    // Return the updated article or a not found message
+    return updatedArticle || { error: "Article not found", status: 404 };
   } catch (error) {
     // Log the error and return a failure response
     console.error("Error updating article:", error);
@@ -363,33 +415,40 @@ export const deleteArticle = async (id) => {
   }
 };
 
-export function parsePublishedAt(publishedAt) { //Trả về publishedAt dạng new Date
-    // Tách ngày tháng năm và giờ
-    const regex = /(\d{1,2})\/(\d{1,2})\/(\d{4}), (\d{2}):(\d{2}) \((GMT[+-]\d{1,2})\)/;
-    const match = publishedAt.match(regex);
+export function parsePublishedAt(publishedAt) {
+  //Trả về publishedAt dạng new Date
+  // Tách ngày tháng năm và giờ
+  const regex =
+    /(\d{1,2})\/(\d{1,2})\/(\d{4}), (\d{2}):(\d{2}) \((GMT[+-]\d{1,2})\)/;
+  const match = publishedAt.match(regex);
 
-    if (match) {
-        const day = match[1];
-        const month = match[2] - 1; // Lưu ý: tháng trong JavaScript bắt đầu từ 0
-        const year = match[3];
-        const hours = match[4];
-        const minutes = match[5];
+  if (match) {
+    const day = match[1];
+    const month = match[2] - 1; // Lưu ý: tháng trong JavaScript bắt đầu từ 0
+    const year = match[3];
+    const hours = match[4];
+    const minutes = match[5];
 
-        // Tạo đối tượng Date
-        const newDate = new Date(year, month, day, hours, minutes);
+    // Tạo đối tượng Date
+    const newDate = new Date(year, month, day, hours, minutes);
 
-        // Điều chỉnh múi giờ nếu cần
-        const gmtOffset = match[6]; // GMT+7 hoặc GMT-3,...
-        const offset = parseInt(gmtOffset.replace('GMT', ''), 10);
-        newDate.setHours(newDate.getHours() - offset);
+    // Điều chỉnh múi giờ nếu cần
+    const gmtOffset = match[6]; // GMT+7 hoặc GMT-3,...
+    const offset = parseInt(gmtOffset.replace("GMT", ""), 10);
+    newDate.setHours(newDate.getHours() - offset);
 
-        return newDate;
-    } else {
-        return null;
-    }
+    return newDate;
+  } else {
+    return null;
+  }
 }
 
-export const getArticlesByPageWithSort = async (page = 1, limit = 12, sortBy = "publishedDate", sortOrder = -1) => {
+export const getArticlesByPageWithSort = async (
+  page = 1,
+  limit = 12,
+  sortBy = "publishedDate",
+  sortOrder = -1
+) => {
   try {
     // Tính toán skip dựa trên số trang và số bài viết mỗi trang
     const skip = (page - 1) * limit;
@@ -431,6 +490,7 @@ export default {
   getArticlesByCategory,
   getArticlesByTag,
   getArticleCountByAuthor,
+  getArticlesByAuthor,
   getArticlesPublishedByAuthor,
   createArticle,
   createMultipleArticles,
@@ -438,5 +498,5 @@ export default {
   updateArticle,
   deleteArticle,
   parsePublishedAt,
-  getArticlesByPageWithSort
-}
+  getArticlesByPageWithSort,
+};

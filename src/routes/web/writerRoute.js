@@ -1,5 +1,6 @@
 import express from "express";
-import { getArticlesPublishedByAuthor } from "../../services/articleService.js";
+import { getArticlesByAuthor } from "../../services/articleService.js";
+import { getArticleCountByAuthor } from "../../services/articleService.js";
 import { createArticle } from "../../services/articleService.js";
 import { getTags } from "../../services/tagService.js";
 import { getCategories } from "../../services/categoryService.js";
@@ -42,7 +43,7 @@ router.get("/my-articles", async (req, res) => {
       return res.redirect("/auth/login");
     }
 
-    const articleCount = await getArticlesPublishedByAuthor(userId);
+    const articleCount = await getArticlesByAuthor(userId);
 
     const pageData = {
       title: `Bài viết của tôi`,
@@ -73,7 +74,7 @@ router.get("/my-articles/create", async (req, res) => {
       return res.redirect("/auth/login");
     }
 
-    const articleCount = await getArticlesByAuthor(userId);
+    const articleCount = await getArticleCountByAuthor(userId);
 
     const pageData = {
       title: "Tạo bài viết mới",
