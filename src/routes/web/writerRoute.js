@@ -3,7 +3,10 @@ import {
   getArticlesByAuthor,
   getArticlesById,
 } from "../../services/articleService.js";
-import { getArticleCountByAuthor } from "../../services/articleService.js";
+import {
+  getArticleCountByAuthor,
+  getArticlesPublishedByAuthor,
+} from "../../services/articleService.js";
 import { createArticle, updateArticle } from "../../services/articleService.js";
 import { getTags } from "../../services/tagService.js";
 import { getCategories } from "../../services/categoryService.js";
@@ -46,7 +49,29 @@ router.get("/", async (req, res) => {
       return res.redirect("/auth/login");
     }
 
-    const articleCount = await getArticlesByAuthor(userId);
+    // const articleCount = await getArticlesByAuthor(userId);
+    const status = req.query.status || "published";
+    const page = parseInt(req.query.page) || 1;
+    const limit = 12;
+
+    let articleCount;
+    if (status === "published") {
+      articleCount = await getArticlesPublishedByAuthor(userId, page, limit);
+    } else if (status === "draft") {
+      articleCount = await getArticlesPublishedByAuthor(
+        userId,
+        page,
+        limit,
+        "draft"
+      );
+    } else if (status === "rejected") {
+      articleCount = await getArticlesPublishedByAuthor(
+        userId,
+        page,
+        limit,
+        "rejected"
+      );
+    }
 
     const pageData = {
       title: `Writer Dashboard`,
@@ -54,6 +79,8 @@ router.get("/", async (req, res) => {
       categories: categoriesResponse.data,
       articles: articleCount.data.articles,
       user: user,
+      status: status,
+      pagination: articleCount.data.pagination,
     };
 
     res.render("pages/MyPostPage", pageData);
@@ -311,9 +338,9 @@ router.post("/edit", upload.single("image"), async (req, res) => {
       tags: JSON.parse(tags),
       category: JSON.parse(category),
       isPremium: isPremium === "1",
-      status,
+      status: rejectReason ? "rejected" : "draft",
       publishedAt,
-      rejectReason: status === "rejected" ? rejectReason : null,
+      rejectReason: status === "rejected" ? rejectReason : "",
     };
     console.log("articleData: ", articleData);
 

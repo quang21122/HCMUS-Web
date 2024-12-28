@@ -223,11 +223,11 @@ export const getArticlesByTag = async (
   }
 };
 
-export const getArticleCountByAuthor = async (authorId) => {
+export const getArticleCountByAuthor = async (authorId, status) => {
   try {
     const count = await Article.countDocuments({
       author: authorId,
-      status: "published",
+      status: status || "published",
     });
 
     return {
@@ -282,7 +282,8 @@ export const getArticlesByAuthor = async (authorId, page = 1, limit = 12) => {
 export const getArticlesPublishedByAuthor = async (
   authorId,
   page = 1,
-  limit = 12
+  limit = 12,
+  status
 ) => {
   try {
     const skip = (page - 1) * limit;
@@ -290,13 +291,13 @@ export const getArticlesPublishedByAuthor = async (
     // Get total count for pagination
     const totalCount = await Article.countDocuments({
       author: authorId,
-      status: "published",
+      status: status || "published",
     });
 
     // Find articles with pagination
     const articles = await Article.find({
       author: authorId,
-      status: "published",
+      status: status || "published",
     })
       .sort({ createdAt: -1 })
       .skip(skip)
