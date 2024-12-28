@@ -21,12 +21,31 @@ export const incrementArticleViews = async (articleId) => {
   }
 };
 
-export const getArticles = async () => {
+export const getArticles = async (sortBy = "publishedDate") => {
   try {
+    let sortQuery = {};
+
+    switch (sortBy) {
+      case "title":
+        sortQuery = { name: 1 }; // Sort by title alphabetically
+        break;
+      case "newest":
+        sortQuery = { publishedDate: -1 }; // Newest first
+        break;
+      case "oldest":
+        sortQuery = { publishedDate: 1 }; // Oldest first
+        break;
+      case "views":
+        sortQuery = { views: -1 }; // Most viewed first
+        break;
+      default:
+        sortQuery = { publishedDate: -1 }; // Default to newest
+    }
+
     const response = await Article.find({ status: "published" })
       .populate("author")
       .populate("category")
-      .sort({ publishedAt: -1 })
+      .sort(sortQuery)
       .lean()
       .exec();
 
@@ -44,6 +63,51 @@ export const getArticles = async () => {
     return {
       status: "FAILED",
       message: error.message || "An error occurred while retrieving articles",
+      data: null,
+    };
+  }
+};
+
+export const getMostViewedCategoryArticles = async () => {
+  try {
+    // First aggregate to find category with most views
+    const mostViewedCategory = await Article.aggregate([
+      { $match: { status: "published" } },
+      {
+        $group: {
+          _id: "$category",
+          totalViews: { $sum: "$views" },
+        },
+      },
+      { $sort: { totalViews: -1 } },
+      { $limit: 1 },
+    ]);
+
+    if (!mostViewedCategory.length) {
+      throw new Error("No categories found");
+    }
+
+    // Then get all articles from that category
+    const articles = await Article.find({
+      category: mostViewedCategory[0]._id,
+      status: "published",
+    })
+      .populate("author")
+      .populate("category")
+      .sort({ views: -1 })
+      .lean()
+      .exec();
+
+    return {
+      status: "SUCCESS",
+      message: "Most viewed category articles retrieved successfully",
+      data: articles,
+    };
+  } catch (error) {
+    console.error("getMostViewedCategoryArticles error:", error);
+    return {
+      status: "FAILED",
+      message: error.message,
       data: null,
     };
   }
