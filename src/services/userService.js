@@ -162,8 +162,8 @@ const getUsersByPage = async (page = 1, role = null) => {
 
         // Nếu role có giá trị, tìm người dùng có role đó nhưng không phải admin
         const query = {
-            ...(role && { role }), // Nếu role có giá trị, thêm điều kiện role
-            role: { $ne: 'admin' }, // Loại trừ người dùng có role là admin
+            ...(role ? { role } : {}), // Nếu role có giá trị, thêm điều kiện role
+            role: { ...(role ? { $eq: role } : {}), $ne: 'admin' }, // Loại trừ admin
         };
 
         // Truy vấn tổng số người dùng và danh sách người dùng theo trang

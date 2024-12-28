@@ -20,6 +20,7 @@ router.get("/manage-users/:currentTab", async (req, res) => {
         } else if (currentTab === "extend-subscription") {
             role = "subscriber";
         }
+        console.log("Role:", role);
 
         // Create timeout promise
         const timeout = new Promise((_, reject) =>
