@@ -60,6 +60,7 @@ router.post("/register", (req, res) => {
         gender,
         country,
         penName: role === "author" ? penName : null,
+        subscriptionExpiry: role === "subscriber" ? 10080 : null,
     };
 
     fetch(`http://localhost:3000/api/users?_id=${userId}`,

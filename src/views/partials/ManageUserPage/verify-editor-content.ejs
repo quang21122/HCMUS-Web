@@ -1,0 +1,55 @@
+<div class="bg-white shadow rounded-md overflow-hidden">
+    <table class="min-w-full text-base text-gray-700">
+        <thead class="bg-gray-200">
+            <tr>
+                <th class="px-6 py-3 text-left font-semibold">Tên</th>
+                <th class="px-6 py-3 text-left font-semibold">Tài khoản</th>
+                <th class="px-6 py-3 text-left font-semibold">Vai trò</th>
+                <th class="px-6 py-3 text-left font-semibold">Chọn chuyên mục</th>
+                <th class="px-6 py-3 text-left font-semibold">Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (users.length===0) { %>
+                <tr>
+                    <td colspan="6" class="px-6 py-3 text-center text-gray-500">
+                        Không có biên tập viên nào cần duyệt để hiển thị.
+                    </td>
+                </tr>
+                <% } else { %>
+                    <% const roleMap={ 'admin' : 'Quản trị viên' , 'subscriber' : 'Độc giả' , 'editor' : 'Biên tập viên'
+                        , 'author' : 'Phóng viên' }; %>
+                        <% users.forEach(userData=> { %>
+                            <tr class="border-t">
+                                <td class="px-6 py-3"><%- userData.name %></td>
+                                <td class="px-6 py-3"><%- userData.email %></td>
+                                <td class="px-6 py-3">
+                                    <%= roleMap[userData.role] || userData.role %>
+                                </td>
+
+                                <!-- Dropdown Chuyên mục -->
+                                <form action="/manage-users/verify/<%= userData._id %>" method="POST">
+                                    <td class="px-6 py-3">
+                                        <select name="categoryId"
+                                            class="form-select border border-gray-300 text-gray-700 rounded-md py-1 px-2">
+                                            <% categories.forEach(category=> { %>
+                                                <option value="<%= category._id %>" <%=userData.category &&
+                                                    userData.category._id===category._id ? 'selected' : '' %> >
+                                                    <%= category.name %>
+                                                </option>
+                                                <% }); %>
+                                        </select>
+                                    <td class="px-6 py-3">
+                                        <button type="submit"
+                                            class="bg-blue-500 text-white px-4 py-1 rounded-md hover:bg-blue-700 transition mt-2">
+                                            Duyệt
+                                        </button>
+                                    </td>
+                                </form>
+                                </td>
+                            </tr>
+                            <% }); %>
+                            <% } %>
+        </tbody>
+    </table>
+</div>

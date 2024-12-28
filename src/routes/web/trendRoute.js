@@ -1,5 +1,4 @@
 import express from "express";
-import cache from "../../config/cache.js";
 import { getArticlesByPageWithSort} from "../../services/articleService.js";
 import { getCategories } from "../../services/categoryService.js";
 import { getTags } from "../../services/tagService.js";

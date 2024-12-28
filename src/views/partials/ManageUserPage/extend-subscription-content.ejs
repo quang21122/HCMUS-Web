@@ -1,0 +1,53 @@
+<!-- User Table -->
+<div class="bg-white shadow rounded-md overflow-hidden">
+    <table class="min-w-full text-base text-gray-700">
+        <thead class="bg-gray-200">
+            <tr>
+                <th class="px-6 py-3 text-left font-semibold">Tên</th>
+                <th class="px-6 py-3 text-left font-semibold">Tài khoản</th>
+                <th class="px-6 py-3 text-left font-semibold">Vai trò</th>
+                <th class="px-6 py-3 text-left font-semibold">Thời điểm tạo</th>
+                <th class="px-6 py-3 text-left font-semibold">Hết hạn sau</th>
+                <th class="px-6 py-3 text-left font-semibold">Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (users.length===0) { %>
+                <tr>
+                    <td colspan="6" class="px-6 py-3 text-center text-gray-500">
+                        Không có độc giả nào để hiển thị.
+                    </td>
+                </tr>
+                <% } else { %>
+                    <% const roleMap={ 'admin' : 'Quản trị viên' , 'subscriber' : 'Độc giả' , 'editor' : 'Biên tập viên'
+                        , 'author' : 'Phóng viên' , }; %>
+                        <% users.forEach(userData=> { %>
+                            <% const createdAt=new Date(userData.createdAt); const
+                                day=createdAt.getDate().toString().padStart(2, '0' ); const month=(createdAt.getMonth()
+                                + 1).toString().padStart(2, '0' ); const year=createdAt.getFullYear(); const
+                                formattedDate=`${day}/${month}/${year}`; %>
+                                <tr class="border-t">
+                                    <td class="px-6 py-3"><%- userData.name %></td>
+                                    <td class="px-6 py-3"><%- userData.email %></td>
+                                    <td class="px-6 py-3">
+                                        <%= roleMap[userData.role] || userData.role %>
+                                    </td>
+                                    <td class="px-6 py-3">
+                                        <%= formattedDate %>
+                                    </td>
+                                    <td class="px-6 py-3"><%- userData.subscriptionExpiry %> phút</td>
+                                    <td class="px-6 py-3">
+                                        <form action="/extend-subscription/<%= userData._id %>" method="POST"
+                                            class="inline">
+                                            <button type="submit"
+                                                class="bg-blue-500 text-white px-4 py-1 rounded-md hover:bg-blue-700 transition">
+                                                Gia hạn
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                                    <% } %>
+        </tbody>
+    </table>
+</div>

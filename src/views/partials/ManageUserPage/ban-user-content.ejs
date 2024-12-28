@@ -1,0 +1,73 @@
+<!-- User Table -->
+<div class="bg-white shadow rounded-md overflow-hidden">
+    <table class="min-w-full text-base text-gray-700">
+        <thead class="bg-gray-200">
+            <tr>
+                <th class="px-6 py-3 text-left font-semibold">Tên</th>
+                <th class="px-6 py-3 text-left font-semibold">Tài khoản</th>
+                <th class="px-6 py-3 text-left font-semibold">Vai trò</th>
+                <th class="px-6 py-3 text-left font-semibold">Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (users.length===0) { %>
+                <tr>
+                    <td colspan="6" class="px-6 py-3 text-center text-gray-500">
+                        Không có người dùng nào để hiển thị.
+                    </td>
+                </tr>
+                <% } else { %>
+                    <% const roleMap={ 'admin' : 'Quản trị viên' , 'subscriber' : 'Độc giả' , 'editor' : 'Biên tập viên'
+                        , 'author' : 'Phóng viên' , }; %>
+                        <% users.forEach(userData=> { %>
+                            <tr class="border-t">
+                                <td class="px-6 py-3"><%- userData.name %></td>
+                                <td class="px-6 py-3"><%- userData.email %></td>
+                                <td class="px-6 py-3">
+                                    <%= roleMap[userData.role] || userData.role %>
+                                </td>
+                                <td class="px-6 py-3">
+                                    <button
+                                        class="ban-user-btn bg-gray-500 text-white px-4 py-1 rounded-md hover:bg-red-500 transition"
+                                        data-user-id="<%- userData._id %>">
+                                        Cấm
+                                    </button>
+                                </td>
+                            </tr>
+                            <% }); %>
+                                <% } %>
+        </tbody>
+    </table>
+</div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const banButtons = document.querySelectorAll(".ban-user-btn");
+
+        banButtons.forEach((button) => {
+            button.addEventListener("click", async () => {
+                const userId = button.getAttribute("data-user-id");
+
+                try {
+                    const response = await fetch(`/ban-user/${userId}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        alert("Người dùng đã bị cấm.");
+                        location.reload(); // Tải lại trang để cập nhật trạng thái
+                    } else {
+                        alert(result.message || "Đã xảy ra lỗi.");
+                    }
+                } catch (error) {
+                    console.error("Ban user error:", error);
+                    alert("Không thể cấm người dùng.");
+                }
+            });
+        });
+    });
+</script>
