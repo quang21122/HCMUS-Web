@@ -25,7 +25,7 @@ import trendRoute from "./routes/web/trendRoute.js";
 import editorRoute from "./routes/web/editorRoute.js";
 import writerRoute from "./routes/web/writerRoute.js";
 import multer from "multer";
-import commentRoute from "./routes/web/commentRoute.js"
+import commentRoute from "./routes/web/commentRoute.js";
 
 // Create __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -106,6 +106,7 @@ app.use("/auth", loginRegisterRoutes);
 app.use("/profile", changeInProfile);
 app.use("/", searchRoute);
 app.use("/editor", editorRoute);
+app.use("/writer", writerRoute);
 
 app.use(
   session({
@@ -116,7 +117,6 @@ app.use(
 );
 
 app.use(flash());
-app.use("/", writerRoute);
 
 const startServer = async () => {
   try {

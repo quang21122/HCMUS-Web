@@ -31,7 +31,7 @@ const upload = multer({ storage: storage });
 
 const router = express.Router();
 
-router.get("/my-articles", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     // Get all tags
     const tagsResponse = await getTags();
@@ -49,7 +49,7 @@ router.get("/my-articles", async (req, res) => {
     const articleCount = await getArticlesByAuthor(userId);
 
     const pageData = {
-      title: `Bài viết của tôi`,
+      title: `Writer Dashboard`,
       tags: tagsResponse.data,
       categories: categoriesResponse.data,
       articles: articleCount.data.articles,
@@ -62,9 +62,9 @@ router.get("/my-articles", async (req, res) => {
   }
 });
 
-// GET my-article/create
+// GET /create
 
-router.get("/my-articles/create", async (req, res) => {
+router.get("/create", async (req, res) => {
   try {
     const tagsResponse = await getTags();
     const categoriesResponse = await getCategories();
@@ -100,7 +100,7 @@ router.get("/my-articles/create", async (req, res) => {
   }
 });
 
-router.post("/my-articles/create", upload.single("image"), async (req, res) => {
+router.post("/create", upload.single("image"), async (req, res) => {
   try {
     const {
       name,
@@ -130,7 +130,7 @@ router.post("/my-articles/create", upload.single("image"), async (req, res) => {
     if (!name || !content || !abstract || !category || !tags) {
       console.log("Vui lòng điền đầy đủ thông tin");
       return res.status(400).render("pages/CreateArticlePage", {
-        title: "Tạo bài viết mới",
+        title: "Create New Article",
         errorMessage: "Vui lòng điền đầy đủ thông tin",
         tags: tagsResponse.data,
         categories: categoriesResponse.data,
@@ -174,7 +174,7 @@ router.post("/my-articles/create", upload.single("image"), async (req, res) => {
     if (!articleResponse.success) {
       console.log("Có lỗi xảy ra. Vui lòng thử lại sau.");
       return res.status(500).render("pages/CreateArticlePage", {
-        title: "Tạo bài viết mới",
+        title: "Create New Article",
         errorMessage: articleResponse.error,
         tags: tagsResponse.data,
         categories: categoriesResponse.data,
@@ -191,7 +191,7 @@ router.post("/my-articles/create", upload.single("image"), async (req, res) => {
     }
 
     // Redirect after article creation
-    res.redirect("/my-articles");
+    res.redirect("/writer");
   } catch (error) {
     console.error("Create article error:", error);
     res.status(500).render("pages/CreateArticlePage", {
@@ -201,7 +201,7 @@ router.post("/my-articles/create", upload.single("image"), async (req, res) => {
   }
 });
 
-router.get("/my-articles/edit", async (req, res) => {
+router.get("/edit", async (req, res) => {
   try {
     const articleId = req.query.id;
     const tagsResponse = await getTags();
@@ -225,12 +225,13 @@ router.get("/my-articles/edit", async (req, res) => {
     }
 
     const pageData = {
-      title: "Chỉnh sửa bài viết",
+      title: "Edit Article",
       tags: tagsResponse.data,
       categories: categoriesResponse.data,
       article: articleResponse.data,
       user: user,
       articleCount: articleCount,
+      rejectReason: articleResponse.data.rejectReason,
     };
 
     res.render("pages/EditArticlePage", pageData);
@@ -239,7 +240,7 @@ router.get("/my-articles/edit", async (req, res) => {
   }
 });
 
-router.post("/my-articles/edit", upload.single("image"), async (req, res) => {
+router.post("/edit", upload.single("image"), async (req, res) => {
   try {
     const {
       name,
@@ -250,6 +251,7 @@ router.post("/my-articles/edit", upload.single("image"), async (req, res) => {
       isPremium,
       status,
       publishedAt,
+      rejectReason,
     } = req.body;
     console.log("req.body: ", req.body);
 
@@ -283,7 +285,7 @@ router.post("/my-articles/edit", upload.single("image"), async (req, res) => {
 
     if (!name || !content || !abstract || !category || !tags) {
       return res.status(400).render("pages/EditArticlePage", {
-        title: "Chỉnh sửa bài viết",
+        title: "Edit Article",
         errorMessage: "Vui lòng điền đầy đủ thông tin",
         tags: tagsResponse.data,
         categories: categoriesResponse.data,
@@ -308,9 +310,10 @@ router.post("/my-articles/edit", upload.single("image"), async (req, res) => {
       content,
       tags: JSON.parse(tags),
       category: JSON.parse(category),
-      isPremium,
+      isPremium: isPremium === "1",
       status,
       publishedAt,
+      rejectReason: status === "rejected" ? rejectReason : null,
     };
     console.log("articleData: ", articleData);
 
@@ -320,7 +323,7 @@ router.post("/my-articles/edit", upload.single("image"), async (req, res) => {
     if (!updateResponse.matchedCount) {
       console.log("Có lỗi xảy ra. Vui lòng thử lại sau.");
       return res.status(500).render("pages/EditArticlePage", {
-        title: "Chỉnh sửa bài viết",
+        title: "Edit Article",
         errorMessage: updateResponse.error,
         tags: tagsResponse.data,
         categories: categoriesResponse.data,
@@ -330,7 +333,7 @@ router.post("/my-articles/edit", upload.single("image"), async (req, res) => {
       });
     }
 
-    res.redirect("/my-articles");
+    res.redirect("/writer");
   } catch (error) {
     console.error("Edit article error:", error);
     res.status(500).render("pages/EditArticlePage", {

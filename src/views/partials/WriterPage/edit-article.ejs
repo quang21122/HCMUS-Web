@@ -1,6 +1,6 @@
 <div class="grid grid-cols-[7fr_3fr] max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 relative space-x-6">
     <div>
-        <form method="POST" action="/my-articles/edit?id=<%= article._id %>" enctype="multipart/form-data" class="space-y-6"
+        <form method="POST" action="/writer/edit?id=<%= article._id %>" enctype="multipart/form-data" class="space-y-6"
             id="articleForm">
             <!-- Title -->
             <div class="mb-4">
@@ -123,6 +123,20 @@
 
             </div>
         </div>
+        <!-- Reject reason if exist -->
+        <% if (article.rejectReason) { %>
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-1 h-4 bg-red-500"></div>
+                    <h2 class="text-lg font-medium text-red-600">Lý do từ chối</h2>
+                </div>
+                <div class="bg-red-50 rounded-lg p-4">
+                    <p class="text-sm text-gray-700 mb-2">
+                        <%= article.rejectReason %>
+                    </p>
+                </div>
+            </div>
+            <% } %>
         <!-- Create Button -->
         <div class="flex items-center justify-center mt-6 w-full">
             <button type="submit" form="articleForm"
