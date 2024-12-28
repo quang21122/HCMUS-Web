@@ -1,0 +1,58 @@
+<div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
+<!-- Header -->
+<div class="flex flex-row items-center space-x-3 mb-4">
+    <div class="text-3xl font-semibold">
+        <%= title %>
+    </div>
+</div>
+
+<!-- Tabs -->
+<div class="flex space-x-6 border-b border-gray-300 mb-6">
+    <a href="/manage-users/ban-users" 
+       class="<%= (currentTab === 'ban-users') ? 'text-red-500 font-semibold border-b-2 border-red-500 pb-2' : 'text-gray-500 hover:text-red-500' %>">
+       Cấm Người Dùng
+    </a>
+    <a href="/manage-users/verify-editors" 
+       class="<%= (currentTab === 'verify-editors') ? 'text-red-500 font-semibold border-b-2 border-red-500 pb-2' : 'text-gray-500 hover:text-red-500' %>">
+       Duyệt Biên Tập Viên
+    </a>
+    <a href="/manage-users/extend-subscription" 
+       class="<%= (currentTab === 'extend-subscription') ? 'text-red-500 font-semibold border-b-2 border-red-500 pb-2' : 'text-gray-500 hover:text-red-500' %>">
+       Gia Hạn Độc Giả
+    </a>
+</div>
+<%- include('./search.ejs') %>
+
+<% if (currentTab === 'ban-users') { %>
+    <%- include('./ban-user-content.ejs') %>
+<% } else if (currentTab === 'verify-editors') { %>
+    <%- include('./verify-editor-content.ejs') %>
+<% } else if (currentTab === 'extend-subscription') { %>
+    <%- include('./extend-subscription-content.ejs') %>
+<% } %>
+     <!-- Pagination -->
+     <% if (pagination.totalPages> 1) { %>
+        <div class="flex justify-center mt-8 gap-2">
+            <% for(let i=1; i <=pagination.totalPages; i++) { %>
+                <button data-page="<%= i %>"
+                    class="pagination-btn px-4 py-2 rounded <%= i === pagination.currentPage ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300' %>">
+                    <%= i %>
+                </button>
+                <% } %>
+        </div>
+        <% } %>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const buttons = document.querySelectorAll('.pagination-btn');
+
+        buttons.forEach(button => {
+            button.addEventListener('click', function () {
+                const page = this.dataset.page;
+                // Use window.location to reload page with new page parameter
+                window.location.href = `/manage-users/<%= currentTab %>?page=${page}`;
+            });
+        });
+    });
+</script>

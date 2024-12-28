@@ -1,0 +1,31 @@
+    <!-- User Table -->
+    <div class="bg-white shadow rounded-md overflow-hidden">
+        <table class="min-w-full text-sm text-gray-700">
+            <thead class="bg-gray-200">
+                <tr>
+                    <th class="px-6 py-3 text-left font-semibold">Tên</th>
+                    <th class="px-6 py-3 text-left font-semibold">Tài khoản</th>
+                    <th class="px-6 py-3 text-left font-semibold">Vai trò</th>
+                    <th class="px-6 py-3 text-left font-semibold">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Example row -->
+                <% users.forEach(userData=> { %>
+                <tr class="border-t">
+                    <td class="px-6 py-3"><%- userData.name %></td>
+                    <td class="px-6 py-3"><%- userData.email %></td>
+                    <td class="px-6 py-3"><%- userData.role %></td>
+                    <td class="px-6 py-3">
+                        <button class="bg-gray-500 text-white px-4 py-1 rounded-md hover:bg-red-500 transition">
+                            Cấm
+                        </button>
+                    </td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
