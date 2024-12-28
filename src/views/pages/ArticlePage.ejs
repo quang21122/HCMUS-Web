@@ -20,7 +20,7 @@
             <%- include('../partials/ArticlePage/sidebar.ejs') %>
         </div>
         <div class="col-span-2 w-full mt-8 border-t border-gray-200 pt-8">
-            <%- include('../partials/ArticlePage/comment.ejs') %>
+            <%- include('../partials/ArticlePage/comment.ejs', {user: user}) %>
         </div>
     </div>
     <%- include('../partials/HomePage/footer.ejs') %>

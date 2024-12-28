@@ -20,13 +20,6 @@ const router = express.Router();
 router.get("/article/:id", async (req, res) => {
   try {
     const articleId = req.params.id;
-    const cacheKey = `article_${articleId}`;
-
-    // Check cache
-    const cachedData = cache.get(cacheKey);
-    if (cachedData) {
-      return res.render("pages/ArticlePage", cachedData);
-    }
 
     // Get article by ID
     const response = await getArticlesById(articleId);
@@ -103,11 +96,8 @@ router.get("/article/:id", async (req, res) => {
       tags: tagsResponse.data,
       user: user,
       categories: categories.data,
-      comments, // Thêm comments vào dữ liệu trả về
+      comments: comments, // Thêm comments vào dữ liệu trả về
     };
-
-    // Cache the data
-    cache.set(cacheKey, articleData);
 
     incrementArticleViews(articleId);
 

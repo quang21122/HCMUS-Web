@@ -18,13 +18,21 @@ router.post("/comments", async (req, res) => {
       createdAt: new Date(),
     });
 
-    // Lưu bình luận vào cơ sở dữ liệu
     await newComment.save();
 
-    res.status(201).json(newComment);
+    const user = req.user || (userId && (await findUser(userId))) || null;
+    // Include user info in response
+    const commentWithUser = {
+      ...newComment.toObject(),
+      user: {
+        _id: user?._id,
+        name: user?.name,
+      },
+    };
+
+    res.status(201).json(commentWithUser);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
