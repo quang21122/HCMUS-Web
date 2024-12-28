@@ -62,6 +62,10 @@ router.post("/register", (req, res) => {
         penName: role === "author" ? penName : null,
     };
 
+    if (role === "subscriber") {
+        user.subscriptionExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    }
+
     fetch(`http://localhost:3000/api/users?_id=${userId}`,
         {
             method: "PUT",

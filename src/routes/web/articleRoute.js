@@ -1,6 +1,5 @@
 import express from "express";
 import puppeteer from "puppeteer";
-import cache from "../../config/cache.js";
 import {
   getArticlesById,
   getArticlesSameCategory,
@@ -35,11 +34,21 @@ router.get("/article/:id", async (req, res) => {
     }
 
     // Check if article is premium and user is not authenticated
-    if (article.isPremium && !req.isAuthenticated()) {
-      return res.render("pages/login", {
-        error: "Bạn cần đăng nhập để xem bài viết premium",
-        returnTo: `/article/${articleId}`,
-      });
+    if (article.isPremium) {
+      if (!req.isAuthenticated()) {
+        return res.render("pages/login", {
+          error: "Bạn cần đăng nhập để xem bài viết premium",
+          returnTo: `/article/${articleId}`,
+        });
+      }
+
+      // Check if user has subscription
+      if (!req.user.subscriptionExpiry || req.user.subscriptionExpiry < new Date()) {
+        return res.status(403).json({
+          success: false,
+          error: "Bạn cần đăng ký tài khoản Đọc giả để xem bài viết premium",
+        });
+      }
     }
 
     // Get category names
