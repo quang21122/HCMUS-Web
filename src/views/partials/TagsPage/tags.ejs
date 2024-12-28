@@ -65,7 +65,7 @@
                                         <% } %>
                         </div>
                         <p class="text-sm text-gray-500 line-clamp-3">
-                            <%= article.abstract || article.content %>
+                            <%= article.abstract %>
                         </p>
                         <p class="text-sm text-gray-500">
                             <%= article.authorNames %> | <%= article.publishedAt ? article.publishedAt.split(',')[1]?.trim()
