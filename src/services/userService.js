@@ -164,6 +164,8 @@ const getUsersByPage = async (page = 1, role = null) => {
         const query = {
             ...(role ? { role } : {}), // Nếu role có giá trị, thêm điều kiện role
             role: { ...(role ? { $eq: role } : {}), $ne: 'admin' }, // Loại trừ admin
+            ...(role === "editor" ? { verified: false } : {}), // Nếu role là editor, thêm điều kiện verified: false
+            ban: false,
         };
 
         // Truy vấn tổng số người dùng và danh sách người dùng theo trang
@@ -209,6 +211,7 @@ const searchUsersByPage = async (page = 1, query = "", role = null) => {
             ],
             ...(role ? { role } : {}), // Nếu role có giá trị, thêm điều kiện role
             role: { ...(role ? { $eq: role } : {}), $ne: 'admin' }, // Loại trừ admin
+            ...(role === "editor" ? { verified: false } : {}), // Nếu role là editor, thêm điều kiện verified: false
         };
 
         // Truy vấn tổng số người dùng và danh sách người dùng theo trang

@@ -9,7 +9,6 @@
             <div class="hidden md:flex items-center space-x-8">
                 <a href="/trend" class="<%= (currentPath.startsWith('/trend')) ? 'text-[#FC4308]' : 'text-gray-600 hover:text-gray-900' %>">Xu Hướng</a>
                 <a href="/newest" class="<%= (currentPath.startsWith('/newest')) ? 'text-[#FC4308]' : 'text-gray-600 hover:text-gray-900' %>">Mới Nhất</a>
-                <a href="/manage-users/ban-users" class="<%= (currentPath.startsWith('/manage-user')) ? 'text-[#FC4308]' : 'text-gray-600 hover:text-gray-900' %>">Người Dùng</a>
                 <% if (typeof user !== 'undefined' && user) { %>
                     <% if (user.role === 'editor') { %>
                         <a href="/editor" class="<%= (currentPath.startsWith('/editor')) ? 'text-[#FC4308]' : 'text-gray-600 hover:text-gray-900' %>">Bài Chờ Duyệt</a>
@@ -18,7 +17,7 @@
                         <a href="/my-articles" class="<%= (currentPath.startsWith('/my-articles')) ? 'text-[#FC4308]' : 'text-gray-600 hover:text-gray-900' %>">Bài Viết Của Tôi</a>
                     <% } %>
                     <% if (user.role === 'admin') { %>
-                        <a href="/manage-user/ban-users" class="<%= (currentPath.startsWith('/manage-user')) ? 'text-[#FC4308]' : 'text-gray-600 hover:text-gray-900' %>">Người Dùng</a>
+                        <a href="/manage-users/ban-users" class="<%= (currentPath.startsWith('/manage-user')) ? 'text-[#FC4308]' : 'text-gray-600 hover:text-gray-900' %>">Người Dùng</a>
                     <% } %>
                 <% } %>
             </div>            
