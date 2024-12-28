@@ -1391,6 +1391,10 @@ video {
   border-top-width: 1px;
 }
 
+.border-b-4{
+  border-bottom-width: 4px;
+}
+
 .border-dashed{
   border-style: dashed;
 }
@@ -2374,6 +2378,11 @@ ul {
 .hover\:text-white:hover{
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+}
+
+.hover\:text-black:hover{
+  --tw-text-opacity: 1;
+  color: rgb(0 0 0 / var(--tw-text-opacity, 1));
 }
 
 .hover\:shadow-lg:hover{

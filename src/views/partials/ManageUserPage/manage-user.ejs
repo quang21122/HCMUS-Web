@@ -7,21 +7,32 @@
 </div>
 
 <!-- Tabs -->
-<div class="flex space-x-6 border-b border-gray-300 mb-6">
+<div class="flex space-x-6 mb-6 text-lg">
     <a href="/manage-users/ban-users" 
-       class="<%= (currentTab === 'ban-users') ? 'text-red-500 font-semibold border-b-2 border-red-500 pb-2' : 'text-gray-500 hover:text-red-500' %>">
+       class="<%= (currentTab === 'ban-users') ? 'font-semibold border-b-4 border-red-500 pb-2' : 'text-gray-500 hover:text-black' %>">
        Cấm Người Dùng
     </a>
     <a href="/manage-users/verify-editors" 
-       class="<%= (currentTab === 'verify-editors') ? 'text-red-500 font-semibold border-b-2 border-red-500 pb-2' : 'text-gray-500 hover:text-red-500' %>">
+       class="<%= (currentTab === 'verify-editors') ? 'font-semibold border-b-4 border-red-500 pb-2' : 'text-gray-500 hover:text-black' %>">
        Duyệt Biên Tập Viên
     </a>
     <a href="/manage-users/extend-subscription" 
-       class="<%= (currentTab === 'extend-subscription') ? 'text-red-500 font-semibold border-b-2 border-red-500 pb-2' : 'text-gray-500 hover:text-red-500' %>">
+       class="<%= (currentTab === 'extend-subscription') ? 'font-semibold border-b-4 border-red-500 pb-2' : 'text-gray-500 hover:text-black' %>">
        Gia Hạn Độc Giả
     </a>
 </div>
-<%- include('./search.ejs') %>
+
+<!-- Search -->
+<form action="/manage-users/<%= currentTab %>/search" method="GET" class="relative mb-8">
+    <input type="text" name="searchUser"
+        class="w-full p-3 pl-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:border-primary"
+        placeholder="Tìm tên">
+    <button type="submit" class="absolute inset-y-0 left-3 flex items-center">
+        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+    </button>
+</form>
 
 <% if (currentTab === 'ban-users') { %>
     <%- include('./ban-user-content.ejs') %>
@@ -30,6 +41,7 @@
 <% } else if (currentTab === 'extend-subscription') { %>
     <%- include('./extend-subscription-content.ejs') %>
 <% } %>
+
      <!-- Pagination -->
      <% if (pagination.totalPages> 1) { %>
         <div class="flex justify-center mt-8 gap-2">
@@ -50,8 +62,15 @@
         buttons.forEach(button => {
             button.addEventListener('click', function () {
                 const page = this.dataset.page;
-                // Use window.location to reload page with new page parameter
-                window.location.href = `/manage-users/<%= currentTab %>?page=${page}`;
+                const searchQuery = new URLSearchParams(window.location.search).get('searchUser') || ''; // Lấy giá trị search nếu có
+                const baseUrl = '/manage-users/<%= currentTab %>';
+
+                let newUrl = `${baseUrl}?page=${page}`;
+                if (searchQuery) {
+                    newUrl += `&searchUser=${searchQuery}`; // Nếu có tìm kiếm, thêm query searchUser vào URL
+                }
+
+                window.location.href = newUrl;
             });
         });
     });

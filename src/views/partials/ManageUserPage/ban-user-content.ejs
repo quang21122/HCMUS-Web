@@ -1,6 +1,6 @@
     <!-- User Table -->
     <div class="bg-white shadow rounded-md overflow-hidden">
-        <table class="min-w-full text-sm text-gray-700">
+        <table class="min-w-full text-base text-gray-700">
             <thead class="bg-gray-200">
                 <tr>
                     <th class="px-6 py-3 text-left font-semibold">Tên</th>
@@ -10,12 +10,20 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- Example row -->
+                <% 
+                // in role thành tiếng việt
+                const roleMap = {
+                    'admin': 'Quản trị viên',
+                    'subscriber': 'Độc giả',
+                    'editor': 'Biên tập viên',
+                    'author': 'Phóng viên',
+                };
+                %>
                 <% users.forEach(userData=> { %>
                 <tr class="border-t">
                     <td class="px-6 py-3"><%- userData.name %></td>
                     <td class="px-6 py-3"><%- userData.email %></td>
-                    <td class="px-6 py-3"><%- userData.role %></td>
+                    <td class="px-6 py-3"><%= roleMap[userData.role] || userData.role %></td>
                     <td class="px-6 py-3">
                         <button class="bg-gray-500 text-white px-4 py-1 rounded-md hover:bg-red-500 transition">
                             Cấm

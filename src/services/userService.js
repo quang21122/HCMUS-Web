@@ -195,4 +195,50 @@ const getUsersByPage = async (page = 1, role = null) => {
     }
 };
 
-export default { createUser, createMultipleUsers, importUsersFromLocal, findUser, updateUser, deleteUser, getUsersByPage };
+const searchUsersByPage = async (page = 1, query = "", role = null) => {
+    try {
+        const limit = 10;
+        // Tính toán số lượng bản ghi cần bỏ qua
+        const skip = (page - 1) * limit;
+
+        // Xây dựng query tìm kiếm
+        const searchQuery = {
+            $or: [
+                { name: { $regex: query, $options: 'i' } }, // Tìm kiếm theo tên (không phân biệt hoa thường)
+                { email: { $regex: query, $options: 'i' } }, // Tìm kiếm theo email (không phân biệt hoa thường)
+            ],
+            ...(role ? { role } : {}), // Nếu role có giá trị, thêm điều kiện role
+            role: { ...(role ? { $eq: role } : {}), $ne: 'admin' }, // Loại trừ admin
+        };
+
+        // Truy vấn tổng số người dùng và danh sách người dùng theo trang
+        const [total, users] = await Promise.all([
+            User.countDocuments(searchQuery),
+            User.find(searchQuery)
+                .sort({ createdAt: -1 })  // Sắp xếp theo ngày tạo mới nhất
+                .skip(skip)
+                .limit(limit)
+                .lean()  // Để trả về các đối tượng JavaScript thay vì đối tượng Mongoose
+                .exec(),
+        ]);
+
+        return {
+            success: true,
+            data: users,
+            pagination: {
+                total, // Tổng số người dùng theo điều kiện tìm kiếm và role
+                currentPage: page, // Trang hiện tại
+                totalPages: Math.ceil(total / limit), // Tổng số trang
+            },
+        };
+    } catch (error) {
+        console.error("searchUsersByPage error:", error);
+        return {
+            success: false,
+            error: error.message,
+        };
+    }
+};
+
+
+export default { createUser, createMultipleUsers, importUsersFromLocal, findUser, updateUser, deleteUser, getUsersByPage, searchUsersByPage };
