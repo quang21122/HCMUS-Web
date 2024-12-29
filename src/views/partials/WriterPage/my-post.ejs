@@ -4,8 +4,17 @@
         <div class="flex items-center space-x-8">
             <button onclick="changeTab('published')" id="published-tab"
                 class="menu-tab text-gray-700 hover:text-gray-900 font-medium pb-2 relative">
-                Xuất Bản
+                Đã Xuất Bản
                 <% if (status==='published' ) { %>
+                    <div
+                        class="tab-indicator absolute bottom-0 left-0 w-full h-0.5 bg-cyan-500 transform scale-x-100 transition-transform">
+                    </div>
+                    <% } %>
+            </button>
+            <button onclick="changeTab('pending')" id="pending-tab"
+                class="menu-tab text-gray-700 hover:text-gray-900 font-medium pb-2 relative">
+                Chờ Xuất Bản
+                <% if (status==='pending' ) { %>
                     <div
                         class="tab-indicator absolute bottom-0 left-0 w-full h-0.5 bg-cyan-500 transform scale-x-100 transition-transform">
                     </div>

@@ -56,7 +56,19 @@ router.get("/", async (req, res) => {
 
     let articleCount;
     if (status === "published") {
-      articleCount = await getArticlesPublishedByAuthor(userId, page, limit);
+      articleCount = await getArticlesPublishedByAuthor(
+        userId,
+        page,
+        limit,
+        "published"
+      );
+    } else if (status === "pending") {
+      articleCount = await getArticlesPublishedByAuthor(
+        userId,
+        page,
+        limit,
+        "pending"
+      );
     } else if (status === "draft") {
       articleCount = await getArticlesPublishedByAuthor(
         userId,

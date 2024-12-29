@@ -1,6 +1,7 @@
 import { readFile } from "fs/promises";
 import Article from "../models/Article.js";
 import mongoose, { get } from "mongoose";
+import moment from "moment";
 
 export const incrementArticleViews = async (articleId) => {
   try {
@@ -34,10 +35,27 @@ export const getArticles = async () => {
       throw new Error("No articles found");
     }
 
+    // Lọc bài viết dựa trên publishedAt
+    const currentDate = new Date();
+    const filteredArticles = response.filter((article) => {
+      if (!article.publishedAt) return true;
+
+      const cleanedPublishedAt = article.publishedAt
+        .replace(" (GMT+7)", "")
+        .replace(/^[^,]+,\s*/, "");
+
+      const publishedDate = moment(
+        cleanedPublishedAt,
+        "DD/MM/YYYY, HH:mm"
+      ).toDate();
+
+      return publishedDate <= currentDate;
+    });
+
     return {
       status: "SUCCESS",
       message: "Articles retrieved successfully",
-      data: response,
+      data: filteredArticles,
     };
   } catch (error) {
     console.error("getArticles error:", error);
@@ -122,7 +140,8 @@ export const getArticlesByCategory = async (
     const skip = (page - 1) * limit;
     const filter = {
       category: { $in: [category] },
-      status: status || "published",
+      status:
+        status === "pending" || status === "published" ? "published" : status,
     };
 
     const projection = {
@@ -149,9 +168,38 @@ export const getArticlesByCategory = async (
         .exec(),
     ]);
 
+    let filteredArticles;
+
+    // Lọc bài viết dựa trên publishedAt
+    if (status === "published" || status === "pending") {
+      const currentDate = new Date();
+
+      filteredArticles = articles.filter((article) => {
+        if (!article.publishedAt) return true;
+
+        const cleanedPublishedAt = article.publishedAt
+          .replace(" (GMT+7)", "")
+          .replace(/^[^,]+,\s*/, "");
+
+        const publishedDate = moment(
+          cleanedPublishedAt,
+          "DD/MM/YYYY, HH:mm"
+        ).toDate();
+
+        if (status === "published") {
+          return publishedDate <= currentDate;
+        } else {
+          return publishedDate > currentDate;
+        }
+      });
+    }
+
     return {
       success: true,
-      data: articles,
+      data:
+        status === "published" || status === "pending"
+          ? filteredArticles
+          : articles,
       pagination: {
         total,
         currentPage: page,
@@ -291,13 +339,15 @@ export const getArticlesPublishedByAuthor = async (
     // Get total count for pagination
     const totalCount = await Article.countDocuments({
       author: authorId,
-      status: status || "published",
+      status:
+        status === "pending" || status === "published" ? "published" : status,
     });
 
     // Find articles with pagination
     const articles = await Article.find({
       author: authorId,
-      status: status || "published",
+      status:
+        status === "pending" || status === "published" ? "published" : status,
     })
       .sort({ createdAt: -1 })
       .skip(skip)
@@ -306,10 +356,39 @@ export const getArticlesPublishedByAuthor = async (
       .populate("tags")
       .populate("author");
 
+    let filteredArticles;
+
+    // Lọc bài viết dựa trên publishedAt
+    if (status === "published" || status === "pending") {
+      const currentDate = new Date();
+
+      filteredArticles = articles.filter((article) => {
+        if (!article.publishedAt) return true;
+
+        const cleanedPublishedAt = article.publishedAt
+          .replace(" (GMT+7)", "")
+          .replace(/^[^,]+,\s*/, "");
+
+        const publishedDate = moment(
+          cleanedPublishedAt,
+          "DD/MM/YYYY, HH:mm"
+        ).toDate();
+
+        if (status === "published") {
+          return publishedDate <= currentDate;
+        } else {
+          return publishedDate > currentDate;
+        }
+      });
+    }
+
     return {
       success: true,
       data: {
-        articles,
+        articles:
+          status === "published" || status === "pending"
+            ? filteredArticles
+            : articles,
         pagination: {
           currentPage: page,
           totalPages: Math.ceil(totalCount / limit),
