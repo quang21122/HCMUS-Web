@@ -29,7 +29,10 @@ router.get("/search", async (req, res) => {
       { $text: { $search: query } },
       { score: { $meta: "textScore" } }
     )
-      .sort({ score: { $meta: "textScore" } })
+      .sort({
+        isPremium: -1, // Sort premium first
+        score: { $meta: "textScore" }, // Then by text match score
+      })
       .skip(skip)
       .limit(limit)
       .populate("category")
