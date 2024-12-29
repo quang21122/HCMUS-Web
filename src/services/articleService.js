@@ -159,6 +159,48 @@ export const getArticlesByCategory = async (category, page = 1, limit = 12, stat
   }
 };
 
+export const getPendingArticlesByCategory = async (
+  category,
+  page = 1,
+  limit = 12
+) => {
+  try {
+    const currentDate = new Date();
+    const skip = (page - 1) * limit;
+
+    const response = await Article.find({
+      status: "published",
+      category: category,
+      publishedDate: { $gt: currentDate },
+    })
+      .populate("author")
+      .populate("category")
+      .sort({ publishedDate: 1 })
+      .skip(skip)
+      .limit(limit)
+      .lean()
+      .exec();
+
+    if (!response) {
+      throw new Error("No pending articles found");
+    }
+
+    return {
+      status: "SUCCESS",
+      message: "Pending articles retrieved successfully",
+      data: response,
+    };
+  } catch (error) {
+    console.error("getPendingArticlesByCategory error:", error);
+    return {
+      status: "FAILED",
+      message:
+        error.message || "An error occurred while retrieving pending articles",
+      data: null,
+    };
+  }
+};
+
 export const getArticlesByTag = async (
   tag,
   page = 1,

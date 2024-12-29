@@ -6,12 +6,15 @@
     </div>
 
     <!-- Status Tabs -->
-    <!-- Status Tabs -->
     <div class="mb-8 border-b border-gray-200">
         <nav class="-mb-px flex justify-center space-x-8" aria-label="Tabs">
             <button onclick="changeTab('published')"
                 class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg <%= activeTab === 'published' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' %>">
                 Đã duyệt
+            </button>
+            <button onclick="changeTab('pending')"
+                class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg <%= activeTab === 'pending' ? 'border-yellow-500 text-yellow-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' %>">
+                Chờ xuất bản
             </button>
             <button onclick="changeTab('draft')"
                 class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg <%= activeTab === 'draft' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' %>">
