@@ -21,12 +21,31 @@ export const incrementArticleViews = async (articleId) => {
   }
 };
 
-export const getArticles = async () => {
+export const getArticles = async (sortBy = "publishedDate") => {
   try {
+    let sortQuery = {};
+
+    switch (sortBy) {
+      case "title":
+        sortQuery = { name: 1 }; // Sort by title alphabetically
+        break;
+      case "newest":
+        sortQuery = { publishedDate: -1 }; // Newest first
+        break;
+      case "oldest":
+        sortQuery = { publishedDate: 1 }; // Oldest first
+        break;
+      case "views":
+        sortQuery = { views: -1 }; // Most viewed first
+        break;
+      default:
+        sortQuery = { publishedDate: -1 }; // Default to newest
+    }
+
     const response = await Article.find({ status: "published" })
       .populate("author")
       .populate("category")
-      .sort({ publishedAt: -1 })
+      .sort(sortQuery)
       .lean()
       .exec();
 
@@ -44,6 +63,53 @@ export const getArticles = async () => {
     return {
       status: "FAILED",
       message: error.message || "An error occurred while retrieving articles",
+      data: null,
+    };
+  }
+};
+
+export const getMostViewedCategoryArticles = async () => {
+  try {
+    // First find highest viewed article for each category
+    const mostViewedPerCategory = await Article.aggregate([
+      { $match: { status: "published" } },
+      {
+        $group: {
+          _id: "$category",
+          articleId: {
+            $first: "$_id",
+          },
+          maxViews: { $max: "$views" },
+          doc: {
+            $first: "$$ROOT",
+          },
+        },
+      },
+      { $sort: { maxViews: -1 } },
+    ]);
+
+    // Get full article details with populated fields
+    const articles = await Article.find({
+      _id: {
+        $in: mostViewedPerCategory.map((item) => item.articleId),
+      },
+    })
+      .populate("author")
+      .populate("category")
+      .sort({ views: -1 })
+      .lean()
+      .exec();
+
+    return {
+      status: "SUCCESS",
+      message: "Most viewed articles per category retrieved successfully",
+      data: articles,
+    };
+  } catch (error) {
+    console.error("getMostViewedCategoryArticles error:", error);
+    return {
+      status: "FAILED",
+      message: error.message,
       data: null,
     };
   }
@@ -112,7 +178,12 @@ export const getArticlesSameCategory = async (category, currentArticleId) => {
   }
 };
 
-export const getArticlesByCategory = async (category, page = 1, limit = 12, status) => {
+export const getArticlesByCategory = async (
+  category,
+  page = 1,
+  limit = 12,
+  status
+) => {
   try {
     const skip = (page - 1) * limit;
     const filter = {
@@ -137,7 +208,7 @@ export const getArticlesByCategory = async (category, page = 1, limit = 12, stat
       Article.countDocuments(filter),
       Article.find(filter)
         .select(projection)
-        .sort({ publishedAt: -1 })
+        .sort({ isPremium: -1, publishedDate: -1 }) // Sort by premium first, then by date
         .skip(skip)
         .limit(limit)
         .lean()
@@ -196,7 +267,7 @@ export const getArticlesByTag = async (
       Article.countDocuments(query),
       Article.find(query)
         .select(projection)
-        .sort({ publishedAt: -1 })
+        .sort({ isPremium: -1, publishedDate: -1 })
         .skip(skip)
         .limit(limit)
         .lean()
@@ -220,7 +291,10 @@ export const getArticlesByTag = async (
 
 export const getArticleCountByAuthor = async (authorId) => {
   try {
-    const count = await Article.countDocuments({ author: authorId, status: "published" });
+    const count = await Article.countDocuments({
+      author: authorId,
+      status: "published",
+    });
 
     return {
       success: true,
@@ -235,16 +309,26 @@ export const getArticleCountByAuthor = async (authorId) => {
   }
 };
 
-export const getArticlesPublishedByAuthor = async (authorId, page = 1, limit = 12) => {
+export const getArticlesPublishedByAuthor = async (
+  authorId,
+  page = 1,
+  limit = 12
+) => {
   try {
     const skip = (page - 1) * limit;
 
     // Get total count for pagination
-    const totalCount = await Article.countDocuments({ author: authorId, status: "published" });
+    const totalCount = await Article.countDocuments({
+      author: authorId,
+      status: "published",
+    });
 
     // Find articles with pagination
-    const articles = await Article.find({ author: authorId, status: "published" })
-      .sort({ createdAt: -1 })
+    const articles = await Article.find({
+      author: authorId,
+      status: "published",
+    })
+      .sort({ isPremium: -1, publishedDate: -1 })
       .skip(skip)
       .limit(limit)
       .populate("category")
@@ -326,18 +410,16 @@ export const importArticlesFromLocal = async () => {
 };
 
 export const updateArticle = async (id, data) => {
-    try {
-        // Kiểm tra ID hợp lệ
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return { error: "Invalid ID format", status: 400 };
-        }
-        // Find the article by ID and update with the provided data
-        const updatedArticle = await Article
-            .updateOne({ _id: id }, data)
-            .exec();
-        
-        // Return the updated article or a not found message
-        return updatedArticle || { error: "Article not found", status: 404 };
+  try {
+    // Kiểm tra ID hợp lệ
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return { error: "Invalid ID format", status: 400 };
+    }
+    // Find the article by ID and update with the provided data
+    const updatedArticle = await Article.updateOne({ _id: id }, data).exec();
+
+    // Return the updated article or a not found message
+    return updatedArticle || { error: "Article not found", status: 404 };
   } catch (error) {
     // Log the error and return a failure response
     console.error("Error updating article:", error);
@@ -363,33 +445,40 @@ export const deleteArticle = async (id) => {
   }
 };
 
-export function parsePublishedAt(publishedAt) { //Trả về publishedAt dạng new Date
-    // Tách ngày tháng năm và giờ
-    const regex = /(\d{1,2})\/(\d{1,2})\/(\d{4}), (\d{2}):(\d{2}) \((GMT[+-]\d{1,2})\)/;
-    const match = publishedAt.match(regex);
+export function parsePublishedAt(publishedAt) {
+  //Trả về publishedAt dạng new Date
+  // Tách ngày tháng năm và giờ
+  const regex =
+    /(\d{1,2})\/(\d{1,2})\/(\d{4}), (\d{2}):(\d{2}) \((GMT[+-]\d{1,2})\)/;
+  const match = publishedAt.match(regex);
 
-    if (match) {
-        const day = match[1];
-        const month = match[2] - 1; // Lưu ý: tháng trong JavaScript bắt đầu từ 0
-        const year = match[3];
-        const hours = match[4];
-        const minutes = match[5];
+  if (match) {
+    const day = match[1];
+    const month = match[2] - 1; // Lưu ý: tháng trong JavaScript bắt đầu từ 0
+    const year = match[3];
+    const hours = match[4];
+    const minutes = match[5];
 
-        // Tạo đối tượng Date
-        const newDate = new Date(year, month, day, hours, minutes);
+    // Tạo đối tượng Date
+    const newDate = new Date(year, month, day, hours, minutes);
 
-        // Điều chỉnh múi giờ nếu cần
-        const gmtOffset = match[6]; // GMT+7 hoặc GMT-3,...
-        const offset = parseInt(gmtOffset.replace('GMT', ''), 10);
-        newDate.setHours(newDate.getHours() - offset);
+    // Điều chỉnh múi giờ nếu cần
+    const gmtOffset = match[6]; // GMT+7 hoặc GMT-3,...
+    const offset = parseInt(gmtOffset.replace("GMT", ""), 10);
+    newDate.setHours(newDate.getHours() - offset);
 
-        return newDate;
-    } else {
-        return null;
-    }
+    return newDate;
+  } else {
+    return null;
+  }
 }
 
-export const getArticlesByPageWithSort = async (page = 1, limit = 12, sortBy = "publishedDate", sortOrder = -1) => {
+export const getArticlesByPageWithSort = async (
+  page = 1,
+  limit = 12,
+  sortBy = "publishedDate",
+  sortOrder = -1
+) => {
   try {
     // Tính toán skip dựa trên số trang và số bài viết mỗi trang
     const skip = (page - 1) * limit;
@@ -438,5 +527,5 @@ export default {
   updateArticle,
   deleteArticle,
   parsePublishedAt,
-  getArticlesByPageWithSort
-}
+  getArticlesByPageWithSort,
+};
