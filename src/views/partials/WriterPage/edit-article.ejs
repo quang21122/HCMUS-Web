@@ -1,6 +1,6 @@
 <div class="grid grid-cols-[7fr_3fr] max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 relative space-x-6">
     <div>
-        <form method="POST" action="/writer/create" enctype="multipart/form-data" class="space-y-6"
+        <form method="POST" action="/writer/edit?id=<%= article._id %>" enctype="multipart/form-data" class="space-y-6"
             id="articleForm">
             <!-- Title -->
             <div class="mb-4">
@@ -25,7 +25,7 @@
                 </div>
 
                 <!-- Adjusted the image styling -->
-                <img id="preview" class="absolute inset-0 w-full h-full object-contain rounded-lg hidden">
+                <img id="preview" src="<%= article.image %>" class="absolute inset-0 w-full h-full object-contain rounded-lg hidden">
             </div>
 
             <!-- Content (TinyMCE Editor) -->
@@ -123,11 +123,25 @@
 
             </div>
         </div>
+        <!-- Reject reason if exist -->
+        <% if (article.rejectReason) { %>
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-1 h-4 bg-red-500"></div>
+                    <h2 class="text-lg font-medium text-red-600">Lý do từ chối</h2>
+                </div>
+                <div class="bg-red-50 rounded-lg p-4">
+                    <p class="text-sm text-gray-700 mb-2">
+                        <%= article.rejectReason %>
+                    </p>
+                </div>
+            </div>
+            <% } %>
         <!-- Create Button -->
         <div class="flex items-center justify-center mt-6 w-full">
             <button type="submit" form="articleForm"
                 class="bg-cyan-600 hover:bg-cyan-700 text-white text-xl py-2 px-4 rounded-md shadow-sm focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 w-full">
-                Đăng Bài
+                Lưu bài viết
             </button>
         </div>
     </div>
@@ -176,6 +190,10 @@
         height: 300,
         paste_data_images: true,
         setup: function (editor) {
+            editor.on('init', function () {
+                const htmlContent = <%- JSON.stringify(article.content) %>;
+                editor.setContent(htmlContent);
+            });
             editor.on('paste', function (e) {
                 // Get pasted content
                 let content = e.clipboardData.getData('text');
@@ -229,8 +247,6 @@
         return content;
     }
 
-    console.log('Content:', <% - JSON.stringify(article.content) %>);
-
     <% if (article.content) { %>
         // Process and load the content into TinyMCE
         tinymce.get('editor').setContent(convertUrlsToContent(<% - article.content %>));
@@ -244,14 +260,20 @@
         };
 </script>
 
-
-
 <script>
     const uploadContainer = document.getElementById('upload-container');
     const fileInput = document.getElementById('file-input');
     const placeholder = document.getElementById('placeholder');
     const preview = document.getElementById('preview');
     let uploadedImageUrl = '';  // Variable to store the uploaded image URL
+
+    console.log('Preview:', preview.src);
+
+    // Show default image if exists
+    if (preview.src && preview.src !== window.location.href) {
+        placeholder.classList.add('hidden');
+        preview.classList.remove('hidden');
+    }
 
     // Handle click to upload
     uploadContainer.addEventListener('click', () => {
@@ -345,56 +367,54 @@
 
     // Function to select an item (tag or category)
     function selectItem(inputId, value, selectedContainerId, displayText) {
-        // Get the input element and current values
         const inputElement = document.getElementById(inputId);
-        let currentValues = inputElement.value ? inputElement.value.split(',') : [];
+        let currentValues = [];
+        
+        try {
+            currentValues = JSON.parse(inputElement.value || '[]');
+        } catch (e) {
+            console.error('Error parsing values:', e);
+        }
 
-        // Avoid duplicates
         if (!currentValues.includes(value)) {
             currentValues.push(value);
-            inputElement.value = currentValues.join(',');
+            inputElement.value = JSON.stringify(currentValues);
 
-            // Add the selected item visually
             const selectedContainer = document.getElementById(selectedContainerId);
             const item = document.createElement('span');
             item.className = 'px-3 py-1 bg-blue-200 rounded-lg text-sm inline-flex items-center mr-2 mb-2';
-
-            // Create the text content for the selected item
+            
             const text = document.createElement('span');
             text.textContent = displayText;
-
-            // Create a remove button
+            
             const removeBtn = document.createElement('button');
             removeBtn.textContent = '×';
             removeBtn.className = 'ml-2 text-red-600 hover:text-red-800 text-lg';
-            removeBtn.onclick = function () {
-                // Remove the item
-                item.remove();
-                // Remove the item from the input value
-                currentValues = currentValues.filter(val => val !== value);
-                inputElement.value = currentValues.join(',');
+            removeBtn.onclick = function() {
+                removeItem(inputId, value, item);
             };
 
             item.appendChild(text);
             item.appendChild(removeBtn);
             selectedContainer.appendChild(item);
         }
-        // Close the list after selection
+
         const listId = inputId === 'tagsInput' ? 'tagList' : 'categoryList';
         document.getElementById(listId).classList.add('hidden');
     }
 
-
-    // Function to remove an item from the selected list
     function removeItem(inputId, itemId, itemElement) {
         const inputField = document.getElementById(inputId);
+        let currentValues = [];
+        
+        try {
+            currentValues = JSON.parse(inputField.value || '[]');
+            currentValues = currentValues.filter(value => value !== itemId);
+            inputField.value = JSON.stringify(currentValues);
+        } catch (e) {
+            console.error('Error removing item:', e);
+        }
 
-        // Update the input field values
-        let currentValues = inputField.value.split(',');
-        currentValues = currentValues.filter(value => value !== itemId);
-        inputField.value = currentValues.join(',');
-
-        // Remove the item from the display section
         itemElement.remove();
     }
     document.querySelector('form').onsubmit = function () {
@@ -404,4 +424,63 @@
         return true;  // Proceed with form submission
     };
 
+</script>
+<script>
+    function removeValues(inputId, valueToRemove) {
+        const input = document.getElementById(inputId);
+        let values = [];
+        
+        try {
+            values = JSON.parse(input.value);
+            values = values.filter(v => v !== valueToRemove);
+            input.value = JSON.stringify(values);
+            console.log(`Updated ${inputId}:`, input.value);
+        } catch (e) {
+            console.error('Error updating values:', e);
+        }
+    }
+document.addEventListener('DOMContentLoaded', function() {
+    // Get article data
+    const articleTags = <%- JSON.stringify(article.tags || []) %>;
+    const articleCategories = <%- JSON.stringify(article.category || []) %>;
+    const categories = <%- JSON.stringify(categories) %>;
+    const tags = <%- JSON.stringify(tags) %>;
+
+    // Initialize selected items containers
+    const selectedTagsContainer = document.getElementById('selectedTags');
+    const selectedCategoriesContainer = document.getElementById('selectedCategories');
+
+    // Set initial values for hidden inputs
+    document.getElementById('tagsInput').value = JSON.stringify(articleTags);
+    document.getElementById('categoriesInput').value = JSON.stringify(articleCategories);
+
+    // Display selected tags
+    articleTags.forEach(tagId => {
+        const tag = tags.find(t => t._id === tagId);
+        if (tag) {
+            const element = document.createElement('span');
+            element.className = 'px-3 py-1 bg-blue-200 rounded-lg text-sm flex items-center gap-2';
+            // Change to use div for consistent structure
+            element.innerHTML = `
+                <span>${tag.name}</span>
+                <button type="button" onclick="this.parentElement.remove(); removeValues('tagsInput', '${tagId}')" class="text-red-600 hover:text-red-800 text-lg">×</button>
+            `;
+            selectedTagsContainer.appendChild(element);
+        }
+    });
+
+    // Display selected categories
+    articleCategories.forEach(catId => {
+        const category = categories.find(c => c._id === catId);
+        if (category) {
+            const element = document.createElement('span');
+            element.className = 'px-3 py-1 bg-blue-200 rounded-lg text-sm flex items-center gap-2';
+            element.innerHTML = `
+                <span>${category.name}</span>
+                <button type="button" onclick="this.parentElement.remove(); removeValues('categoriesInput', '${catId}')" class="text-red-600 hover:text-red-800 text-lg">×</button>
+            `;
+            selectedCategoriesContainer.appendChild(element);
+        }
+    });
+});
 </script>

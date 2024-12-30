@@ -26,7 +26,19 @@ router.get("/", async (req, res) => {
 
     let articles;
     if (status === "published") {
-      articles = await getArticlesByCategory(user.category, page, limit);
+      articles = await getArticlesByCategory(
+        user.category,
+        page,
+        limit,
+        "published"
+      );
+    } else if (status === "pending") {
+      articles = await getArticlesByCategory(
+        user.category,
+        page,
+        limit,
+        "pending"
+      );
     } else if (status === "draft") {
       articles = await getArticlesByCategory(
         user.category,

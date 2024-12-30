@@ -1,192 +1,161 @@
-<style>
-    .selected {
-        position: relative;
-    }
-
-    .selected::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        width: 100%;
-        height: 2px;
-        background-color: #676565;
-    }
-</style>
-<div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 min-h-screen">
     <div class="relative flex items-center justify-center px-6 py-4">
         <!-- Menu Links -->
         <div class="flex items-center space-x-8">
-            <a href="" id="menu-xuat-ban" class="text-gray-700 hover:text-gray-900 font-medium">
-                Xuất Bản
-            </a>
-            <a href="" id="menu-duoc-duyet" class="text-gray-700 hover:text-gray-900 font-medium">
-                Được Duyệt
-            </a>
-            <a href="" id="menu-tu-choi" class="text-gray-700 hover:text-gray-900 font-medium">
+            <button onclick="changeTab('published')" id="published-tab"
+                class="menu-tab text-gray-700 hover:text-gray-900 font-medium pb-2 relative">
+                Đã Xuất Bản
+                <% if (status==='published' ) { %>
+                    <div
+                        class="tab-indicator absolute bottom-0 left-0 w-full h-0.5 bg-cyan-500 transform scale-x-100 transition-transform">
+                    </div>
+                    <% } %>
+            </button>
+            <button onclick="changeTab('pending')" id="pending-tab"
+                class="menu-tab text-gray-700 hover:text-gray-900 font-medium pb-2 relative">
+                Chờ Xuất Bản
+                <% if (status==='pending' ) { %>
+                    <div
+                        class="tab-indicator absolute bottom-0 left-0 w-full h-0.5 bg-cyan-500 transform scale-x-100 transition-transform">
+                    </div>
+                    <% } %>
+            </button>
+            <button onclick="changeTab('rejected')" id="rejected-tab"
+                class="menu-tab text-gray-700 hover:text-gray-900 font-medium pb-2 relative">
                 Từ Chối
-            </a>
-            <a href="" id="menu-cho-duyet" class="text-gray-700 hover:text-gray-900 font-medium">
+                <% if (status==='rejected' ) { %>
+                    <div
+                        class="tab-indicator absolute bottom-0 left-0 w-full h-0.5 bg-cyan-500 transform scale-x-100 transition-transform">
+                    </div>
+                    <% } %>
+            </button>
+            <button onclick="changeTab('draft')" id="draft-tab"
+                class="menu-tab text-gray-700 hover:text-gray-900 font-medium pb-2 relative">
                 Chờ Duyệt
-            </a>
+                <% if (status==='draft' ) { %>
+                    <div
+                        class="tab-indicator absolute bottom-0 left-0 w-full h-0.5 bg-cyan-500 transform scale-x-100 transition-transform">
+                    </div>
+                    <% } %>
+            </button>
         </div>
 
         <!-- Create New Post Button -->
-        <a href="/my-articles/create"
+        <a href="/writer/create"
             class="absolute right-4 top-1/2 transform -translate-y-1/2 inline-flex items-center px-4 py-2 bg-[#FF4D6B] text-white font-medium rounded-lg hover:bg-[#ff3956] transition-colors">
             <span class="mr-2">+</span>
             Tạo Bài Viết Mới
         </a>
     </div>
     <div class="grid grid-cols-4 gap-4 mt-8">
-        <% articles.forEach(article=> { %>
-            <a href="/article/<%= article._id %>" class="block hover:shadow-lg transition-all duration-300">
-                <div class="bg-white rounded-lg shadow overflow-hidden p-2">
-                    <!-- Image -->
-                    <div class="relative w-full h-48">
-                        <img src="<%= article.image %>" alt="<%= article.name %>"
-                            class="w-full h-full object-cover rounded-xl">
-                        <% if (article.isPremium) { %>
-                            <div class="absolute top-2 left-2">
-                                <svg class="w-6 h-6 text-yellow-400" aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M11 9a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z" />
-                                    <path fill-rule="evenodd"
-                                        d="M9.896 3.051a2.681 2.681 0 0 1 4.208 0c.147.186.38.282.615.255a2.681 2.681 0 0 1 2.976 2.975.681.681 0 0 0 .254.615 2.681 2.681 0 0 1 0 4.208.682.682 0 0 0-.254.615 2.681 2.681 0 0 1-2.976 2.976.681.681 0 0 0-.615.254 2.682 2.682 0 0 1-4.208 0 .681.681 0 0 0-.614-.255 2.681 2.681 0 0 1-2.976-2.975.681.681 0 0 0-.255-.615 2.681 2.681 0 0 1 0-4.208.681.681 0 0 0 .255-.615 2.681 2.681 0 0 1 2.976-2.975.681.681 0 0 0 .614-.255Z" />
-                                </svg>
-                            </div>
-                            <% } %>
-                    </div>
-                    <!-- Content -->
-                    <div class="flex flex-col space-y-4 mt-2 ml-2">
-                        <h3 class="font-semibold text-lg line-clamp-1">
-                            <%= article.name %>
-                        </h3>
-                        <div class="flex flex-row space-x-2 mb-3">
-                            <!-- Parent Category -->
-                            <div class="p-1 flex text-xs justify-center border border-black rounded-xl w-[32%]">
-                                <% if (article.category && article.category.length> 0) { %>
-                                    <% const parentCategory=categories.find(cat=> cat._id ===
-                                        article.category[0]); %>
-                                        <%= parentCategory ? parentCategory.name : 'Unknown Category' %>
-                                            <% } else { %>
-                                                No category
-                                                <% } %>
-                            </div>
-
-                            <!-- Child Categories -->
-                            <% if (article.category && article.category.length> 1) { %>
-                                <% article.category.slice(1).forEach(childId=> {
-                                    const childCategory = categories.find(cat => cat._id === childId);
-                                    %>
-                                    <span class="text-xs text-cyan-500 flex justify-center items-center">
-                                        #<%= childCategory ? childCategory.name : 'Unknown Category' %>
-                                    </span>
-                                    <% }); %>
-                                        <% } %>
-                        </div>
-                        <p class="text-sm text-gray-500 line-clamp-3">
-                            <%= article.abstract || article.content %>
-                        </p>
-                        <p class="text-sm text-gray-500">
-                            <%= user.name %> | <%= article.publishedAt ? article.publishedAt.split(',')[1]?.trim() ||
-                                    article.publishedAt : 'No date' %>
-                        </p>
-                    </div>
-                </div>
-            </a>
-            <% }); %>
-    </div>
-</div>
-<script>
-    // Lấy tất cả các menu items
-    const menuItems = [
-        document.getElementById('menu-xuat-ban'),
-        document.getElementById('menu-duoc-duyet'),
-        document.getElementById('menu-tu-choi'),
-        document.getElementById('menu-cho-duyet')
-    ];
-
-    // Gán sự kiện click cho từng menu item
-    menuItems.forEach(item => {
-        item.addEventListener('click', (event) => {
-            event.preventDefault(); // Ngăn hành vi mặc định của thẻ <a>
-
-            // Xóa trạng thái được chọn ở tất cả menu items
-            menuItems.forEach(i => i.classList.remove('selected'));
-
-            // Thêm trạng thái được chọn vào item được click
-            item.classList.add('selected');
-        });
-    });
-
-    // Mặc định đặt "Xuất Bản" là mục được chọn
-    document.getElementById('menu-xuat-ban').classList.add('selected');
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Status mapping
-    const statusMap = {
-        'menu-xuat-ban': 'published',
-        'menu-duoc-duyet': 'approved', 
-        'menu-tu-choi': 'rejected',
-        'menu-cho-duyet': 'draft'
-    };
-
-    // Get articles container
-    const articlesContainer = document.querySelector('.grid');
-    const articles = <%- JSON.stringify(articles) %>;
-
-    // Add click handlers to menu items
-    Object.keys(statusMap).forEach(menuId => {
-        const menuItem = document.getElementById(menuId);
-        menuItem.addEventListener('click', (e) => {
-            e.preventDefault();
-            
-            // Update UI
-            document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
-            menuItem.classList.add('selected');
-
-            // Filter articles
-            const status = statusMap[menuId];
-            const filteredArticles = articles.filter(article => article.status === status);
-
-            // Update URL
-            const url = new URL(window.location);
-            url.searchParams.set('status', status);
-            window.history.pushState({}, '', url);
-
-            // Render filtered articles
-            articlesContainer.innerHTML = filteredArticles.map(article => `
-                <a href="/article/${article._id}" class="block hover:shadow-lg transition-all duration-300">
+        <% if (articles && articles.length> 0) { %>
+            <% articles.forEach(article=> { %>
+                <div class="block">
                     <div class="bg-white rounded-lg shadow overflow-hidden p-2">
-                        <div class="relative w-full h-48">
-                            <img src="${article.image}" alt="${article.name}" class="w-full h-full object-cover rounded-xl">
-                            ${article.isPremium ? `
+                        <!-- Image -->
+                        <% if (article.status === 'published') { %>
+                            <a href="/article/<%= article._id %>" class="relative w-full h-48">
+                        <% } else { %>
+                            <div class="relative w-full h-48">
+                        <% } %>
+                            <img src="<%= article.image %>" alt="<%= article.name %>" class="w-full h-full object-cover rounded-xl">
+                            <% if (article.isPremium) { %>
                                 <div class="absolute top-2 left-2">
-                                    <svg class="w-6 h-6 text-yellow-400" aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-6 h-6 text-yellow-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M11 9a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z" />
-                                        <path fill-rule="evenodd"
-                                            d="M9.896 3.051a2.681 2.681 0 0 1 4.208 0c.147.186.38.282.615.255a2.681 2.681 0 0 1 2.976 2.975.681.681 0 0 0 .254.615 2.681 2.681 0 0 1 0 4.208.682.682 0 0 0-.254.615 2.681 2.681 0 0 1-2.976 2.976.681.681 0 0 0-.615.254 2.682 2.682 0 0 1-4.208 0 .681.681 0 0 0-.614-.255 2.681 2.681 0 0 1-2.976-2.975.681.681 0 0 0-.255-.615 2.681 2.681 0 0 1 0-4.208.681.681 0 0 0 .255-.615 2.681 2.681 0 0 1 2.976-2.975.681.681 0 0 0 .614-.255Z" />
+                                        <path fill-rule="evenodd" d="M9.896 3.051a2.681 2.681 0 0 1 4.208 0c.147.186.38.282.615.255a2.681 2.681 0 0 1 2.976 2.975.681.681 0 0 0 .254.615 2.681 2.681 0 0 1 0 4.208.682.682 0 0 0-.254.615 2.681 2.681 0 0 1-2.976 2.976.681.681 0 0 0-.615.254 2.682 2.682 0 0 1-4.208 0 .681.681 0 0 0-.614-.255 2.681 2.681 0 0 1-2.976-2.975.681.681 0 0 0-.255-.615 2.681 2.681 0 0 1 0-4.208.681.681 0 0 0 .255-.615 2.681 2.681 0 0 1 2.976-2.975.681.681 0 0 0 .614-.255Z" />
                                     </svg>
                                 </div>
-                            ` : ''}
-                        </div>
-
+                            <% } %>
+                        <% if (article.status === 'published') { %>
+                            </a>
+                        <% } else { %>
+                            </div>
+                        <% } %>
+                        <!-- Content -->
                         <div class="flex flex-col space-y-4 mt-2 ml-2">
-                            <h3 class="font-semibold text-lg line-clamp-1">${article.name}</h3>
-                            <p class="text-sm text-gray-500 line-clamp-3">${article.abstract || article.content}</p>
+                            <h3 class="font-semibold text-lg line-clamp-1">
+                                <%= article.name %>
+                            </h3>
+                            <div class="flex flex-row space-x-2 mb-3">
+                                <!-- Parent Category -->
+                                <div class="p-1 flex text-xs justify-center border border-black rounded-xl w-[32%]">
+                                    <% if (article.category && article.category.length> 0) { %>
+                                        <% const parentCategory=categories.find(cat=> cat._id ===
+                                            article.category[0]); %>
+                                            <%= parentCategory ? parentCategory.name : 'Unknown Category' %>
+                                                <% } else { %>
+                                                    No category
+                                                    <% } %>
+                                </div>
+
+                                <!-- Child Categories -->
+                                <% if (article.category && article.category.length> 1) { %>
+                                    <% article.category.slice(1).forEach(childId=> {
+                                        const childCategory = categories.find(cat => cat._id === childId);
+                                        %>
+                                        <span class="text-xs text-cyan-500 flex justify-center items-center">
+                                            #<%= childCategory ? childCategory.name : 'Unknown Category' %>
+                                        </span>
+                                        <% }); %>
+                                            <% } %>
+                            </div>
+                            <p class="text-sm text-gray-500 line-clamp-3">
+                                <%= article.abstract || article.content %>
+                            </p>
+                            <div class="flex justify-between items-center">
+                                <p class="text-sm text-gray-500">
+
+                                    <%= user.name %> | <%= article.publishedAt ?
+                                            article.publishedAt.split(',')[1]?.trim() || article.publishedAt : 'No date'
+                                            %>
+                                </p>
+                                <!-- Edit button -->
+                                <% if (article.status==='rejected' || article.status==='draft' ) { %>
+                                    <div class="flex justify-end mt-1">
+                                        <a href="/writer/edit?id=<%= article._id %>"
+                                            class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md">
+                                            Edit
+                                        </a>
+                                    </div>
+                                    <% } %>
+                            </div>
                         </div>
                     </div>
-                </a>
-            `).join('');
+                </div>
+                <% }); %>
+                    <% } else { %>
+                        <div class="col-span-4 text-center py-8 text-gray-500">
+                            Không có bài viết nào
+                        </div>
+                        <% } %>
+    </div>
+    <!-- Pagination -->
+    <% if (pagination && pagination.totalPages> 1) { %>
+        <div class="flex justify-center mt-8 gap-2">
+            <% for(let i=1; i <=pagination.totalPages; i++) { %>
+                <button data-page="<%= i %>" data-status="<%= activeTab %>"
+                    class="pagination-btn px-4 py-2 rounded <%= i === pagination.currentPage ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300' %>">
+                    <%= i %>
+                </button>
+                <% } %>
+        </div>
+        <% } %>
+</div>
+
+<script>
+    function changeTab(status) {
+        window.location.href = `/writer?status=${status}`;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const buttons = document.querySelectorAll('.pagination-btn');
+        buttons.forEach(button => {
+            button.addEventListener('click', function () {
+                const page = this.dataset.page;
+                const status = this.dataset.status;
+                window.location.href = `/writer?status=${status}&page=${page}`;
+            });
         });
     });
-
-    // Set initial active tab based on URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const status = urlParams.get('status') || 'published';
-    document.getElementById(Object.keys(statusMap).find(key => statusMap[key] === status))?.click();
-});
 </script>

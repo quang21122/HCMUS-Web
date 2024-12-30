@@ -114,6 +114,7 @@ app.use("/auth", loginRegisterRoutes);
 app.use("/profile", changeInProfile);
 app.use("/", searchRoute);
 app.use("/editor", editorRoute);
+app.use("/writer", writerRoute);
 
 app.use(
   session({
@@ -124,7 +125,6 @@ app.use(
 );
 
 app.use(flash());
-app.use("/", writerRoute);
 
 const startServer = async () => {
   try {

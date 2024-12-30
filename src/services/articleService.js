@@ -1,6 +1,7 @@
 import { readFile } from "fs/promises";
 import Article from "../models/Article.js";
-import mongoose from "mongoose";
+import mongoose, { get } from "mongoose";
+import moment from "moment";
 
 export const incrementArticleViews = async (articleId) => {
   try {
@@ -53,10 +54,27 @@ export const getArticles = async (sortBy = "publishedDate") => {
       throw new Error("No articles found");
     }
 
+    // Lọc bài viết dựa trên publishedAt
+    const currentDate = new Date();
+    const filteredArticles = response.filter((article) => {
+      if (!article.publishedAt) return true;
+
+      const cleanedPublishedAt = article.publishedAt
+        .replace(" (GMT+7)", "")
+        .replace(/^[^,]+,\s*/, "");
+
+      const publishedDate = moment(
+        cleanedPublishedAt,
+        "DD/MM/YYYY, HH:mm"
+      ).toDate();
+
+      return publishedDate <= currentDate;
+    });
+
     return {
       status: "SUCCESS",
       message: "Articles retrieved successfully",
-      data: response,
+      data: filteredArticles,
     };
   } catch (error) {
     console.error("getArticles error:", error);
@@ -188,7 +206,8 @@ export const getArticlesByCategory = async (
     const skip = (page - 1) * limit;
     const filter = {
       category: { $in: [category] },
-      status: status || "published",
+      status:
+        status === "pending" || status === "published" ? "published" : status,
     };
 
     const projection = {
@@ -215,9 +234,38 @@ export const getArticlesByCategory = async (
         .exec(),
     ]);
 
+    let filteredArticles;
+
+    // Lọc bài viết dựa trên publishedAt
+    if (status === "published" || status === "pending") {
+      const currentDate = new Date();
+
+      filteredArticles = articles.filter((article) => {
+        if (!article.publishedAt) return true;
+
+        const cleanedPublishedAt = article.publishedAt
+          .replace(" (GMT+7)", "")
+          .replace(/^[^,]+,\s*/, "");
+
+        const publishedDate = moment(
+          cleanedPublishedAt,
+          "DD/MM/YYYY, HH:mm"
+        ).toDate();
+
+        if (status === "published") {
+          return publishedDate <= currentDate;
+        } else {
+          return publishedDate > currentDate;
+        }
+      });
+    }
+
     return {
       success: true,
-      data: articles,
+      data:
+        status === "published" || status === "pending"
+          ? filteredArticles
+          : articles,
       pagination: {
         total,
         currentPage: page,
@@ -289,11 +337,11 @@ export const getArticlesByTag = async (
   }
 };
 
-export const getArticleCountByAuthor = async (authorId) => {
+export const getArticleCountByAuthor = async (authorId, status) => {
   try {
     const count = await Article.countDocuments({
       author: authorId,
-      status: "published",
+      status: status || "published",
     });
 
     return {
@@ -309,26 +357,16 @@ export const getArticleCountByAuthor = async (authorId) => {
   }
 };
 
-export const getArticlesPublishedByAuthor = async (
-  authorId,
-  page = 1,
-  limit = 12
-) => {
+export const getArticlesByAuthor = async (authorId, page = 1, limit = 12) => {
   try {
     const skip = (page - 1) * limit;
 
     // Get total count for pagination
-    const totalCount = await Article.countDocuments({
-      author: authorId,
-      status: "published",
-    });
+    const totalCount = await Article.countDocuments({ author: authorId });
 
     // Find articles with pagination
-    const articles = await Article.find({
-      author: authorId,
-      status: "published",
-    })
-      .sort({ isPremium: -1, publishedDate: -1 })
+    const articles = await Article.find({ author: authorId })
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .populate("category")
@@ -339,6 +377,84 @@ export const getArticlesPublishedByAuthor = async (
       success: true,
       data: {
         articles,
+        pagination: {
+          currentPage: page,
+          totalPages: Math.ceil(totalCount / limit),
+          totalItems: totalCount,
+        },
+      },
+    };
+  } catch (error) {
+    console.error("getArticlesByAuthor error:", error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+};
+
+export const getArticlesPublishedByAuthor = async (
+  authorId,
+  page = 1,
+  limit = 12,
+  status
+) => {
+  try {
+    const skip = (page - 1) * limit;
+
+    // Get total count for pagination
+    const totalCount = await Article.countDocuments({
+      author: authorId,
+      status:
+        status === "pending" || status === "published" ? "published" : status,
+    });
+
+    // Find articles with pagination
+    const articles = await Article.find({
+      author: authorId,
+      status:
+        status === "pending" || status === "published" ? "published" : status,
+    })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate("category")
+      .populate("tags")
+      .populate("author");
+
+    let filteredArticles;
+
+    // Lọc bài viết dựa trên publishedAt
+    if (status === "published" || status === "pending") {
+      const currentDate = new Date();
+
+      filteredArticles = articles.filter((article) => {
+        if (!article.publishedAt) return true;
+
+        const cleanedPublishedAt = article.publishedAt
+          .replace(" (GMT+7)", "")
+          .replace(/^[^,]+,\s*/, "");
+
+        const publishedDate = moment(
+          cleanedPublishedAt,
+          "DD/MM/YYYY, HH:mm"
+        ).toDate();
+
+        if (status === "published") {
+          return publishedDate <= currentDate;
+        } else {
+          return publishedDate > currentDate;
+        }
+      });
+    }
+
+    return {
+      success: true,
+      data: {
+        articles:
+          status === "published" || status === "pending"
+            ? filteredArticles
+            : articles,
         pagination: {
           currentPage: page,
           totalPages: Math.ceil(totalCount / limit),
@@ -520,6 +636,7 @@ export default {
   getArticlesByCategory,
   getArticlesByTag,
   getArticleCountByAuthor,
+  getArticlesByAuthor,
   getArticlesPublishedByAuthor,
   createArticle,
   createMultipleArticles,
