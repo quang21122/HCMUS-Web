@@ -1119,6 +1119,10 @@ video {
   cursor: pointer;
 }
 
+.cursor-default{
+  cursor: default;
+}
+
 .auto-cols-\[minmax\(400px\2c _1fr\)\]{
   grid-auto-columns: minmax(400px, 1fr);
 }
@@ -1948,6 +1952,11 @@ video {
 .text-yellow-700{
   --tw-text-opacity: 1;
   color: rgb(161 98 7 / var(--tw-text-opacity, 1));
+}
+
+.text-gray-300{
+  --tw-text-opacity: 1;
+  color: rgb(209 213 219 / var(--tw-text-opacity, 1));
 }
 
 .underline{
