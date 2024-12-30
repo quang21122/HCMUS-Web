@@ -3,6 +3,7 @@ import {
   getArticlesByCategory,
   getArticlesById,
   getArticleCountByAuthor,
+  getPendingArticlesByCategory,
   updateArticle,
 } from "../../services/articleService.js";
 import { findUser } from "../../services/userService.js";
@@ -53,6 +54,8 @@ router.get("/", async (req, res) => {
         limit,
         "rejected"
       );
+    } else if (status === "pending") {
+      articles = await getPendingArticlesByCategory(user.category, page, limit);
     }
 
     // Fix articles data access
