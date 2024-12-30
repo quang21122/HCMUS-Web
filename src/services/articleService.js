@@ -47,7 +47,7 @@ export const getArticles = async (sortBy = "publishedDate") => {
       .populate("author")
       .populate("category")
       .sort(sortQuery)
-      .limit(12)
+      .limit(10)
       .lean()
       .exec();
 
@@ -116,6 +116,7 @@ export const getMostViewedCategoryArticles = async () => {
       .populate("author")
       .populate("category")
       .sort({ publishedDate: -1 })
+      .limit(10)
       .lean()
       .exec();
 
