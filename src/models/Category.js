@@ -1,11 +1,10 @@
 import { Schema, model } from 'mongoose';
 
 const CategorySchema = new Schema({
-  id: {
-    type: Schema.Types.ObjectId,
+  _id: {
+    type: String,
     required: true,
     unique: true,
-    auto: true,
   },
   name: {
     type: String,
