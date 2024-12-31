@@ -9,6 +9,8 @@ import { Strategy as LocalStrategy } from "passport-local";
 import User from "../models/User.js";
 import UserVerification from "../models/UserVerification.js";
 import PasswordReset from "../models/PasswordReset.js";
+import axios from 'axios';
+
 
 dotenv.config();
 const resetTokens = new Map();
@@ -69,48 +71,77 @@ passport.deserializeUser(async (_id, done) => {
   }
 });
 
-// Register new user
-router.post("/register", async (req, res) => {
-  const { email, password, confirmPassword, name } = req.body;
+
+// Hàm xác minh CAPTCHA
+const verifyCaptcha = async (captchaResponse) => {
+  const secretKey = "6LfyvaoqAAAAAPi5zzSUmgOOqyfOrBAaQpmS8iZb"; // Thay bằng secret key của bạn
+  console.log(captchaResponse);
+  try {
+    const response = await axios.post(
+      'https://www.google.com/recaptcha/api/siteverify',
+      null,
+      {
+        params: {
+          secret: secretKey,
+          response: captchaResponse,
+        },
+      }
+    );
+    console.log('CAPTCHA verification response:', response.data);
+    return response.data.success;
+  } catch (error) {
+    console.error('Error verifying CAPTCHA:', error);
+    throw new Error('CAPTCHA verification service unavailable');
+  }
+};
+
+router.post('/register', async (req, res) => {
+  const { email, password, confirmPassword, name, captchaResponse } = req.body;
+
   // Kiểm tra các trường bắt buộc
-  if (!email || !password || !confirmPassword || !name) {
-    return res.status(400).json({ message: "Missing required fields" });
+  if (!email || !password || !confirmPassword || !name || !captchaResponse) {
+    return res.status(400).json({ message: 'Missing required fields' });
   }
 
-  // Kiểm tra confirmPassword
+  // Kiểm tra mật khẩu khớp
   if (password !== confirmPassword) {
-    return res.status(400).json({ message: "Passwords do not match" });
+    return res.status(400).json({ message: 'Passwords do not match' });
   }
 
   try {
+    // Xác minh CAPTCHA
+    const isCaptchaValid = await verifyCaptcha(captchaResponse);
+    if (!isCaptchaValid) {
+      return res.status(400).json({ message: 'CAPTCHA verification failed' });
+    }
+
     // Kiểm tra email đã tồn tại chưa
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: "Email already registered" });
+      return res.status(409).json({ message: 'Email already registered' }); // 409: Conflict
     }
 
     // Mã hóa mật khẩu
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Tạo user mới
+    // Tạo người dùng mới
     const newUser = new User({
       email,
       password: hashedPassword,
       name,
-      verified: false,
+      verified: false, // Giả sử cần xác thực qua email
     });
 
     const user = await newUser.save();
 
+    // Lưu session hoặc token (tùy chọn)
     req.session.userId = user._id.toString();
 
     // Phản hồi thành công
-    res.redirect("http://localhost:3000/register-form");
+    res.redirect("/register-form");
   } catch (error) {
-    console.error("Error registering user:", error);
-    res
-      .status(500)
-      .json({ message: "Error registering user", error: error.message });
+    console.error('Error registering user:', error);
+    res.status(500).json({ message: 'Error registering user', error: error.message });
   }
 });
 
