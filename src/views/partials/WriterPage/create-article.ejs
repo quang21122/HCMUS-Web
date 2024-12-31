@@ -176,6 +176,10 @@
         height: 300,
         paste_data_images: true,
         setup: function (editor) {
+            editor.on('init', function() {
+                const container = document.querySelector('.tox-tinymce');
+                container.id = 'editor-wrapper';
+            });
             editor.on('paste', function (e) {
                 // Get pasted content
                 let content = e.clipboardData.getData('text');
@@ -243,8 +247,6 @@
             return true;
         };
 </script>
-
-
 
 <script>
     const uploadContainer = document.getElementById('upload-container');
@@ -345,32 +347,38 @@
 
     // Function to select an item (tag or category)
     function selectItem(inputId, value, selectedContainerId, displayText) {
-        // Get the input element and current values
+        // Get input element and values
         const inputElement = document.getElementById(inputId);
         let currentValues = inputElement.value ? inputElement.value.split(',') : [];
 
-        // Avoid duplicates
+        // Clear error message immediately
+        const container = document.getElementById(selectedContainerId).parentElement;
+        const errorMsg = container.querySelector('.text-red-500');
+        if (errorMsg) {
+            errorMsg.remove();
+            container.classList.remove('border-red-500');
+        }
+
+        // Continue with existing selection logic
         if (!currentValues.includes(value)) {
             currentValues.push(value);
             inputElement.value = currentValues.join(',');
 
-            // Add the selected item visually
+            // Add selected item visually
             const selectedContainer = document.getElementById(selectedContainerId);
             const item = document.createElement('span');
             item.className = 'px-3 py-1 bg-blue-200 rounded-lg text-sm inline-flex items-center mr-2 mb-2';
 
-            // Create the text content for the selected item
+            // Create text content
             const text = document.createElement('span');
             text.textContent = displayText;
 
-            // Create a remove button
+            // Create remove button
             const removeBtn = document.createElement('button');
             removeBtn.textContent = '×';
             removeBtn.className = 'ml-2 text-red-600 hover:text-red-800 text-lg';
-            removeBtn.onclick = function () {
-                // Remove the item
+            removeBtn.onclick = function() {
                 item.remove();
-                // Remove the item from the input value
                 currentValues = currentValues.filter(val => val !== value);
                 inputElement.value = currentValues.join(',');
             };
@@ -379,7 +387,8 @@
             item.appendChild(removeBtn);
             selectedContainer.appendChild(item);
         }
-        // Close the list after selection
+
+        // Close list after selection
         const listId = inputId === 'tagsInput' ? 'tagList' : 'categoryList';
         document.getElementById(listId).classList.add('hidden');
     }
@@ -404,4 +413,112 @@
         return true;  // Proceed with form submission
     };
 
+</script>
+
+<script>
+    document.querySelector('#articleForm').addEventListener('submit', function(e) {
+        let isValid = true;
+        
+        // Clear all previous error messages
+        document.querySelectorAll('.text-red-500').forEach(el => el.remove());
+        document.querySelectorAll('.border-red-500').forEach(el => 
+            el.classList.remove('border-red-500')
+        );
+        
+        // Validate editor content
+        const editorContent = tinymce.get('editor').getContent();
+        if (!editorContent.trim()) {
+            e.preventDefault();
+            isValid = false;
+            const editorContainer = document.querySelector('#editor-wrapper');
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'text-red-500 text-sm mt-1';
+            errorMsg.textContent = 'Nội dung bài viết không được để trống';
+            editorContainer.after(errorMsg);
+        }
+
+        // Validate cover image
+        const preview = document.getElementById('preview');
+        const uploadContainer = document.getElementById('upload-container');
+        
+        if (!preview.src || preview.classList.contains('hidden')) {
+            e.preventDefault();
+            isValid = false;
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'text-red-500 text-sm mt-1';
+            errorMsg.textContent = 'Vui lòng chọn ảnh bìa cho bài viết';
+            uploadContainer.after(errorMsg);
+            uploadContainer.classList.add('border-red-500');
+        }
+
+        // Validate tags
+        const tagsInput = document.getElementById('tagsInput');
+        const tagsContainer = document.getElementById('selectedTags').parentElement;
+        if (!tagsInput.value) {
+            e.preventDefault();
+            isValid = false;
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'text-red-500 text-sm mt-1';
+            errorMsg.textContent = 'Vui lòng chọn ít nhất một nhãn';
+            tagsContainer.appendChild(errorMsg);
+            tagsContainer.classList.add('border-red-500');
+        }
+
+        // Validate categories
+        const categoriesInput = document.getElementById('categoriesInput');
+        const categoriesContainer = document.getElementById('selectedCategories').parentElement;
+        if (!categoriesInput.value) {
+            e.preventDefault();
+            isValid = false;
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'text-red-500 text-sm mt-1';
+            errorMsg.textContent = 'Vui lòng chọn ít nhất một chuyên mục';
+            categoriesContainer.appendChild(errorMsg);
+            categoriesContainer.classList.add('border-red-500');
+        }
+
+        if (!isValid) {
+            window.scrollTo(0, 0);
+        }
+        
+        return isValid;
+    });
+
+    // Clear image error when file is selected
+    fileInput.addEventListener('change', () => {
+        const errorMsg = uploadContainer.nextElementSibling;
+        if (errorMsg?.classList.contains('text-red-500')) {
+            errorMsg.remove();
+        }
+        uploadContainer.classList.remove('border-red-500');
+    });
+
+    // Clear editor error when content changes
+    tinymce.get('editor').on('input', () => {
+        const editorContainer = document.querySelector('#editor-wrapper');
+        const errorMsg = editorContainer.nextElementSibling;
+        if (errorMsg?.classList.contains('text-red-500')) {
+            errorMsg.remove();
+        }
+    });
+
+    // Clear tag error when tag is selected
+    document.getElementById('tagList').addEventListener('click', () => {
+        const tagsContainer = document.getElementById('selectedTags').parentElement;
+        const errorMsg = tagsContainer.querySelector('.text-red-500');
+        if (errorMsg) {
+            errorMsg.remove();
+            tagsContainer.classList.remove('border-red-500');
+        }
+    });
+
+    // Clear category error when category is selected
+    document.getElementById('categoryList').addEventListener('click', () => {
+        const categoriesContainer = document.getElementById('selectedCategories').parentElement;
+        const errorMsg = categoriesContainer.querySelector('.text-red-500');
+        if (errorMsg) {
+            errorMsg.remove();
+            categoriesContainer.classList.remove('border-red-500');
+        }
+    });
 </script>
