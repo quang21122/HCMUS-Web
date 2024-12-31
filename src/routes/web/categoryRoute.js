@@ -217,5 +217,33 @@ router.delete('/api/categories/:categoryId/subcategories/:subcategoryId', async 
   }
 });
 
+// API chỉnh sửa tên category
+router.put("/edit-category/:id", async (req, res) => {
+  const { id } = req.params; // Lấy id từ tham số URL
+  const { name } = req.body; // Lấy tên category mới từ body của yêu cầu
+
+  try {
+    // Tìm category theo _id
+    const category = await Category.findOne({ _id: id });
+
+    // Nếu không tìm thấy category
+    if (!category) {
+      console.error("Tag không tồn tại với ID:", id);
+      return res.status(404).json({ error: "Tag không tồn tại." });
+    }
+
+    // Cập nhật tên category
+    category.name = name;
+
+    // Lưu thay đổi
+    await category.save();
+
+    // Trả về category đã cập nhật
+    res.status(200).json({ message: "Cập nhật category thành công", data: category });
+  } catch (error) {
+    console.error("Lỗi khi cập nhật category:", error);
+    res.status(500).json({ error: "Đã xảy ra lỗi khi cập nhật category." });
+  }
+});
 
 export default router;

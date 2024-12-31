@@ -120,6 +120,23 @@
               </svg>
             </button>
             <button
+              onclick="editCategory('<%= category._id %>', '<%= category.name %>')"
+              class="p-2 rounded-full bg-white/20 hover:bg-white/30"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="hh-5 w-5 text-white"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M12.293 2.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-7 7a1 1 0 01-.707.293H7.414a1 1 0 01-.707-.293l-4-4a1 1 0 010-1.414l7-7a1 1 0 011.414 0l.707.707z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
+            <button
               onclick="deleteCategory('<%= category._id %>')"
               class="p-2 rounded-full bg-white/20 hover:bg-white/30"
             >
@@ -195,8 +212,37 @@
   </div>
 </div>
 
+<!-- Modal Edit Category -->
+<div
+  id="editCategoryModal"
+  class="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center hidden"
+>
+  <div class="bg-white p-6 rounded-lg w-1/3">
+    <h2 class="text-lg font-semibold">Chỉnh sửa tên chuyên mục</h2>
+    <input
+      type="text"
+      id="editCategoryName"
+      class="mt-2 p-2 w-full border rounded-lg"
+      required
+    />
+    <div class="mt-4 flex justify-end gap-2">
+      <button
+        onclick="closeEditModal()"
+        class="px-4 py-2 bg-gray-300 text-black rounded-lg"
+      >
+        Hủy
+      </button>
+      <button
+        onclick="saveEditedCategory()"
+        class="px-4 py-2 bg-blue-500 text-white rounded-lg"
+      >
+        Lưu
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
-  
   // Thêm category mới
   document
     .getElementById("addCategoryForm")
@@ -307,5 +353,61 @@
         alert("Có lỗi xảy ra khi xóa chuyên mục con");
       }
     }
+  }
+
+  function editCategory(categoryId, categoryName) {
+    const modal = document.getElementById("editCategoryModal");
+    modal.classList.remove("hidden");
+    document.getElementById("editCategoryName").value = categoryName;
+    window.editCategoryId = categoryId;
+  }
+
+  function editSubCategory(categoryId ,subcategoryId, subcategoryName) {
+    const modal = document.getElementById("editCategoryModal");
+    modal.classList.remove("hidden");
+    document.getElementById("editCategoryName").value = subcategoryName;
+    window.editCategoryId = subcategoryId;
+  }
+
+  function closeEditModal() {
+    document.getElementById("editCategoryModal").classList.add("hidden");
+  }
+
+  async function saveEditedCategory() {
+    const categoryName = document.getElementById("editCategoryName").value;
+    const categoryId = window.editCategoryId;
+
+    try {
+      const response = await fetch(`/edit-category/${categoryId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: categoryName }),
+      });
+
+      if (response.ok) {
+        const updatedCategory = await response.json();
+        updateCategoryOnPage(updatedCategory.data);
+        closeEditModal(); // Đóng modal sau khi cập nhật thành công
+      } else {
+        const data = await response.json();
+        alert(
+          data.error || `Lỗi ${response.status}: Không thể hoàn thành yêu cầu.`
+        );
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Có lỗi xảy ra khi chỉnh sửa chuyên mục");
+    }
+  }
+
+  function updateCategoryOnPage(category) {
+    // Tìm category card cần cập nhật dựa trên categoryId
+    const categoryCard = document.querySelector(
+      `.category-card[data-category-id="${category._id}"]`
+    );
+
+    // Cập nhật tên category trong category card
+    const categoryNameElement = categoryCard.querySelector("h3");
+    categoryNameElement.textContent = category.name;
   }
 </script>
