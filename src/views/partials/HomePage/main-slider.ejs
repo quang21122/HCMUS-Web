@@ -10,7 +10,7 @@
         </svg>
     </button>
     <div class="main-slider flex overflow-hidden max-w-full mx-auto bg-gray-200 text-black rounded-lg">
-        <% mostViewArticles.slice(0, 4).forEach(article => { %>
+        <% weeklyArticles.slice(0, 4).forEach(article => { %>
             <a href="/article/<%= article._id %>" class="flex-shrink-0 grid grid-cols-[6fr_4fr] w-full h-full gap-4 cursor-pointer">
                 <!-- Image Section -->
                 <div class="relative rounded-lg w-full h-full p-4">
