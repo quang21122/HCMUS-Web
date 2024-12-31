@@ -60,6 +60,7 @@ router.post("/register", (req, res) => {
         gender,
         country,
         penName: role === "author" ? penName : null,
+        subscriptionExpiry: role === "subscriber" ? 10080 : null,
     };
 
     if (role === "subscriber") {

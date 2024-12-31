@@ -51,6 +51,14 @@ router.get("/article/:id", async (req, res) => {
       }
     }
 
+    if (article.isPremium && req.user.role === "subscriber") {
+      const minute = req.user.subscriptionExpiry;
+      const subscriptionExpiry = new Date(req.user.createdAt).getTime() + minute * 60 * 1000;
+      if (subscriptionExpiry < Date.now()) {
+        return res.status(403).json({ success: false, error: "Hết hạn gói" });
+      }
+    }
+
     // Get category names
     const categoryNames = await Promise.all(
       article.category.map((catId) => getCategoryName(catId))

@@ -68,29 +68,29 @@
             </a>
             <% }); %>
     </div>
- <!-- Pagination -->
- <% if (pagination.totalPages> 1) { %>
-    <div class="flex justify-center mt-8 gap-2">
-        <% for(let i=1; i <=pagination.totalPages; i++) { %>
-            <button data-page="<%= i %>"
-                class="pagination-btn px-4 py-2 rounded <%= i === pagination.currentPage ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300' %>">
-                <%= i %>
-            </button>
-            <% } %>
-    </div>
-    <% } %>
+    <!-- Pagination -->
+    <% if (pagination.totalPages> 1) { %>
+        <div class="flex justify-center mt-8 gap-2">
+            <% for(let i=1; i <=pagination.totalPages; i++) { %>
+                <button data-page="<%= i %>"
+                    class="pagination-btn px-4 py-2 rounded <%= i === pagination.currentPage ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300' %>">
+                    <%= i %>
+                </button>
+                <% } %>
+        </div>
+        <% } %>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const buttons = document.querySelectorAll('.pagination-btn');
+    document.addEventListener('DOMContentLoaded', function () {
+        const buttons = document.querySelectorAll('.pagination-btn');
 
-    buttons.forEach(button => {
-        button.addEventListener('click', function () {
-            const page = this.dataset.page;
-            // Use window.location to reload page with new page parameter
-            window.location.href = `/trend/?page=${page}`;
+        buttons.forEach(button => {
+            button.addEventListener('click', function () {
+                const page = this.dataset.page;
+                // Use window.location to reload page with new page parameter
+                window.location.href = `/trend/?page=${page}`;
+            });
         });
     });
-});
 </script>

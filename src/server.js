@@ -26,6 +26,7 @@ import editorRoute from "./routes/web/editorRoute.js";
 import writerRoute from "./routes/web/writerRoute.js";
 import multer from "multer";
 import commentRoute from "./routes/web/commentRoute.js"
+import adminRoute from "./routes/web/adminRoute.js"
 
 // Create __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -90,6 +91,12 @@ liveReloadServer.server.once("connection", () => {
   }, 100);
 });
 
+//truyền path cho navbar
+app.use((req, res, next) => {
+  res.locals.currentPath = req.path; // Đường dẫn hiện tại
+  next();
+});
+
 app.use("/", commentRoute);
 app.use("/", homePageRoute);
 app.use("/", articleRoute);
@@ -100,12 +107,14 @@ app.use("/", tagRoute);
 app.use("/", authRoute);
 app.use("/", profileRoute);
 app.use("/", authorRoute);
+app.use("/", adminRoute);
 app.use("/api/articles", articleAPIRoute);
 app.use("/api/users", userRoute);
 app.use("/auth", loginRegisterRoutes);
 app.use("/profile", changeInProfile);
 app.use("/", searchRoute);
 app.use("/editor", editorRoute);
+app.use("/writer", writerRoute);
 
 app.use(
   session({
@@ -116,7 +125,6 @@ app.use(
 );
 
 app.use(flash());
-app.use("/", writerRoute);
 
 const startServer = async () => {
   try {

@@ -10,7 +10,7 @@ const userSchema = new Schema({
     ban: { type: Boolean, default: false },
     dob: { type: Date },
     createdAt: { type: Date, default: Date.now },
-    subscriptionExpiry: { type: Date },
+    subscriptionExpiry: { type: Number },
     penName: { type: String },
     category: { type: String },
     googleID: {type: String},

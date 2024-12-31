@@ -21,8 +21,8 @@
     <div class="">
         <div class="grid grid-cols-2 gap-1 w-full">
             <!-- First Article: 50% width -->
-            <% if (articles && articles.length> 0) { %>
-                <% const firstArticle=articles[0]; %>
+            <% if (mostViewedCategoryArticles && mostViewedCategoryArticles.length> 0) { %>
+                <% const firstArticle=mostViewedCategoryArticles[0]; %>
                     <a href="/article/<%= firstArticle._id %>" class="col-span-1">
                         <div class="relative rounded-lg w-full h-full flex">
                             <div class="relative w-full flex-grow">
@@ -76,14 +76,14 @@
                         </div>
                     </a>
                     <% } else { %>
-                        <!-- Fallback for no articles -->
+                        <!-- Fallback for no mostViewedCategoryArticles -->
                         <div class="col-span-2 text-center text-gray-500 italic">
-                            No articles available.
+                            No Articles available.
                         </div>
                         <% } %>
 
                             <!-- Remaining Articles: 50% width grid -->
-                            <% if (articles && articles.length> 1) { %>
+                            <% if (mostViewedCategoryArticles && mostViewedCategoryArticles.length> 1) { %>
                                 <div class="col-span-1 my-auto overflow-hidden">
                                     <div
                                         class="absolute top-0 right-0 h-full w-48 bg-gradient-to-l from-white/80 to-transparent pointer-events-none blur-overlay">
@@ -92,7 +92,7 @@
                                         <!-- Dynamic grid layout: 2 rows with scrollable columns -->
                                         <div
                                             class="flex-shrink-0 grid grid-rows-2 gap-2 auto-cols-[minmax(400px,_1fr)] grid-flow-col w-full">
-                                            <% articles.slice(1).forEach((article, index)=> { %>
+                                            <% mostViewedCategoryArticles.slice(1).forEach((article, index)=> { %>
                                                 <a href="/article/<%= article._id %>"
                                                     class="article-item bg-white shadow-lg rounded-lg">
                                                     <div class="grid grid-cols-10 gap-2 w-full h-full p-4">
