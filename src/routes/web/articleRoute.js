@@ -43,7 +43,7 @@ router.get("/article/:id", async (req, res) => {
       }
 
       // Check if user has subscription
-      if (!req.user.subscriptionExpiry || req.user.subscriptionExpiry < new Date()) {
+      if (!req.user.subscriptionExpiry && req.user.role !== "admin") {
         return res.status(403).json({
           success: false,
           error: "Bạn cần đăng ký tài khoản Đọc giả để xem bài viết premium",

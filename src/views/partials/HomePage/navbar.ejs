@@ -18,6 +18,7 @@
                     <% } %>
                     <% if (user.role === 'admin') { %>
                         <a href="/manage-users/ban-users" class="<%= (currentPath.startsWith('/manage-user')) ? 'text-[#FC4308]' : 'text-gray-600 hover:text-gray-900' %>">Người Dùng</a>
+                        <a href="/admin-approve" class="<%= (currentPath.startsWith('/admin-approve')) ? 'text-[#FC4308]' : 'text-gray-600 hover:text-gray-900' %>">Bài chờ duyệt</a>
                     <% } %>
                 <% } %>
             </div>            

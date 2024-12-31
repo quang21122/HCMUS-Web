@@ -670,6 +670,126 @@ export const getArticlesByPageWithSort = async (
   }
 };
 
+export const getArticlesByStatus = async (
+  page = 1,
+  limit = 12,
+  status
+) => {
+  try {
+    const skip = (page - 1) * limit;
+    const filter = {
+      status:
+        status === "pending" || status === "published" ? "published" : status,
+    };
+
+    const projection = {
+      name: 1,
+      image: 1,
+      abstract: 1,
+      content: 1,
+      author: 1,
+      publishedAt: 1,
+      isPremium: 1,
+      category: 1,
+      status: 1,
+      rejectReason: 1,
+    };
+
+    const [total, articles] = await Promise.all([
+      Article.countDocuments(filter),
+      Article.find(filter)
+        .select(projection)
+        .sort({ isPremium: -1, publishedDate: -1 }) // Sort by premium first, then by date
+        .skip(skip)
+        .limit(limit)
+        .lean()
+        .exec(),
+    ]);
+
+    let filteredArticles;
+
+    // Lọc bài viết dựa trên publishedAt
+    if (status === "published" || status === "pending") {
+      const currentDate = new Date();
+
+      filteredArticles = articles.filter((article) => {
+        if (!article.publishedAt) return true;
+
+        const cleanedPublishedAt = article.publishedAt
+          .replace(" (GMT+7)", "")
+          .replace(/^[^,]+,\s*/, "");
+
+        const publishedDate = moment(
+          cleanedPublishedAt,
+          "DD/MM/YYYY, HH:mm"
+        ).toDate();
+
+        if (status === "published") {
+          return publishedDate <= currentDate;
+        } else {
+          return publishedDate > currentDate;
+        }
+      });
+    }
+
+    return {
+      success: true,
+      data:
+        status === "published" || status === "pending"
+          ? filteredArticles
+          : articles,
+      pagination: {
+        total,
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  } catch (error) {
+    console.error("getArticlesByCategory error:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+export const getPendingArticles = async (
+  page = 1,
+  limit = 12
+) => {
+  try {
+    const currentDate = new Date();
+    const skip = (page - 1) * limit;
+
+    const response = await Article.find({
+      status: "published",
+      publishedDate: { $gt: currentDate },
+    })
+      .populate("author")
+      .populate("category")
+      .sort({ publishedDate: 1 })
+      .skip(skip)
+      .limit(limit)
+      .lean()
+      .exec();
+
+    if (!response) {
+      throw new Error("No pending articles found");
+    }
+
+    return {
+      status: "SUCCESS",
+      message: "Pending articles retrieved successfully",
+      data: response,
+    };
+  } catch (error) {
+    console.error("getPendingArticlesByCategory error:", error);
+    return {
+      status: "FAILED",
+      message:
+        error.message || "An error occurred while retrieving pending articles",
+      data: null,
+    };
+  }
+};
+
 export default {
   incrementArticleViews,
   getArticles,
@@ -687,4 +807,6 @@ export default {
   deleteArticle,
   parsePublishedAt,
   getArticlesByPageWithSort,
+  getArticlesByStatus,
+  getPendingArticles,
 };

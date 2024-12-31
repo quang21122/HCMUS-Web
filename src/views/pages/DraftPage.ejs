@@ -16,18 +16,21 @@
     <%- include('../partials/HomePage/header') %>
         <% if (user && user.verified) { %>
             <%- include('../partials/EditorPage/draft-article.ejs') %>
-                <% } else { %>
-                    <div class="min-h-screen flex items-center justify-center">
-                        <div class="bg-red-100 text-red-700 p-6 rounded-lg shadow-lg max-w-lg mx-auto flex items-center gap-3">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" />
-                            </svg>
-                            <p class="text-lg font-medium">Bạn cần được admin duyệt để có thể duyệt bài viết</p>
-                        </div>
-                    </div>
-                    <% } %>
-            <%- include('../partials/HomePage/footer') %>
+                <% } else if (user && user.role==='admin' ) { %>
+                    <%- include('../partials/AdminApproveArticlePage/draft-article.ejs') %>
+                        <% } else { %>
+                            <div class="min-h-screen flex items-center justify-center">
+                                <div
+                                    class="bg-red-100 text-red-700 p-6 rounded-lg shadow-lg max-w-lg mx-auto flex items-center gap-3">
+                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                        <path
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" />
+                                    </svg>
+                                    <p class="text-lg font-medium">Bạn cần được admin duyệt để có thể duyệt bài viết</p>
+                                </div>
+                            </div>
+                            <% } %>
+                                <%- include('../partials/HomePage/footer') %>
 </body>
 
 </html>
