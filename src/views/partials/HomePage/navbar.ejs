@@ -14,9 +14,11 @@
                         <a href="/editor" class="<%= (currentPath.startsWith('/editor')) ? 'text-[#FC4308]' : 'text-gray-600 hover:text-gray-900' %>">Bài Chờ Duyệt</a>
                     <% } %>
                     <% if (user.role === 'author') { %>
-                        <a href="/my-articles" class="<%= (currentPath.startsWith('/my-articles')) ? 'text-[#FC4308]' : 'text-gray-600 hover:text-gray-900' %>">Bài Viết Của Tôi</a>
+                        <a href="/writer" class="text-gray-600 hover:text-gray-900">Bài Viết Của Tôi</a>
                     <% } %>
                     <% if (user.role === 'admin') { %>
+                        <a href="/manage-articles" class="<%= (currentPath.startsWith('/manage-articles')) ? 'text-[#FC4308]' : 'text-gray-600 hover:text-gray-900' %>">Quản Lý Bài Viết</a>
+                        <a href="/admin-approve" class="<%= (currentPath.startsWith('/admin-approve')) ? 'text-[#FC4308]' : 'text-gray-600 hover:text-gray-900' %>">Bài chờ duyệt</a>
                         <a href="/manage-users/ban-users" class="<%= (currentPath.startsWith('/manage-user')) ? 'text-[#FC4308]' : 'text-gray-600 hover:text-gray-900' %>">Người Dùng</a>
                         <a href="/manage-categories" class="<%= (currentPath.startsWith('/manage-categories')) ? 'text-[#FC4308]' : 'text-gray-600 hover:text-gray-900' %>">Chuyên mục</a>
                         <a href="/manage-tags" class="<%= (currentPath.startsWith('/manage-tags')) ? 'text-[#FC4308]' : 'text-gray-600 hover:text-gray-900' %>">Nhãn</a>

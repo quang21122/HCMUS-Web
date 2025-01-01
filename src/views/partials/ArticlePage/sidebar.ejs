@@ -8,7 +8,7 @@
                     <div class="flex flex-col space-y-4 justify-center">
                         <a href="/author/<%= author.name %>"
                             class="text-lg font-semibold hover:text-blue-600 transition-colors">
-                            <%= author.name %>
+                            <%= author.penName %>
                         </a>
                         <span class="text-sm text-gray-500">
                             <%= article.articleCount[index].data %> bài viết
@@ -42,10 +42,10 @@
                 <p class="ml-2">Chuyên mục</p>
             </div>
             <div class="flex flex-wrap p-1 gap-2 mt-3">
-                <% article.categoryNames.forEach(category=> { %>
-                    <a href="/categories/<%= category %>"
+                <% article.categoryData.forEach(category=> { %>
+                    <a href="/categories/<%= category.name %><%= category.parentName ? `?p=${category.parentName}` : '' %>"
                         class="px-2 py-1 bg-gray-200 hover:bg-gray-300 rounded-full text-xs transition-colors">
-                        <%= category %>
+                        <%= category.name %>
                     </a>
                     <% }); %>
             </div>

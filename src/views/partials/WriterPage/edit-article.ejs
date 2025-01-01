@@ -1,0 +1,730 @@
+<div class="grid grid-cols-[7fr_3fr] max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 relative space-x-6">
+    <div>
+        <form method="POST" action="/writer/edit?id=<%= article._id %>" enctype="multipart/form-data" class="space-y-6"
+            id="articleForm">
+            <!-- Title -->
+            <div class="mb-4">
+                <label for="name" class="block text-xl font-medium text-gray-700">Tên bài viết</label>
+                <input type="text" id="name" name="name" required value="<%= article.name %>"
+                    class="mt-1 py-3 px-2 block w-full text-xl bg-[#F5F5F5] rounded-md focus:outline-none focus:ring-0">
+            </div>
+
+            <div id="upload-container"
+                class="relative mt-4 flex flex-col items-center justify-center w-full h-[200px] rounded-lg cursor-pointer bg-[#F5F5F5] hover:bg-[#f0f0f0] transition-colors border-2 border-dashed border-gray-300">
+
+                <input type="file" id="file-input" name="image" class="hidden" accept="image/*">
+
+                <div id="placeholder" class="flex flex-col items-center gap-2 text-gray-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
+                        <circle cx="12" cy="13" r="3" />
+                    </svg>
+                    <span class="text-lg">Thêm ảnh đại diện bài viết</span>
+                </div>
+
+                <!-- Adjusted the image styling -->
+                <img id="preview" src="<%= article.image %>" class="absolute inset-0 w-full h-full object-contain rounded-lg hidden">
+            </div>
+
+            <!-- Content (TinyMCE Editor) -->
+            <div class="mb-4">
+                <label for="editor" class="block text-xl font-medium text-gray-700">Nội dung</label>
+                <textarea id="editor" name="content" class="mt-2 bg-white border border-gray-600 rounded-md"
+                    style="height: 300px;"></textarea>
+            </div>
+
+            <!-- Abstract -->
+            <div class="mb-4">
+                <label for="abstract" class="block text-xl font-medium text-gray-700">Tóm tắt</label>
+                <textarea id="abstract" name="abstract" rows="3" required
+                    class="mt-1 py-3 px-2 block w-full text-xl bg-[#F5F5F5] rounded-md focus:outline-none focus:ring-0"><%= article.abstract %></textarea>
+            </div>
+
+            <!-- Premium Article -->
+            <div class="mb-4 flex items-center">
+                <input type="checkbox" id="premium" name="isPremium" value="1" <%=article.isPremium ? 'checked' : '' %>
+                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                <label for="premium" class="ml-2 text-sm text-gray-700">Premium Article</label>
+            </div>
+
+            <input type="hidden" name="tags" id="tagsInput">
+            <input type="hidden" name="category" id="categoriesInput">
+        </form>
+    </div>
+    <div class="rounded-xl h-[20rem] space-y-4">
+        <div class="author-info p-4 flex flex-row space-x-4 h-[7rem] bg-[#F5F5F5]">
+            <div class="flex items-center gap-4">
+                <img src="/images/default-ava.png" alt="" class="w-20 h-20 rounded-xl">
+            </div>
+            <div class="flex flex-row space-x-3">
+                <div class="flex flex-col space-y-4 justify-center">
+                    <a href="/author/<%= user.name %>"
+                        class="text-lg font-semibold hover:text-blue-600 transition-colors">
+                        <%= user.name %>
+                    </a>
+                    <span class="text-sm text-gray-500">
+                        <%= articleCount.data %> bài viết
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-4xl mx-auto rounded-xl shadow-sm p-6 h-auto bg-[#F5F5F5]">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Tags Section -->
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-1 h-4 bg-red-500"></div>
+                        <h2 class="text-lg font-medium">Nhãn</h2>
+                        <button onclick="toggleList('tagList')"
+                            class="ml-auto w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
+                            <span class="text-gray-600">+</span>
+                        </button>
+                    </div>
+                    <div id="tagList" class="hidden flex flex-wrap gap-2">
+                        <% tags.forEach(tag=> { %>
+                            <button
+                                onclick="selectItem('tagsInput', '<%= tag._id %>', 'selectedTags', '#<%= tag.name %>')"
+                                class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 text-sm">
+                                #<%= tag.name %>
+                            </button>
+                            <% }); %>
+                    </div>
+                    <div id="selectedTags" class="mt-4 flex flex-wrap gap-2">
+                        <!-- Selected tags will be shown here -->
+                    </div>
+                </div>
+
+
+                <!-- Categories Section -->
+                <div>
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-1 h-4 bg-red-500"></div>
+                        <h2 class="text-lg font-medium">Chuyên Mục</h2>
+                        <button onclick="toggleList('categoryList')"
+                            class="ml-auto w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100">
+                            <span class="text-gray-600">+</span>
+                        </button>
+                    </div>
+                    <div id="categoryList" class="hidden flex flex-wrap gap-2">
+                        <% categories.filter(category => !category.parent).forEach(parentCategory => { %>
+                            <div class="relative group">
+                                <!-- Parent Category -->
+                                <button
+                                    onclick="selectItem('categoriesInput', '<%= parentCategory._id %>', 'selectedCategories', '<%= parentCategory.name %>')"
+                                    class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 text-sm font-medium">
+                                    <%= parentCategory.name %>
+                                </button>
+                                
+                                <!-- Child Categories Dropdown -->
+                                <div class="invisible group-hover:visible absolute left-[90%] top-0 ml-1 bg-white rounded-lg shadow-lg min-w-max z-10">
+                                    <% categories.filter(child => child.parent === parentCategory._id).forEach(childCategory => { %>
+                                        <button
+                                            onclick="selectItem('categoriesInput', '<%= childCategory._id %>', 'selectedCategories', '<%= childCategory.name %>')"
+                                            class="block w-full px-3 py-1 text-left text-sm hover:bg-gray-100 whitespace-nowrap first:rounded-t-lg last:rounded-b-lg">
+                                            <%= childCategory.name %>
+                                        </button>
+                                    <% }); %>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                    <div id="selectedCategories" class="mt-4 flex flex-wrap gap-2">
+                        <!-- Selected categories will be shown here -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- Reject reason if exist -->
+        <% if (article.rejectReason) { %>
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-1 h-4 bg-red-500"></div>
+                    <h2 class="text-lg font-medium text-red-600">Lý do từ chối</h2>
+                </div>
+                <div class="bg-red-50 rounded-lg p-4">
+                    <p class="text-sm text-gray-700 mb-2">
+                        <%= article.rejectReason %>
+                    </p>
+                </div>
+            </div>
+            <% } %>
+        <!-- Create Button -->
+        <div class="flex items-center justify-center mt-6 w-full">
+            <button type="submit" form="articleForm"
+                class="bg-cyan-600 hover:bg-cyan-700 text-white text-xl py-2 px-4 rounded-md shadow-sm focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 w-full">
+                Lưu bài viết
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<!-- TinyMCE CSS -->
+<script
+    src="https://cdn.tiny.cloud/1/9sbwo81wdmk8i7n89zu9aubg5z3pq6tfog7yzzy2dwek0za9/tinymce/5/tinymce.min.js"></script>
+
+<script>
+    document.querySelector('form').onsubmit = function () {
+        // Get editor content
+        let content = tinymce.get('editor').getContent();
+        console.log('Original content:', content);
+
+        // Convert image URLs to <img> tags
+        content = content.replace(
+            /(?:https?:\/\/[^\s<>"']+?\.(?:jpg|jpeg|gif|png|bmp|svg))/gi,
+            function (url) {
+                console.log('Converting image URL to <img>:', url);
+                return `<img src="${url}" alt="Image" style="width: 100% !important; height: auto;">`;
+            }
+        );
+
+        // Convert YouTube URLs to <iframe> tags
+        content = content.replace(
+            /(?:https?:\/\/(?:www\.)?youtube\.com\/watch\?v=|https?:\/\/youtu\.be\/)([a-zA-Z0-9_-]+)/gi,
+            function (url, videoId) {
+                console.log('Converting YouTube URL to <iframe>:', url);
+                return `<iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+            }
+        );
+
+        // Set processed content
+        document.querySelector('#content').value = content;
+        console.log('Processed content:', content);
+
+        return true;
+    };
+
+    tinymce.init({
+        selector: '#editor',
+        plugins: 'link image code paste',
+        toolbar: 'undo redo | formatselect | bold italic | link image | code',
+        height: 300,
+        paste_data_images: true,
+        setup: function (editor) {
+            editor.on('init', function () {
+                const container = document.querySelector('.tox-tinymce');
+                container.id = 'editor-wrapper';
+                const htmlContent = <%- JSON.stringify(article.content) %>;
+                editor.setContent(htmlContent);
+            });
+            editor.on('paste', function (e) {
+                // Get pasted content
+                let content = e.clipboardData.getData('text');
+                console.log('Pasted raw content:', content);
+
+                if (content) {
+                    // Check for YouTube URL
+                    const youtubeRegex = /https?:\/\/(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/;
+                    const match = content.match(youtubeRegex);
+
+                    if (match) {
+                        console.log('Found YouTube URL, video ID:', match[1]);
+                        // Prevent default paste
+                        e.preventDefault();
+
+                        // Insert iframe instead
+                        const iframe = `
+                            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;">
+                                <iframe 
+                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+                                    src="https://www.youtube.com/embed/${match[1]}" 
+                                    title="YouTube video player" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                    referrerpolicy="strict-origin-when-cross-origin" 
+                                    allowfullscreen>
+                                </iframe>
+                            </div>`;
+
+                        editor.insertContent(iframe);
+                    }
+                }
+            });
+        }
+    });
+
+    // Function to convert URLs to appropriate HTML tags
+    function convertUrlsToContent(content) {
+        // Convert image URLs to <img> tags
+        content = content.replace(
+            /(https?:\/\/[^\s]+(?:\.jpg|\.jpeg|\.png|\.gif|\.bmp|\.svg))/gi,
+            '<img src="$1" alt="Image">'
+        );
+
+        // Convert YouTube URLs to <iframe> tags
+        content = content.replace(
+            /(?:https?:\/\/(?:www\.)?youtube\.com\/watch\?v=|https?:\/\/youtu\.be\/)([a-zA-Z0-9_-]+)/gi,
+            '<iframe width="560" height="315" src="https://www.youtube.com/embed/$1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
+        );
+
+        return content;
+    }
+
+    <% if (article.content) { %>
+        // Process and load the content into TinyMCE
+        tinymce.get('editor').setContent(convertUrlsToContent(<% - article.content %>));
+    <% } %>
+
+        document.querySelector('form').onsubmit = function () {
+            let processedContent = tinymce.get('editor').getContent();
+            document.querySelector('#content').value = processedContent;
+            console.log('Submitting form with content:', processedContent);
+            return true;
+        };
+</script>
+
+<script>
+    const uploadContainer = document.getElementById('upload-container');
+    const fileInput = document.getElementById('file-input');
+    const placeholder = document.getElementById('placeholder');
+    const preview = document.getElementById('preview');
+    let uploadedImageUrl = '';  // Variable to store the uploaded image URL
+
+    console.log('Preview:', preview.src);
+
+    // Show default image if exists
+    if (preview.src && preview.src !== window.location.href) {
+        placeholder.classList.add('hidden');
+        preview.classList.remove('hidden');
+    }
+
+    // Handle click to upload
+    uploadContainer.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    // Handle drag and drop
+    uploadContainer.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadContainer.classList.add('border-gray-500', 'bg-gray-100');
+    });
+
+    uploadContainer.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        uploadContainer.classList.remove('border-gray-500', 'bg-gray-100');
+    });
+
+    uploadContainer.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadContainer.classList.remove('border-gray-500', 'bg-gray-100');
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image')) {
+            previewFile(file);
+            uploadImage(file);  // Upload the image after selection
+        }
+    });
+
+    // Handle file selection
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith('image')) {
+            previewFile(file);
+            uploadImage(file);  // Upload the image after selection
+        }
+    });
+
+    function previewFile(file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            placeholder.classList.add('hidden');
+            preview.classList.remove('hidden');
+            preview.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // Upload image to the server
+    function uploadImage(file) {
+        const formData = new FormData();
+        formData.append('image', file);
+
+        // Make a request to the backend to upload the image
+        fetch('/upload-image', {  // You need to set up an endpoint on your server to handle this
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.imageUrl) {
+                    uploadedImageUrl = data.imageUrl;  // Store the image URL returned from the server
+                    console.log('Image uploaded successfully:', uploadedImageUrl);
+                } else {
+                    console.error('Image upload failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error uploading image:', error);
+            });
+    }
+
+    // Add the uploaded image URL to the form before submitting
+    document.querySelector('form').onsubmit = function () {
+        // Add the image URL to the hidden field or another form field
+        const imageUrlField = document.createElement('input');
+        imageUrlField.type = 'hidden';
+        imageUrlField.name = 'imageUrl';
+        imageUrlField.value = uploadedImageUrl;
+        document.querySelector('form').appendChild(imageUrlField);
+
+        // Proceed with form submission
+        return true;
+    };
+
+</script>
+<script>
+    // Make categories available globally
+    window.categories = <%- JSON.stringify(categories) %>;
+</script>
+<script>
+    // Function to toggle the visibility of tag or category list
+    function toggleList(id) {
+        const list = document.getElementById(id);
+        list.classList.toggle('hidden');
+    }
+
+    // Function to select an item (tag or category)
+    function selectItem(inputId, value, selectedContainerId, displayText) {
+        // Get input element and values
+        const inputElement = document.getElementById(inputId);
+        let currentValues = inputElement.value ? inputElement.value.split(',') : [];
+
+        // Clear error message immediately
+        const container = document.getElementById(selectedContainerId).parentElement;
+        const errorMsg = container.querySelector('.text-red-500');
+        if (errorMsg) {
+            errorMsg.remove();
+            container.classList.remove('border-red-500');
+        }
+
+        if (inputId === 'categoriesInput') {
+            // Find if selected category is a child
+            const selectedCategory = window.categories.find(cat => cat._id === value);
+            if (selectedCategory && selectedCategory.parent) {
+                // Add parent ID if not already included
+                if (!currentValues.includes(selectedCategory.parent)) {
+                    currentValues.push(selectedCategory.parent);
+                }
+            }
+        }
+
+        // Add current value if not already included
+        if (!currentValues.includes(value)) {
+            currentValues.push(value);
+            inputElement.value = currentValues.join(',');
+
+            // Add selected item visually
+            const selectedContainer = document.getElementById(selectedContainerId);
+            const item = document.createElement('span');
+            item.className = 'px-3 py-1 bg-blue-200 rounded-lg text-sm inline-flex items-center mr-2 mb-2';
+
+            // Create text content
+            const text = document.createElement('span');
+            text.textContent = displayText;
+
+            // Create remove button
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = '×';
+            removeBtn.className = 'ml-2 text-red-600 hover:text-red-800 text-lg';
+            removeBtn.onclick = function() {
+                item.remove();
+                currentValues = currentValues.filter(val => val !== value);
+                inputElement.value = currentValues.join(',');
+            };
+
+            item.appendChild(text);
+            item.appendChild(removeBtn);
+            selectedContainer.appendChild(item);
+        }
+
+        // Close list after selection
+        const listId = inputId === 'tagsInput' ? 'tagList' : 'categoryList';
+        document.getElementById(listId).classList.add('hidden');
+    }
+
+    function removeItem(inputId, itemId, itemElement) {
+        const inputField = document.getElementById(inputId);
+        let currentValues = [];
+        
+        try {
+            currentValues = JSON.parse(inputField.value || '[]');
+            currentValues = currentValues.filter(value => value !== itemId);
+            inputField.value = JSON.stringify(currentValues);
+        } catch (e) {
+            console.error('Error removing item:', e);
+        }
+
+        itemElement.remove();
+    }
+    document.querySelector('form').onsubmit = function () {
+        // You can add other form validations or operations here if needed
+        console.log('Submitting form with tags:', document.getElementById('tagsInput').value);
+        console.log('Submitting form with categories:', document.getElementById('categoriesInput').value);
+        return true;  // Proceed with form submission
+    };
+
+</script>
+<script>
+    function removeValues(inputId, valueToRemove) {
+        const input = document.getElementById(inputId);
+        let values = [];
+        
+        try {
+            values = JSON.parse(input.value);
+            values = values.filter(v => v !== valueToRemove);
+            input.value = JSON.stringify(values);
+            console.log(`Updated ${inputId}:`, input.value);
+        } catch (e) {
+            console.error('Error updating values:', e);
+        }
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get article data
+        const articleTags = <%- JSON.stringify(article.tags || []) %>;
+        const articleCategories = <%- JSON.stringify(article.category || []) %>;
+        const categories = <%- JSON.stringify(categories) %>;
+        const tags = <%- JSON.stringify(tags) %>;
+
+        // Initialize selected items containers
+        const selectedTagsContainer = document.getElementById('selectedTags');
+        const selectedCategoriesContainer = document.getElementById('selectedCategories');
+
+        // Set initial values for hidden inputs
+        document.getElementById('tagsInput').value = JSON.stringify(articleTags);
+        document.getElementById('categoriesInput').value = JSON.stringify(articleCategories);
+
+        // Display selected tags
+        articleTags.forEach(tagId => {
+            const tag = tags.find(t => t._id === tagId);
+            if (tag) {
+                const element = document.createElement('span');
+                element.className = 'px-3 py-1 bg-blue-200 rounded-lg text-sm flex items-center gap-2';
+                // Change to use div for consistent structure
+                element.innerHTML = `
+                    <span>${tag.name}</span>
+                    <button type="button" onclick="this.parentElement.remove(); removeValues('tagsInput', '${tagId}')" class="text-red-600 hover:text-red-800 text-lg">×</button>
+                `;
+                selectedTagsContainer.appendChild(element);
+            }
+        });
+
+        // Display selected categories
+        articleCategories.forEach(catId => {
+            const category = categories.find(c => c._id === catId);
+            if (category) {
+                const element = document.createElement('span');
+                element.className = 'px-3 py-1 bg-blue-200 rounded-lg text-sm flex items-center gap-2';
+                element.innerHTML = `
+                    <span>${category.name}</span>
+                    <button type="button" onclick="this.parentElement.remove(); removeValues('categoriesInput', '${catId}')" class="text-red-600 hover:text-red-800 text-lg">×</button>
+                `;
+                selectedCategoriesContainer.appendChild(element);
+            }
+        });
+    });
+    // Update form validation
+    document.querySelector('#articleForm').addEventListener('submit', function(e) {
+        let isValid = true;
+
+        // Clear existing error messages first
+        const clearErrors = (container) => {
+            const existingError = container.querySelector('.text-red-500');
+            if (existingError) {
+                existingError.remove();
+                container.classList.remove('border-red-500');
+            }
+        };
+        document.querySelectorAll('.text-red-500').forEach(el => el.remove());
+        document.querySelectorAll('.border-red-500').forEach(el => 
+            el.classList.remove('border-red-500')
+        );
+
+        // Validate editor content
+        const editorContent = tinymce.get('editor').getContent();
+        if (!editorContent.trim()) {
+            e.preventDefault();
+            isValid = false;
+            const editorContainer = document.querySelector('#editor-wrapper');
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'text-red-500 text-sm mt-1';
+            errorMsg.textContent = 'Nội dung bài viết không được để trống';
+            editorContainer.after(errorMsg);
+        }
+
+        // Validate cover image
+        const preview = document.getElementById('preview');
+        const uploadContainer = document.getElementById('upload-container');
+        
+        if (!preview.src || preview.classList.contains('hidden')) {
+            e.preventDefault();
+            isValid = false;
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'text-red-500 text-sm mt-1';
+            errorMsg.textContent = 'Vui lòng chọn ảnh bìa cho bài viết';
+            uploadContainer.after(errorMsg);
+            uploadContainer.classList.add('border-red-500');
+        }
+
+        // Validate tags
+        const tagsInput = document.getElementById('tagsInput');
+        const tagsContainer = document.getElementById('selectedTags').parentElement;
+        let tagsValue = [];
+        
+        try {
+            tagsValue = JSON.parse(tagsInput.value || '[]');
+            clearErrors(tagsContainer);
+            
+            if (!tagsValue.length) {
+                e.preventDefault();
+                isValid = false;
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'text-red-500 text-sm mt-1';
+                errorMsg.textContent = 'Vui lòng chọn ít nhất một nhãn';
+                tagsContainer.appendChild(errorMsg);
+                tagsContainer.classList.add('border-red-500');
+            }
+        } catch (e) {
+            console.error('Error parsing tags:', e);
+        }
+
+        // Validate categories
+        const categoriesInput = document.getElementById('categoriesInput');
+        const categoriesContainer = document.getElementById('selectedCategories').parentElement;
+        let categoriesValue = [];
+        
+        try {
+            categoriesValue = JSON.parse(categoriesInput.value || '[]');
+            clearErrors(categoriesContainer);
+            
+            if (!categoriesValue.length) {
+                e.preventDefault();
+                isValid = false;
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'text-red-500 text-sm mt-1';
+                errorMsg.textContent = 'Vui lòng chọn ít nhất một chuyên mục';
+                categoriesContainer.appendChild(errorMsg);
+                categoriesContainer.classList.add('border-red-500');
+            }
+        } catch (e) {
+            console.error('Error parsing categories:', e);
+        }
+
+        if (!isValid) {
+            window.scrollTo(0, 0);
+        }
+        return isValid;
+    });
+</script>
+<script>
+    document.querySelector('#articleForm').addEventListener('submit', function(e) {
+        let isValid = true;
+        
+        // Clear all previous error messages
+        document.querySelectorAll('.text-red-500').forEach(el => el.remove());
+        document.querySelectorAll('.border-red-500').forEach(el => 
+            el.classList.remove('border-red-500')
+        );
+        
+        // Validate editor content
+        const editorContent = tinymce.get('editor').getContent();
+        if (!editorContent.trim()) {
+            e.preventDefault();
+            isValid = false;
+            const editorContainer = document.querySelector('#editor-wrapper');
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'text-red-500 text-sm mt-1';
+            errorMsg.textContent = 'Nội dung bài viết không được để trống';
+            editorContainer.after(errorMsg);
+        }
+
+        // Validate cover image
+        const preview = document.getElementById('preview');
+        const uploadContainer = document.getElementById('upload-container');
+        
+        if (!preview.src || preview.classList.contains('hidden')) {
+            e.preventDefault();
+            isValid = false;
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'text-red-500 text-sm mt-1';
+            errorMsg.textContent = 'Vui lòng chọn ảnh bìa cho bài viết';
+            uploadContainer.after(errorMsg);
+            uploadContainer.classList.add('border-red-500');
+        }
+
+        // Add debug logging
+        const tagsInput = document.getElementById('tagsInput');
+        const categoriesInput = document.getElementById('categoriesInput');
+
+        // Validate tags
+        const tagsInput = document.getElementById('tagsInput');
+        const tagsContainer = document.getElementById('selectedTags').parentElement;
+        if (!tagsInput.value) {
+            e.preventDefault();
+            isValid = false;
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'text-red-500 text-sm mt-1';
+            errorMsg.textContent = 'Vui lòng chọn ít nhất một nhãn';
+            tagsContainer.appendChild(errorMsg);
+            tagsContainer.classList.add('border-red-500');
+        }
+
+        // Validate categories
+        const categoriesInput = document.getElementById('categoriesInput');
+        const categoriesContainer = document.getElementById('selectedCategories').parentElement;
+        if (!categoriesInput.value) {
+            e.preventDefault();
+            isValid = false;
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'text-red-500 text-sm mt-1';
+            errorMsg.textContent = 'Vui lòng chọn ít nhất một chuyên mục';
+            categoriesContainer.appendChild(errorMsg);
+            categoriesContainer.classList.add('border-red-500');
+        }
+
+        if (!isValid) {
+            window.scrollTo(0, 0);
+        }
+        
+        return isValid;
+    });
+
+    // Clear image error when file is selected
+    fileInput.addEventListener('change', () => {
+        const errorMsg = uploadContainer.nextElementSibling;
+        if (errorMsg?.classList.contains('text-red-500')) {
+            errorMsg.remove();
+        }
+        uploadContainer.classList.remove('border-red-500');
+    });
+
+    // Clear editor error when content changes
+    tinymce.get('editor').on('input', () => {
+        const editorContainer = document.querySelector('#editor-wrapper');
+        const errorMsg = editorContainer.nextElementSibling;
+        if (errorMsg?.classList.contains('text-red-500')) {
+            errorMsg.remove();
+        }
+    });
+
+    // Clear tag error when tag is selected
+    document.getElementById('tagList').addEventListener('click', () => {
+        const tagsContainer = document.getElementById('selectedTags').parentElement;
+        const errorMsg = tagsContainer.querySelector('.text-red-500');
+        if (errorMsg) {
+            errorMsg.remove();
+            tagsContainer.classList.remove('border-red-500');
+        }
+    });
+
+    // Clear category error when category is selected
+    document.getElementById('categoryList').addEventListener('click', () => {
+        const categoriesContainer = document.getElementById('selectedCategories').parentElement;
+        const errorMsg = categoriesContainer.querySelector('.text-red-500');
+        if (errorMsg) {
+            errorMsg.remove();
+            categoriesContainer.classList.remove('border-red-500');
+        }
+    });
+</script>

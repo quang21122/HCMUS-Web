@@ -10,7 +10,7 @@
                     <ul class="dropdown bg-black opacity-70">
                         <% categories.filter(child=> child.parent === parentCategory._id).forEach(childCategory => { %>
                             <li>
-                                <a href="/categories/<%= childCategory.name %>" class="text-sm bg-black opacity-70">
+                                <a href="/categories/<%= childCategory.name %>?p=<%= parentCategory.name %>" class="text-sm bg-black opacity-70">
                                     <%= childCategory.name %>
                                 </a>
                             </li>

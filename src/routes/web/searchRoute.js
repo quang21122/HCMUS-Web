@@ -25,11 +25,20 @@ router.get("/search", async (req, res) => {
       $text: { $search: query },
     });
 
+    // Full text search with weights
     const articles = await Article.find(
-      { $text: { $search: query } },
-      { score: { $meta: "textScore" } }
+      {
+        $text: { $search: query },
+        status: "published",
+      },
+      {
+        score: { $meta: "textScore" },
+      }
     )
-      .sort({ score: { $meta: "textScore" } })
+      .sort({
+        isPremium: -1, // Premium articles first
+        score: { $meta: "textScore" }, // Then by relevance
+      })
       .skip(skip)
       .limit(limit)
       .populate("category")

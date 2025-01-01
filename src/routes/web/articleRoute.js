@@ -1,6 +1,5 @@
 import express from "express";
 import puppeteer from "puppeteer";
-import cache from "../../config/cache.js";
 import {
   getArticlesById,
   getArticlesSameCategory,
@@ -35,11 +34,37 @@ router.get("/article/:id", async (req, res) => {
     }
 
     // Check if article is premium and user is not authenticated
-    if (article.isPremium && !req.isAuthenticated()) {
-      return res.render("pages/login", {
-        error: "Bạn cần đăng nhập để xem bài viết premium",
-        returnTo: `/article/${articleId}`,
-      });
+    if (article.isPremium) {
+      if (!req.isAuthenticated()) {
+        return res.render("pages/login", {
+          error: "Bạn cần đăng nhập để xem bài viết premium",
+          returnTo: `/article/${articleId}`,
+        });
+      }
+
+      // Check if user has subscription
+      if (!req.user) {
+        return res.status(403).json({
+          success: false,
+          error: "Bạn cần đăng ký tài khoản Đọc giả để xem bài viết premium",
+        });
+      }
+    }
+
+    if (article.isPremium && req.user.role === "subscriber") {
+      const minute = req.user.subscriptionExpiry;
+      const subscriptionExpiry = new Date(req.user.createdAt).getTime() + minute * 60 * 1000;
+      if (subscriptionExpiry < Date.now()) {
+        return res.status(403).json({ success: false, error: "Hết hạn gói" });
+      }
+    }
+
+    if (article.isPremium && req.user.role === "subscriber") {
+      const minute = req.user.subscriptionExpiry;
+      const subscriptionExpiry = new Date(req.user.createdAt).getTime() + minute * 60 * 1000;
+      if (subscriptionExpiry < Date.now()) {
+        return res.status(403).json({ success: false, error: "Hết hạn gói" });
+      }
     }
 
     // Get category names
@@ -78,6 +103,27 @@ router.get("/article/:id", async (req, res) => {
     const user = req.user || (userId && (await findUser(userId))) || null;
 
     const categories = await getCategories();
+    const categoryData = await Promise.all(
+      article.category.map(async (catId) => {
+        const cat = categories.data.find(
+          (c) => c._id.toString() === catId.toString()
+        );
+        if (!cat) return null;
+
+        let parentName = null;
+        if (cat.parent) {
+          const parent = categories.data.find(
+            (p) => p._id.toString() === cat.parent.toString()
+          );
+          if (parent) parentName = parent.name;
+        }
+
+        return {
+          name: cat.name,
+          parentName,
+        };
+      })
+    );
 
     // Lấy danh sách comments bằng service
     const comments = await getCommentsByArticleId(articleId);
@@ -87,7 +133,7 @@ router.get("/article/:id", async (req, res) => {
       title: article.name,
       article: {
         ...article,
-        categoryNames,
+        categoryData,
         tagNames,
         authors,
         articleCount,

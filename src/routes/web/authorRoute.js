@@ -20,8 +20,10 @@ router.get("/author/:author", async (req, res) => {
 
     // Get articles by author
     const articlesResponse = await getArticlesPublishedByAuthor(
-      userResponse.data._id,
-      page
+      userResponse.data._id, // authorId
+      page, // page number
+      12, // limit
+      "published" // status
     );
 
     if (!articlesResponse.success) {

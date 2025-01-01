@@ -28,13 +28,42 @@ document.addEventListener("DOMContentLoaded", () => {
       let currentIndex = 0;
       const slideWidth = slides[0].offsetWidth; // Use offsetWidth to include padding and border
 
+      // Initial button states
+      prevButton.classList.add("bg-gray-300");
+      nextButton.classList.add("bg-gray-400");
+
+      const updateButtonStates = () => {
+        // Update prev button
+        if (currentIndex === 0) {
+          prevButton.classList.replace("bg-gray-400", "bg-gray-300");
+          prevButton.style.cursor = "default";
+          prevButton.style.pointerEvents = "none";
+        } else {
+          prevButton.classList.replace("bg-gray-300", "bg-gray-400");
+          prevButton.style.cursor = "pointer";
+          prevButton.style.pointerEvents = "auto";
+        }
+
+        // Update next button
+        if (currentIndex === slides.length - 5) {
+          nextButton.classList.replace("bg-gray-400", "bg-gray-300");
+          nextButton.style.cursor = "default";
+          nextButton.style.pointerEvents = "none";
+        } else {
+          nextButton.classList.replace("bg-gray-300", "bg-gray-400");
+          nextButton.style.cursor = "pointer";
+          nextButton.style.pointerEvents = "auto";
+        }
+      };
+
       nextButton.addEventListener("click", () => {
-        if (currentIndex < slides.length - 1) {
+        if (currentIndex < slides.length - 5) {
           currentIndex++;
           slider.scrollTo({
             left: currentIndex * (slideWidth + 8),
             behavior: "smooth",
           });
+          updateButtonStates();
         }
       });
 
@@ -45,6 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
             left: currentIndex * (slideWidth + 8),
             behavior: "smooth",
           });
+          updateButtonStates();
         }
       });
     });

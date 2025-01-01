@@ -12,13 +12,17 @@
        class="<%= (currentTab === 'ban-users') ? 'font-semibold border-b-4 border-red-500 pb-2' : 'text-gray-500 hover:text-black' %>">
        Cấm Người Dùng
     </a>
-    <a href="/manage-users/verify-editors" 
-       class="<%= (currentTab === 'verify-editors') ? 'font-semibold border-b-4 border-red-500 pb-2' : 'text-gray-500 hover:text-black' %>">
-       Duyệt Biên Tập Viên
-    </a>
     <a href="/manage-users/extend-subscription" 
        class="<%= (currentTab === 'extend-subscription') ? 'font-semibold border-b-4 border-red-500 pb-2' : 'text-gray-500 hover:text-black' %>">
        Gia Hạn Độc Giả
+    </a>
+    <a href="/manage-users/verify-authors" 
+       class="<%= (currentTab === 'verify-authors') ? 'font-semibold border-b-4 border-red-500 pb-2' : 'text-gray-500 hover:text-black' %>">
+       Duyệt Phóng viên
+    </a>
+    <a href="/manage-users/verify-editors" 
+       class="<%= (currentTab === 'verify-editors') ? 'font-semibold border-b-4 border-red-500 pb-2' : 'text-gray-500 hover:text-black' %>">
+       Duyệt Biên Tập Viên
     </a>
 </div>
 
@@ -35,11 +39,13 @@
 </form>
 
 <% if (currentTab === 'ban-users') { %>
-    <%- include('./ban-user-content.ejs') %>
-<% } else if (currentTab === 'verify-editors') { %>
-    <%- include('./verify-editor-content.ejs') %>
+<%- include('./ban-user-content.ejs') %>
 <% } else if (currentTab === 'extend-subscription') { %>
-    <%- include('./extend-subscription-content.ejs') %>
+<%- include('./extend-subscription-content.ejs') %>
+<% } else if (currentTab === 'verify-editors') { %>
+<%- include('./verify-editor-content.ejs') %>
+<% } else if (currentTab === 'verify-authors') { %>
+<%- include('./verify-author-content.ejs') %>
 <% } %>
 
      <!-- Pagination -->
