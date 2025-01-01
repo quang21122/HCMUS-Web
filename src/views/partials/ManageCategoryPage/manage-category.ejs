@@ -66,7 +66,10 @@
         <!-- Subcategories list -->
         <div class="space-y-2">
           <% category.subCategories.forEach(sub => { %>
-          <div class="flex items-center justify-between bg-white p-2 rounded">
+          <div
+            class="flex items-center justify-between bg-white p-2 rounded"
+            data-subcategory-id="<%= sub._id %>"
+          >
             <span class="text-sm"><%= sub.name %></span>
             <button
               onclick="deleteSubCategory('<%= category._id %>', '<%= sub._id %>')"
@@ -81,6 +84,23 @@
                 <path
                   fill-rule="evenodd"
                   d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
+            <button
+              onclick="editCategory('<%= sub._id %>', '<%= sub.name %>')"
+              class="p-1 hover:bg-gray-100 rounded"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 text-gray-500"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M11.414 10l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L10 11.414l4-4a1 1 0 011.414 0z"
                   clip-rule="evenodd"
                 />
               </svg>
@@ -184,25 +204,47 @@
         <!-- Subcategories list -->
         <div class="space-y-2">
           <% category.subCategories.forEach(sub => { %>
-          <div class="flex items-center justify-between bg-white p-2 rounded">
+          <div
+            class="flex items-center justify-between bg-white p-2 rounded"
+            data-subcategory-id="<%= sub._id %>"
+          >
             <span class="text-sm"><%= sub.name %></span>
-            <button
-              onclick="deleteSubCategory('<%= category._id %>', '<%= sub._id %>')"
-              class="p-1 hover:bg-gray-100 rounded"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 text-gray-500"
-                viewBox="0 0 20 20"
-                fill="currentColor"
+            <div class="flex gap-2">
+              <button
+                onclick="editCategory('<%= sub._id %>', '<%= sub.name %>')"
+                class="p-1 hover:bg-gray-100 rounded"
               >
-                <path
-                  fill-rule="evenodd"
-                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4 text-gray-500"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M11.414 10l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L10 11.414l4-4a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+              <button
+                onclick="deleteSubCategory('<%= category._id %>', '<%= sub._id %>')"
+                class="p-1 hover:bg-gray-100 rounded"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4 text-gray-500"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
           <% }) %>
         </div>
@@ -362,52 +404,43 @@
     window.editCategoryId = categoryId;
   }
 
-  function editSubCategory(categoryId ,subcategoryId, subcategoryName) {
-    const modal = document.getElementById("editCategoryModal");
-    modal.classList.remove("hidden");
-    document.getElementById("editCategoryName").value = subcategoryName;
-    window.editCategoryId = subcategoryId;
-  }
-
   function closeEditModal() {
     document.getElementById("editCategoryModal").classList.add("hidden");
+    window.editCategoryId = null;
   }
 
   async function saveEditedCategory() {
-    const categoryName = document.getElementById("editCategoryName").value;
+    const newName = document.getElementById("editCategoryName").value;
     const categoryId = window.editCategoryId;
 
     try {
-      const response = await fetch(`/edit-category/${categoryId}`, {
-        method: "PUT",
+      let url, method, body;
+      // Editing a main category
+      url = `/edit-category/${categoryId}`;
+      method = "PUT";
+      body = JSON.stringify({ name: newName });
+
+      const response = await fetch(url, {
+        method: method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: categoryName }),
+        body: body,
       });
 
       if (response.ok) {
-        const updatedCategory = await response.json();
-        updateCategoryOnPage(updatedCategory.data);
-        closeEditModal(); // Đóng modal sau khi cập nhật thành công
+        const updatedData = await response.json();
+        window.location.reload();
       } else {
         const data = await response.json();
         alert(
-          data.error || `Lỗi ${response.status}: Không thể hoàn thành yêu cầu.`
+          data.error ||
+            `Error ${response.status}: Unable to complete the request.`
         );
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Có lỗi xảy ra khi chỉnh sửa chuyên mục");
+      alert("An error occurred while editing the category/subcategory");
     }
   }
 
-  function updateCategoryOnPage(category) {
-    // Tìm category card cần cập nhật dựa trên categoryId
-    const categoryCard = document.querySelector(
-      `.category-card[data-category-id="${category._id}"]`
-    );
 
-    // Cập nhật tên category trong category card
-    const categoryNameElement = categoryCard.querySelector("h3");
-    categoryNameElement.textContent = category.name;
-  }
 </script>
