@@ -41,9 +41,10 @@ router.get("/manage-users/:currentTab/search", async (req, res) => {
         const userId = req.user?._id;
         const user = req.user || (userId && (await findUser(userId))) || null;
         
-        if (user.role !== "admin") {
+        if (!user || user.role !== "admin") {
             return res.redirect("/");
         }
+      
 
         const [usersResponse, categoriesResponse, tagsResponse] = result;
 

@@ -27,6 +27,8 @@ import writerRoute from "./routes/web/writerRoute.js";
 import multer from "multer";
 import commentRoute from "./routes/web/commentRoute.js"
 import adminRoute from "./routes/web/adminRoute.js"
+import adminApproveArticleRoute from "./routes/web/adminApproveArticleRoute.js"
+import adminManageArticleRoute from "./routes/web/adminManageArticleRoute.js"
 
 // Create __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -115,6 +117,8 @@ app.use("/profile", changeInProfile);
 app.use("/", searchRoute);
 app.use("/editor", editorRoute);
 app.use("/writer", writerRoute);
+app.use("/admin-approve", adminApproveArticleRoute);
+app.use("/manage-articles", adminManageArticleRoute);
 
 app.use(
   session({
