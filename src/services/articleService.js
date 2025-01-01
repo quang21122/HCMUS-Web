@@ -592,6 +592,7 @@ export const deleteArticle = async (id) => {
       return { error: "Invalid ID format", status: 400 };
     }
     // Find the article by ID and delete it
+    const article = await getArticlesById(id);
     const deletedArticle = await Article.deleteOne({ _id: id }).exec();
 
     // Return the deleted article or a not found message
@@ -790,6 +791,44 @@ export const getPendingArticles = async (
   }
 };
 
+export const getAllArticlesByPage = async (
+  page = 1,
+  limit = 12,
+) => {
+  try {
+    // Tính toán skip dựa trên số trang và số bài viết mỗi trang
+    const skip = (page - 1) * limit;
+
+    // Truy vấn bài viết từ cơ sở dữ liệu
+    const [total, articles] = await Promise.all([
+      Article.countDocuments(), // Đếm tổng số bài viết
+      Article.find() // Tìm bài viết có trạng thái "published"
+        .sort({ ["createdAt"]: -1 }) // Sắp xếp theo trường sortBy, mặc định publishedDate giảm dần
+        .skip(skip) // Bỏ qua số bài viết dựa trên trang hiện tại
+        .limit(limit) // Giới hạn số bài viết trên mỗi trang
+        .lean() // Lấy dữ liệu dưới dạng plain JavaScript object
+        .exec(),
+    ]);
+
+    return {
+      success: true,
+      data: articles,
+      pagination: {
+        total,
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  } catch (error) {
+    console.error("getArticlesByPage error:", error);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
+};
+
+
 export default {
   incrementArticleViews,
   getArticles,
@@ -809,4 +848,5 @@ export default {
   getArticlesByPageWithSort,
   getArticlesByStatus,
   getPendingArticles,
+  getAllArticlesByPage,
 };

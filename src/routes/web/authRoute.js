@@ -50,7 +50,7 @@ router.post("/register", (req, res) => {
     if (role === "author" && !penName) {
         return res.status(400).send("Bút danh là bắt buộc cho vai trò Phóng viên.");
     }
-
+    const subscriptionExpiry = 10080;
     // Xử lý lưu dữ liệu vào cơ sở dữ liệu (giả lập)
     const user = {
         role,
@@ -60,11 +60,7 @@ router.post("/register", (req, res) => {
         gender,
         country,
         penName: role === "author" ? penName : null,
-        subscriptionExpiry: role === "subscriber" ? 10080 : null,
-    };
-
-    if (role === "subscriber") {
-        user.subscriptionExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+        subscriptionExpiry: role === "subscriber" ? subscriptionExpiry : null,
     }
 
     fetch(`http://localhost:3000/api/users?_id=${userId}`,

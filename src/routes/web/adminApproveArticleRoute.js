@@ -81,7 +81,7 @@ router.get("/", async (req, res) => {
     const tagsResponse = await getTags();
 
     return res.render("pages/AdminApproveArticlePage", {
-      title: "Editor Dashboard",
+      title: "Approve Articles Dashboard",
       user,
       articles: articlesList,
       pagination: articles.pagination,
@@ -90,7 +90,7 @@ router.get("/", async (req, res) => {
       categories: categories.data,
     });
   } catch (error) {
-    console.error("Editor route error:", error);
+    console.error("admin approve route error:", error);
     return res.status(500).render("error", { error: error.message });
   }
 });
@@ -155,7 +155,7 @@ router.get("/article/:id", async (req, res) => {
       article: article,
     });
   } catch (error) {
-    console.error("Editor route error:", error);
+    console.error("admin approve route error:", error);
     return res.redirect("/500");
   }
 });
@@ -222,7 +222,7 @@ router.get("/articleReject/:id", async (req, res) => {
       article,
     });
   } catch (error) {
-    console.error("Editor route error:", error);
+    console.error("admin approve route error:", error);
     return res.redirect("/500");
   }
 });

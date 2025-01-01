@@ -96,7 +96,7 @@ const updateArticleById = async (req, res) => {
 
 const deleteArticleById = async (req, res) => {
     try {
-        const id = req.params._id;
+        const id = req.params.id;
 
         // Kiểm tra nếu không có _id trong query
         if (!id) {
