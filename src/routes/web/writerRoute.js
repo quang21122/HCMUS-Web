@@ -107,6 +107,7 @@ router.get("/create", async (req, res) => {
   try {
     const tagsResponse = await getTags();
     const categoriesResponse = await getCategories();
+    console.log("categoriesResponse: ", categoriesResponse);
 
     const userId = req.user?._id;
     const user = req.user || (userId && (await findUser(userId))) || null;
@@ -334,21 +335,43 @@ router.post("/edit", upload.single("image"), async (req, res) => {
       });
     }
 
-    // const tagsArray = tags.split(",");
-    // const categoryArray = category.split(",");
+    const cleanAndParseJSON = (str) => {
+      try {
+        // Split on closing bracket to separate JSON array from additional IDs
+        const [jsonPart, ...rest] = str.split("]");
+
+        // Parse the JSON array part
+        const jsonArray = JSON.parse(jsonPart + "]");
+
+        // Get additional IDs by cleaning up the rest
+        const additionalIds = rest
+          .join("")
+          .split(",")
+          .filter((id) => id.trim())
+          .map((id) => id.trim());
+
+        // Combine both arrays and remove duplicates
+        return [...new Set([...jsonArray, ...additionalIds])];
+      } catch (e) {
+        // If JSON parsing fails, try splitting by comma
+        return str
+          .split(",")
+          .filter((id) => id.trim())
+          .map((id) => id.replace(/[\[\]"]/g, "").trim());
+      }
+    };
 
     const image = req.file
       ? `/uploads/${req.file.filename}`
       : articleResponse.data.image;
-    console.log("image: ", image);
 
     const articleData = {
       name,
       image,
       abstract,
       content,
-      tags: JSON.parse(tags),
-      category: JSON.parse(category),
+      tags: cleanAndParseJSON(tags),
+      category: cleanAndParseJSON(category),
       isPremium: isPremium === "1",
       status: rejectReason ? "rejected" : "draft",
       publishedAt,

@@ -54,6 +54,8 @@ router.get("/", async (req, res) => {
       article.authorNames = authors.map((author) => author.name);
     }
 
+    const weeklyArticles = await getArticles("weeklyViews");
+
     const pageData = {
       title: "Trang chủ",
       articles: articlesResponse.data,
@@ -61,6 +63,7 @@ router.get("/", async (req, res) => {
       tags: tagsResponse.data,
       mostViewArticles: mostViewArticles.data,
       mostViewedCategoryArticles: mostViewedCategoryArticles.data,
+      weeklyArticles: weeklyArticles.data,
       user: user,
     };
 

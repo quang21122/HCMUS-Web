@@ -25,28 +25,41 @@ export const incrementArticleViews = async (articleId) => {
 export const getArticles = async (sortBy = "publishedDate") => {
   try {
     let sortQuery = {};
+    let findQuery = { status: "published" };
 
     switch (sortBy) {
+      case "weeklyViews": {
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+        findQuery = {
+          ...findQuery,
+          publishedDate: { $gte: sevenDaysAgo },
+        };
+        sortQuery = { views: -1 };
+        break;
+      }
       case "title":
-        sortQuery = { name: 1 }; // Sort by title alphabetically
+        sortQuery = { name: 1 };
         break;
       case "newest":
-        sortQuery = { publishedDate: -1 }; // Newest first
+        sortQuery = { publishedDate: -1 };
         break;
       case "oldest":
-        sortQuery = { publishedDate: 1 }; // Oldest first
+        sortQuery = { publishedDate: 1 };
         break;
       case "views":
-        sortQuery = { views: -1 }; // Most viewed first
+        sortQuery = { views: -1 };
         break;
       default:
-        sortQuery = { publishedDate: -1 }; // Default to newest
+        sortQuery = { publishedDate: -1 };
     }
 
-    const response = await Article.find({ status: "published" })
+    const response = await Article.find(findQuery)
       .populate("author")
       .populate("category")
       .sort(sortQuery)
+      .limit(sortBy === "weeklyViews" ? 4 : 10)
       .lean()
       .exec();
 
@@ -114,7 +127,8 @@ export const getMostViewedCategoryArticles = async () => {
     })
       .populate("author")
       .populate("category")
-      .sort({ views: -1 })
+      .sort({ publishedDate: -1 })
+      .limit(10)
       .lean()
       .exec();
 

@@ -21,11 +21,20 @@ const ArticleSchema = new Schema({
 });
 
 // Add text index
-ArticleSchema.index({
-  name: "text",
-  content: "text",
-  abstract: "text",
-});
+ArticleSchema.index(
+  {
+    name: "text", // weight: 10 (default)
+    abstract: "text", // weight: 5
+    content: "text", // weight: 1
+  },
+  {
+    weights: {
+      name: 10,
+      abstract: 5,
+      content: 1,
+    },
+  }
+);
 
 const Article = model('articles', ArticleSchema);
 
