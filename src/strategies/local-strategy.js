@@ -147,7 +147,7 @@ router.post('/register', async (req, res) => {
 
 // Log in existing user
 router.post("/login", (req, res, next) => {
-  passport.authenticate("local", (err, user, info) => {
+  passport.authenticate("local", async (err, user, info) => {
     if (err) {
       return next(err);
     }
@@ -155,21 +155,32 @@ router.post("/login", (req, res, next) => {
       return res.redirect("/auth/login?error=invalid_credentials");
     }
 
-    req.logIn(user, (err) => {
-      if (err) {
-        return next(err);
+    try {
+      // Kiểm tra xem người dùng có bị ban không
+      const userInDb = await User.findById(user._id); // Thay User bằng model tương ứng của bạn
+      if (userInDb && userInDb.ban) {  // Kiểm tra trường isBanned
+        return res.redirect("/auth/login?error=user_banned");
       }
 
-      // Explicitly save the session before redirecting
-      req.session.save((err) => {
+      req.logIn(user, (err) => {
         if (err) {
           return next(err);
         }
-        res.redirect("/");
+
+        // Explicitly save the session before redirecting
+        req.session.save((err) => {
+          if (err) {
+            return next(err);
+          }
+          res.redirect("/");
+        });
       });
-    });
+    } catch (err) {
+      return next(err);
+    }
   })(req, res, next);
 });
+
 
 //Logout
 router.post("/logout", async (req, res, next) => {
