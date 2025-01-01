@@ -1,112 +1,218 @@
-<div class="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
-    style="background-image: url('/images/login-bg.png');">
-    <div class="bg-white/90 px-8 pt-6 pb-20 rounded-lg shadow-lg w-full max-w-xl flex flex-col">
-        <div class="grid grid-cols-[1fr_8fr_1fr] mb-8">
-            <a href="/">
-                <img src="/images/left-arrow.png" alt="" class="w-8 h-8">
-            </a>
-            <div class="flex flex-col justify-center items-center space-y-2">
-                <h1 class="text-3xl font-bold text-center text-gray-800">Đăng nhập</h1>
-                <div class="flex flex-row justify-center items-center space-x-2">
-                    <p class="text-lg text-gray-700">Chưa có tài khoản?</p>
-                    <a href="/auth/register" class="text-lg text-gray-500 underline underline-offset-1">Đăng ký</a>
-                </div>
-            </div>
-            <div class=""></div>
+<div
+  class="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
+  style="background-image: url('/images/login-bg.png')"
+>
+  <div
+    class="bg-white/90 px-8 pt-6 pb-20 rounded-lg shadow-lg w-full max-w-xl flex flex-col"
+  >
+    <div class="grid grid-cols-[1fr_8fr_1fr] mb-8">
+      <a href="/">
+        <img src="/images/left-arrow.png" alt="" class="w-8 h-8" />
+      </a>
+      <div class="flex flex-col justify-center items-center space-y-2">
+        <h1 class="text-3xl font-bold text-center text-gray-800">Đăng nhập</h1>
+        <div class="flex flex-row justify-center items-center space-x-2">
+          <p class="text-lg text-gray-700">Chưa có tài khoản?</p>
+          <a
+            href="/auth/register"
+            class="text-lg text-gray-500 underline underline-offset-1"
+            >Đăng ký</a
+          >
+        </div>
+      </div>
+      <div></div>
+    </div>
+
+    <form action="/auth/login" method="POST" class="space-y-6">
+      <div class="space-y-2">
+        <label for="email" class="block text-lg font-medium text-gray-500"
+          >Địa chỉ email hoặc tên tài khoản:</label
+        >
+        <input
+          type="text"
+          id="email"
+          name="email"
+          required
+          class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+        />
+      </div>
+
+      <div class="space-y-2">
+        <label for="password" class="block text-lg font-medium text-gray-500"
+          >Mật khẩu:</label
+        >
+        <div class="relative">
+          <input
+            type="password"
+            id="password"
+            name="password"
+            required
+            class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+          />
+          <button
+            type="button"
+            id="togglePassword"
+            class="absolute right-3 top-1/2 transform -translate-y-1/2"
+          >
+            <!-- Eye icon (visible when password is hidden) -->
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-5 h-5 text-gray-500 show-password"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+            <!-- Eye-slash icon (visible when password is shown) -->
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-5 h-5 text-gray-500 hide-password hidden"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <a href="/auth/forget-password" class="flex flex-row-reverse">
+        <span class="text-gray-400 underline text-sm">Quên mật khẩu?</span>
+      </a>
+
+      <div class="flex flex-col space-y-4">
+        <button
+          type="submit"
+          id="loginButton"
+          disabled
+          class="w-full py-3 rounded-[2rem] transition duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed enabled:bg-blue-600 enabled:hover:bg-blue-700 text-white"
+        >
+          Đăng nhập
+        </button>
+
+        <div class="flex flex-row items-center w-full my-4">
+          <hr class="flex-grow border-t border-gray-500" />
+          <span class="px-4 text-gray-500">Hoặc tiếp tục với Google</span>
+          <hr class="flex-grow border-t border-gray-500" />
         </div>
 
+        <a
+          href="/auth/google"
+          class="w-full bg-white text-black py-3 rounded-[2rem] border border-black hover:bg-blue-500 transition duration-200 text-center flex items-center justify-center space-x-2"
+        >
+          <img
+            src="/images/google-icon.png"
+            alt="google-icon"
+            class="w-6 h-6"
+          />
+          <span>Tiếp tục với Google</span>
+        </a>
 
-        <form action="/auth/login" method="POST" class="space-y-6">
-            <div class="space-y-2">
-                <label for="email" class="block text-lg font-medium text-gray-500">Địa chỉ email hoặc tên tài
-                    khoản:</label>
-                <input type="text" id="email" name="email" required
-                    class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+        <!-- Error Message -->
+        <div
+          id="errorMessage"
+          class="hidden transform transition-all duration-300"
+        >
+          <div
+            class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-full max-w-sm"
+          >
+            <div
+              class="bg-red-50 border-l-4 border-red-500 rounded-r-lg p-4 shadow-lg flex items-center space-x-3"
+            >
+              <div class="flex-shrink-0">
+                <svg
+                  class="h-5 w-5 text-red-400"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p id="errorText" class="text-sm text-red-600 font-medium"></p>
+              </div>
             </div>
-
-            <div class="space-y-2">
-                <label for="password" class="block text-lg font-medium text-gray-500">Mật khẩu:</label>
-                <div class="relative">
-                    <input type="password" id="password" name="password" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
-                    <button type="button" id="togglePassword"
-                        class="absolute right-3 top-1/2 transform -translate-y-1/2">
-                        <!-- Eye icon (visible when password is hidden) -->
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="w-5 h-5 text-gray-500 show-password">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        <!-- Eye-slash icon (visible when password is shown) -->
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="w-5 h-5 text-gray-500 hide-password hidden">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <a href="/auth/forget-password" class="flex flex-row-reverse">
-                <span class="text-gray-400 underline text-sm">Quên mật khẩu?</span>
-            </a>
-
-            <div class="flex flex-col space-y-4">
-                <button type="submit" id="loginButton" disabled
-                    class="w-full py-3 rounded-[2rem] transition duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed enabled:bg-blue-600 enabled:hover:bg-blue-700 text-white">
-                    Đăng nhập
-                </button>
-
-                <div class="flex flex-row items-center w-full my-4">
-                    <hr class="flex-grow border-t border-gray-500">
-                    <span class="px-4 text-gray-500">Hoặc tiếp tục với Google</span>
-                    <hr class="flex-grow border-t border-gray-500">
-                </div>
-
-                <a href="/auth/google"
-                    class="w-full bg-white text-black py-3 rounded-[2rem] border border-black hover:bg-blue-500 transition duration-200 text-center flex items-center justify-center space-x-2">
-                    <!-- Google Logo SVG -->
-                    <img src="/images/google-icon.png" alt="google-icon" class="w-6 h-6">
-                    <span>Tiếp tục với Google</span>
-                </a>
-            </div>
-        </form>
-    </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const toggleButton = document.getElementById('togglePassword');
-        const passwordInput = document.getElementById('password');
-        const showIcon = toggleButton.querySelector('.show-password');
-        const hideIcon = toggleButton.querySelector('.hide-password');
+  document.addEventListener("DOMContentLoaded", function () {
+    // Handle error messages
+    const urlParams = new URLSearchParams(window.location.search);
+    const error = urlParams.get("error");
 
-        toggleButton.addEventListener('click', function () {
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                showIcon.classList.add('hidden');
-                hideIcon.classList.remove('hidden');
-            } else {
-                passwordInput.type = 'password';
-                showIcon.classList.remove('hidden');
-                hideIcon.classList.add('hidden');
-            }
-        });
+    if (error) {
+      const errorMessage = document.getElementById("errorMessage");
+      const errorText = document.getElementById("errorText");
+
+      if (error === "invalid_credentials") {
+        errorText.textContent = "Tài khoản hoặc mật khẩu không chính xác.";
+      } else {
+        errorText.textContent = "Đã xảy ra lỗi. Vui lòng thử lại.";
+      }
+
+      errorMessage.classList.remove("hidden");
+    }
+    // Auto-hide the error message after 3 seconds
+    setTimeout(() => {
+      errorMessage.classList.add("hidden");
+    }, 3000);
+
+    // Toggle password visibility
+    const toggleButton = document.getElementById("togglePassword");
+    const passwordInput = document.getElementById("password");
+    const showIcon = toggleButton.querySelector(".show-password");
+    const hideIcon = toggleButton.querySelector(".hide-password");
+
+    toggleButton.addEventListener("click", function () {
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        showIcon.classList.add("hidden");
+        hideIcon.classList.remove("hidden");
+      } else {
+        passwordInput.type = "password";
+        showIcon.classList.remove("hidden");
+        hideIcon.classList.add("hidden");
+      }
     });
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const loginButton = document.getElementById('loginButton');
+    // Enable/disable login button
+    const emailInput = document.getElementById("email");
+    const loginButton = document.getElementById("loginButton");
 
-        function validateForm() {
-            const isEmailValid = emailInput.value.trim() !== '';
-            const isPasswordValid = passwordInput.value.trim() !== '';
-            loginButton.disabled = !(isEmailValid && isPasswordValid);
-        }
+    function validateForm() {
+      const isEmailValid = emailInput.value.trim() !== "";
+      const isPasswordValid = passwordInput.value.trim() !== "";
+      loginButton.disabled = !(isEmailValid && isPasswordValid);
+    }
 
-        emailInput.addEventListener('input', validateForm);
-        passwordInput.addEventListener('input', validateForm);
-    });
+    emailInput.addEventListener("input", validateForm);
+    passwordInput.addEventListener("input", validateForm);
+  });
 </script>

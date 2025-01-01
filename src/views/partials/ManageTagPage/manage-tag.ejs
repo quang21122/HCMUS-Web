@@ -1,0 +1,242 @@
+<div class="p-6">
+  <div class="mb-6">
+    <h1 class="text-xl font-semibold">Quản lý nhãn</h1>
+    <form id="addTagForm" class="mt-4 flex gap-2">
+      <input
+        type="text"
+        id="tagName"
+        name="name"
+        placeholder="Nhập tên nhãn mới"
+        class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        required
+      />
+      <button
+        type="submit"
+        class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+        Thêm nhãn
+      </button>
+    </form>
+  </div>
+
+  <% if (tags.length === 0) { %>
+  <p class="text-gray-500 text-center">Chưa có nhãn nào.</p>
+  <% } else { %>
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+    <% tags.forEach(tag => { %>
+    <div
+      class="flex items-center justify-between px-4 py-2 bg-gray-100 rounded-full"
+      data-id="<%= tag._id %>"
+    >
+      <span class="text-sm text-gray-700">#<%= tag.name %></span>
+      <div class="flex gap-2">
+        <!-- Button Edit -->
+        <button
+          onclick="editTag('<%= tag._id %>', '<%= tag.name %>')"
+          class="ml-2 p-1 hover:bg-gray-200 rounded-full"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4 text-gray-500"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M12.293 2.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-7 7a1 1 0 01-.707.293H7.414a1 1 0 01-.707-.293l-4-4a1 1 0 010-1.414l7-7a1 1 0 011.414 0l.707.707z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+
+        <!-- Button Delete -->
+        <button
+          onclick="deleteTag('<%= tag._id %>')"
+          class="ml-2 p-1 hover:bg-gray-200 rounded-full"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4 text-gray-500"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+  <% } %>
+</div>
+
+<!-- Modal Edit Tag -->
+<div
+  id="editTagModal"
+  class="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center hidden"
+>
+  <div class="bg-white p-6 rounded-lg w-1/3">
+    <h2 class="text-lg font-semibold">Chỉnh sửa tên nhãn</h2>
+    <input
+      type="text"
+      id="editTagName"
+      class="mt-2 p-2 w-full border rounded-lg"
+      required
+    />
+    <div class="mt-4 flex justify-end gap-2">
+      <button
+        onclick="closeEditModal()"
+        class="px-4 py-2 bg-gray-300 text-black rounded-lg"
+      >
+        Hủy
+      </button>
+      <button
+        onclick="saveEditedTag()"
+        class="px-4 py-2 bg-blue-500 text-white rounded-lg"
+      >
+        Lưu
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  document
+    .getElementById("addTagForm")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const tagName = document.getElementById("tagName").value;
+      const submitButton = e.target.querySelector('button[type="submit"]');
+
+      try {
+        submitButton.disabled = true;
+        submitButton.textContent = "Đang xử lý...";
+
+        const response = await fetch("/manage-tags/addtag", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: tagName }),
+        });
+
+        if (response.ok) {
+          const newTag = await response.json();
+          addTagToPage(newTag.data);
+          document.getElementById("tagName").value = "";
+        } else {
+          const data = await response.json();
+          alert(
+            data.error ||
+              `Lỗi ${response.status}: Không thể hoàn thành yêu cầu.`
+          );
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Có lỗi xảy ra khi thêm nhãn");
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = "Thêm nhãn";
+      }
+    });
+
+  function addTagToPage(tag) {
+    const tagsContainer = document.querySelector(".grid");
+    if (!tagsContainer) return;
+
+    const tagElement = document.createElement("div");
+    tagElement.className =
+      "flex items-center justify-between px-4 py-2 bg-gray-100 rounded-full";
+    tagElement.innerHTML = `
+            <span class="text-sm text-gray-700">#${tag.name}</span>
+            <div class="flex gap-2">
+                <button onclick="editTag('${tag._id}', '${tag.name}')" class="ml-2 p-1 hover:bg-gray-200 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M12.293 2.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-7 7a1 1 0 01-.707.293H7.414a1 1 0 01-.707-.293l-4-4a1 1 0 010-1.414l7-7a1 1 0 011.414 0l.707.707z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+                <button onclick="deleteTag('${tag._id}')" class="ml-2 p-1 hover:bg-gray-200 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+        `;
+    tagsContainer.appendChild(tagElement);
+  }
+
+  async function deleteTag(tagId) {
+    try {
+      const response = await fetch(`/manage-tags/${tagId}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        location.reload();
+      } else {
+        alert("Không thể xóa nhãn.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Có lỗi xảy ra khi xóa nhãn");
+    }
+  }
+
+  function editTag(tagId, tagName) {
+    const modal = document.getElementById("editTagModal");
+    modal.classList.remove("hidden");
+    document.getElementById("editTagName").value = tagName;
+    window.editTagId = tagId;
+  }
+
+  function closeEditModal() {
+    document.getElementById("editTagModal").classList.add("hidden");
+  }
+
+  async function saveEditedTag() {
+    const tagName = document.getElementById("editTagName").value;
+    const tagId = window.editTagId;
+
+    try {
+      const response = await fetch(`/edit-tag/${tagId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: tagName }),
+      });
+
+      if (response.ok) {
+        const updatedTag = await response.json();
+        updateTagOnPage(updatedTag.data);
+        closeEditModal(); // Đóng modal sau khi cập nhật thành công
+      } else {
+        const data = await response.json();
+        alert(
+          data.error || `Lỗi ${response.status}: Không thể hoàn thành yêu cầu.`
+        );
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Có lỗi xảy ra khi chỉnh sửa nhãn");
+    }
+  }
+
+  function updateTagOnPage(tag) {
+    const tagsContainer = document.querySelector(".grid");
+    if (!tagsContainer) return;
+
+    // Tìm phần tử chứa tag dựa trên _id
+    const tagElement = Array.from(tagsContainer.children).find((element) => {
+      return element.getAttribute("data-id") === tag._id;
+    });
+
+    if (tagElement) {
+      // Cập nhật tên tag trên giao diện
+      tagElement.querySelector("span").textContent = `#${tag.name}`;
+      console.log("Updated tag:", tag.name); // Log để kiểm tra việc cập nhật
+    } else {
+      console.log("Tag không tìm thấy trong DOM.");
+    }
+  }
+</script>
