@@ -103,6 +103,27 @@ router.get("/article/:id", async (req, res) => {
     const user = req.user || (userId && (await findUser(userId))) || null;
 
     const categories = await getCategories();
+    const categoryData = await Promise.all(
+      article.category.map(async (catId) => {
+        const cat = categories.data.find(
+          (c) => c._id.toString() === catId.toString()
+        );
+        if (!cat) return null;
+
+        let parentName = null;
+        if (cat.parent) {
+          const parent = categories.data.find(
+            (p) => p._id.toString() === cat.parent.toString()
+          );
+          if (parent) parentName = parent.name;
+        }
+
+        return {
+          name: cat.name,
+          parentName,
+        };
+      })
+    );
 
     // Lấy danh sách comments bằng service
     const comments = await getCommentsByArticleId(articleId);
@@ -112,7 +133,7 @@ router.get("/article/:id", async (req, res) => {
       title: article.name,
       article: {
         ...article,
-        categoryNames,
+        categoryData,
         tagNames,
         authors,
         articleCount,
