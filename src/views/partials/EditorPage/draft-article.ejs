@@ -75,13 +75,28 @@
                             <span class="text-gray-600">+</span>
                         </button>
                     </div>
-                    <div id="categoryList" class="hidden flex flex-wrap gap-2">
-                        <% categories.forEach(category=> { %>
-                            <button
-                                onclick="selectItem('categoriesInput', '<%= category._id %>', 'selectedCategories', '<%= category.name %>')"
-                                class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 text-sm">
-                                <%= category.name %>
-                            </button>
+                    <div id="categoryList" class="hidden flex flex-wrap gap-2 mb-4">
+                        <% categories.filter(category=> !category.parent).forEach(parentCategory => { %>
+                            <div class="relative group">
+                                <!-- Parent Category -->
+                                <button
+                                    onclick="selectItem('categoriesInput', '<%= parentCategory._id %>', 'selectedCategories', '<%= parentCategory.name %>')"
+                                    class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 text-sm font-medium">
+                                    <%= parentCategory.name %>
+                                </button>
+                        
+                                <!-- Child Categories Dropdown -->
+                                <div
+                                    class="invisible group-hover:visible absolute left-[90%] top-0 ml-1 bg-white rounded-lg shadow-lg min-w-max z-10">
+                                    <% categories.filter(child=> child.parent === parentCategory._id).forEach(childCategory => { %>
+                                        <button
+                                            onclick="selectItem('categoriesInput', '<%= childCategory._id %>', 'selectedCategories', '<%= childCategory.name %>')"
+                                            class="block w-full px-3 py-1 text-left text-sm hover:bg-gray-100 whitespace-nowrap first:rounded-t-lg last:rounded-b-lg">
+                                            <%= childCategory.name %>
+                                        </button>
+                                        <% }); %>
+                                </div>
+                            </div>
                             <% }); %>
                     </div>
                     <div id="selectedCategories" class="flex flex-wrap gap-2">

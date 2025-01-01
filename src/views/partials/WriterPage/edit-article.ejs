@@ -108,13 +108,27 @@
                         </button>
                     </div>
                     <div id="categoryList" class="hidden flex flex-wrap gap-2">
-                        <% categories.forEach(category=> { %>
-                            <button
-                                onclick="selectItem('categoriesInput', '<%= category._id %>', 'selectedCategories', '<%= category.name %>')"
-                                class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 text-sm">
-                                <%= category.name %>
-                            </button>
-                            <% }); %>
+                        <% categories.filter(category => !category.parent).forEach(parentCategory => { %>
+                            <div class="relative group">
+                                <!-- Parent Category -->
+                                <button
+                                    onclick="selectItem('categoriesInput', '<%= parentCategory._id %>', 'selectedCategories', '<%= parentCategory.name %>')"
+                                    class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 text-sm font-medium">
+                                    <%= parentCategory.name %>
+                                </button>
+                                
+                                <!-- Child Categories Dropdown -->
+                                <div class="invisible group-hover:visible absolute left-[90%] top-0 ml-1 bg-white rounded-lg shadow-lg min-w-max z-10">
+                                    <% categories.filter(child => child.parent === parentCategory._id).forEach(childCategory => { %>
+                                        <button
+                                            onclick="selectItem('categoriesInput', '<%= childCategory._id %>', 'selectedCategories', '<%= childCategory.name %>')"
+                                            class="block w-full px-3 py-1 text-left text-sm hover:bg-gray-100 whitespace-nowrap first:rounded-t-lg last:rounded-b-lg">
+                                            <%= childCategory.name %>
+                                        </button>
+                                    <% }); %>
+                                </div>
+                            </div>
+                        <% }); %>
                     </div>
                     <div id="selectedCategories" class="mt-4 flex flex-wrap gap-2">
                         <!-- Selected categories will be shown here -->
@@ -150,7 +164,7 @@
 
 <!-- TinyMCE CSS -->
 <script
-    src="https://cdn.tiny.cloud/1/fitaf2bz3rvadtw7hbv673d3l9xs64dlcith8cjds35dcufs/tinymce/5/tinymce.min.js"></script>
+    src="https://cdn.tiny.cloud/1/9sbwo81wdmk8i7n89zu9aubg5z3pq6tfog7yzzy2dwek0za9/tinymce/5/tinymce.min.js"></script>
 
 <script>
     document.querySelector('form').onsubmit = function () {
@@ -191,6 +205,8 @@
         paste_data_images: true,
         setup: function (editor) {
             editor.on('init', function () {
+                const container = document.querySelector('.tox-tinymce');
+                container.id = 'editor-wrapper';
                 const htmlContent = <%- JSON.stringify(article.content) %>;
                 editor.setContent(htmlContent);
             });
@@ -359,6 +375,10 @@
 
 </script>
 <script>
+    // Make categories available globally
+    window.categories = <%- JSON.stringify(categories) %>;
+</script>
+<script>
     // Function to toggle the visibility of tag or category list
     function toggleList(id) {
         const list = document.getElementById(id);
@@ -367,31 +387,51 @@
 
     // Function to select an item (tag or category)
     function selectItem(inputId, value, selectedContainerId, displayText) {
+        // Get input element and values
         const inputElement = document.getElementById(inputId);
-        let currentValues = [];
-        
-        try {
-            currentValues = JSON.parse(inputElement.value || '[]');
-        } catch (e) {
-            console.error('Error parsing values:', e);
+        let currentValues = inputElement.value ? inputElement.value.split(',') : [];
+
+        // Clear error message immediately
+        const container = document.getElementById(selectedContainerId).parentElement;
+        const errorMsg = container.querySelector('.text-red-500');
+        if (errorMsg) {
+            errorMsg.remove();
+            container.classList.remove('border-red-500');
         }
 
+        if (inputId === 'categoriesInput') {
+            // Find if selected category is a child
+            const selectedCategory = window.categories.find(cat => cat._id === value);
+            if (selectedCategory && selectedCategory.parent) {
+                // Add parent ID if not already included
+                if (!currentValues.includes(selectedCategory.parent)) {
+                    currentValues.push(selectedCategory.parent);
+                }
+            }
+        }
+
+        // Add current value if not already included
         if (!currentValues.includes(value)) {
             currentValues.push(value);
-            inputElement.value = JSON.stringify(currentValues);
+            inputElement.value = currentValues.join(',');
 
+            // Add selected item visually
             const selectedContainer = document.getElementById(selectedContainerId);
             const item = document.createElement('span');
             item.className = 'px-3 py-1 bg-blue-200 rounded-lg text-sm inline-flex items-center mr-2 mb-2';
-            
+
+            // Create text content
             const text = document.createElement('span');
             text.textContent = displayText;
-            
+
+            // Create remove button
             const removeBtn = document.createElement('button');
             removeBtn.textContent = '×';
             removeBtn.className = 'ml-2 text-red-600 hover:text-red-800 text-lg';
             removeBtn.onclick = function() {
-                removeItem(inputId, value, item);
+                item.remove();
+                currentValues = currentValues.filter(val => val !== value);
+                inputElement.value = currentValues.join(',');
             };
 
             item.appendChild(text);
@@ -399,6 +439,7 @@
             selectedContainer.appendChild(item);
         }
 
+        // Close list after selection
         const listId = inputId === 'tagsInput' ? 'tagList' : 'categoryList';
         document.getElementById(listId).classList.add('hidden');
     }
@@ -439,48 +480,251 @@
             console.error('Error updating values:', e);
         }
     }
-document.addEventListener('DOMContentLoaded', function() {
-    // Get article data
-    const articleTags = <%- JSON.stringify(article.tags || []) %>;
-    const articleCategories = <%- JSON.stringify(article.category || []) %>;
-    const categories = <%- JSON.stringify(categories) %>;
-    const tags = <%- JSON.stringify(tags) %>;
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get article data
+        const articleTags = <%- JSON.stringify(article.tags || []) %>;
+        const articleCategories = <%- JSON.stringify(article.category || []) %>;
+        const categories = <%- JSON.stringify(categories) %>;
+        const tags = <%- JSON.stringify(tags) %>;
 
-    // Initialize selected items containers
-    const selectedTagsContainer = document.getElementById('selectedTags');
-    const selectedCategoriesContainer = document.getElementById('selectedCategories');
+        // Initialize selected items containers
+        const selectedTagsContainer = document.getElementById('selectedTags');
+        const selectedCategoriesContainer = document.getElementById('selectedCategories');
 
-    // Set initial values for hidden inputs
-    document.getElementById('tagsInput').value = JSON.stringify(articleTags);
-    document.getElementById('categoriesInput').value = JSON.stringify(articleCategories);
+        // Set initial values for hidden inputs
+        document.getElementById('tagsInput').value = JSON.stringify(articleTags);
+        document.getElementById('categoriesInput').value = JSON.stringify(articleCategories);
 
-    // Display selected tags
-    articleTags.forEach(tagId => {
-        const tag = tags.find(t => t._id === tagId);
-        if (tag) {
-            const element = document.createElement('span');
-            element.className = 'px-3 py-1 bg-blue-200 rounded-lg text-sm flex items-center gap-2';
-            // Change to use div for consistent structure
-            element.innerHTML = `
-                <span>${tag.name}</span>
-                <button type="button" onclick="this.parentElement.remove(); removeValues('tagsInput', '${tagId}')" class="text-red-600 hover:text-red-800 text-lg">×</button>
-            `;
-            selectedTagsContainer.appendChild(element);
+        // Display selected tags
+        articleTags.forEach(tagId => {
+            const tag = tags.find(t => t._id === tagId);
+            if (tag) {
+                const element = document.createElement('span');
+                element.className = 'px-3 py-1 bg-blue-200 rounded-lg text-sm flex items-center gap-2';
+                // Change to use div for consistent structure
+                element.innerHTML = `
+                    <span>${tag.name}</span>
+                    <button type="button" onclick="this.parentElement.remove(); removeValues('tagsInput', '${tagId}')" class="text-red-600 hover:text-red-800 text-lg">×</button>
+                `;
+                selectedTagsContainer.appendChild(element);
+            }
+        });
+
+        // Display selected categories
+        articleCategories.forEach(catId => {
+            const category = categories.find(c => c._id === catId);
+            if (category) {
+                const element = document.createElement('span');
+                element.className = 'px-3 py-1 bg-blue-200 rounded-lg text-sm flex items-center gap-2';
+                element.innerHTML = `
+                    <span>${category.name}</span>
+                    <button type="button" onclick="this.parentElement.remove(); removeValues('categoriesInput', '${catId}')" class="text-red-600 hover:text-red-800 text-lg">×</button>
+                `;
+                selectedCategoriesContainer.appendChild(element);
+            }
+        });
+    });
+    // Update form validation
+    document.querySelector('#articleForm').addEventListener('submit', function(e) {
+        let isValid = true;
+
+        // Clear existing error messages first
+        const clearErrors = (container) => {
+            const existingError = container.querySelector('.text-red-500');
+            if (existingError) {
+                existingError.remove();
+                container.classList.remove('border-red-500');
+            }
+        };
+        document.querySelectorAll('.text-red-500').forEach(el => el.remove());
+        document.querySelectorAll('.border-red-500').forEach(el => 
+            el.classList.remove('border-red-500')
+        );
+
+        // Validate editor content
+        const editorContent = tinymce.get('editor').getContent();
+        if (!editorContent.trim()) {
+            e.preventDefault();
+            isValid = false;
+            const editorContainer = document.querySelector('#editor-wrapper');
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'text-red-500 text-sm mt-1';
+            errorMsg.textContent = 'Nội dung bài viết không được để trống';
+            editorContainer.after(errorMsg);
+        }
+
+        // Validate cover image
+        const preview = document.getElementById('preview');
+        const uploadContainer = document.getElementById('upload-container');
+        
+        if (!preview.src || preview.classList.contains('hidden')) {
+            e.preventDefault();
+            isValid = false;
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'text-red-500 text-sm mt-1';
+            errorMsg.textContent = 'Vui lòng chọn ảnh bìa cho bài viết';
+            uploadContainer.after(errorMsg);
+            uploadContainer.classList.add('border-red-500');
+        }
+
+        // Validate tags
+        const tagsInput = document.getElementById('tagsInput');
+        const tagsContainer = document.getElementById('selectedTags').parentElement;
+        let tagsValue = [];
+        
+        try {
+            tagsValue = JSON.parse(tagsInput.value || '[]');
+            clearErrors(tagsContainer);
+            
+            if (!tagsValue.length) {
+                e.preventDefault();
+                isValid = false;
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'text-red-500 text-sm mt-1';
+                errorMsg.textContent = 'Vui lòng chọn ít nhất một nhãn';
+                tagsContainer.appendChild(errorMsg);
+                tagsContainer.classList.add('border-red-500');
+            }
+        } catch (e) {
+            console.error('Error parsing tags:', e);
+        }
+
+        // Validate categories
+        const categoriesInput = document.getElementById('categoriesInput');
+        const categoriesContainer = document.getElementById('selectedCategories').parentElement;
+        let categoriesValue = [];
+        
+        try {
+            categoriesValue = JSON.parse(categoriesInput.value || '[]');
+            clearErrors(categoriesContainer);
+            
+            if (!categoriesValue.length) {
+                e.preventDefault();
+                isValid = false;
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'text-red-500 text-sm mt-1';
+                errorMsg.textContent = 'Vui lòng chọn ít nhất một chuyên mục';
+                categoriesContainer.appendChild(errorMsg);
+                categoriesContainer.classList.add('border-red-500');
+            }
+        } catch (e) {
+            console.error('Error parsing categories:', e);
+        }
+
+        if (!isValid) {
+            window.scrollTo(0, 0);
+        }
+        return isValid;
+    });
+</script>
+<script>
+    document.querySelector('#articleForm').addEventListener('submit', function(e) {
+        let isValid = true;
+        
+        // Clear all previous error messages
+        document.querySelectorAll('.text-red-500').forEach(el => el.remove());
+        document.querySelectorAll('.border-red-500').forEach(el => 
+            el.classList.remove('border-red-500')
+        );
+        
+        // Validate editor content
+        const editorContent = tinymce.get('editor').getContent();
+        if (!editorContent.trim()) {
+            e.preventDefault();
+            isValid = false;
+            const editorContainer = document.querySelector('#editor-wrapper');
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'text-red-500 text-sm mt-1';
+            errorMsg.textContent = 'Nội dung bài viết không được để trống';
+            editorContainer.after(errorMsg);
+        }
+
+        // Validate cover image
+        const preview = document.getElementById('preview');
+        const uploadContainer = document.getElementById('upload-container');
+        
+        if (!preview.src || preview.classList.contains('hidden')) {
+            e.preventDefault();
+            isValid = false;
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'text-red-500 text-sm mt-1';
+            errorMsg.textContent = 'Vui lòng chọn ảnh bìa cho bài viết';
+            uploadContainer.after(errorMsg);
+            uploadContainer.classList.add('border-red-500');
+        }
+
+        // Add debug logging
+        const tagsInput = document.getElementById('tagsInput');
+        const categoriesInput = document.getElementById('categoriesInput');
+
+        // Validate tags
+        const tagsInput = document.getElementById('tagsInput');
+        const tagsContainer = document.getElementById('selectedTags').parentElement;
+        if (!tagsInput.value) {
+            e.preventDefault();
+            isValid = false;
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'text-red-500 text-sm mt-1';
+            errorMsg.textContent = 'Vui lòng chọn ít nhất một nhãn';
+            tagsContainer.appendChild(errorMsg);
+            tagsContainer.classList.add('border-red-500');
+        }
+
+        // Validate categories
+        const categoriesInput = document.getElementById('categoriesInput');
+        const categoriesContainer = document.getElementById('selectedCategories').parentElement;
+        if (!categoriesInput.value) {
+            e.preventDefault();
+            isValid = false;
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'text-red-500 text-sm mt-1';
+            errorMsg.textContent = 'Vui lòng chọn ít nhất một chuyên mục';
+            categoriesContainer.appendChild(errorMsg);
+            categoriesContainer.classList.add('border-red-500');
+        }
+
+        if (!isValid) {
+            window.scrollTo(0, 0);
+        }
+        
+        return isValid;
+    });
+
+    // Clear image error when file is selected
+    fileInput.addEventListener('change', () => {
+        const errorMsg = uploadContainer.nextElementSibling;
+        if (errorMsg?.classList.contains('text-red-500')) {
+            errorMsg.remove();
+        }
+        uploadContainer.classList.remove('border-red-500');
+    });
+
+    // Clear editor error when content changes
+    tinymce.get('editor').on('input', () => {
+        const editorContainer = document.querySelector('#editor-wrapper');
+        const errorMsg = editorContainer.nextElementSibling;
+        if (errorMsg?.classList.contains('text-red-500')) {
+            errorMsg.remove();
         }
     });
 
-    // Display selected categories
-    articleCategories.forEach(catId => {
-        const category = categories.find(c => c._id === catId);
-        if (category) {
-            const element = document.createElement('span');
-            element.className = 'px-3 py-1 bg-blue-200 rounded-lg text-sm flex items-center gap-2';
-            element.innerHTML = `
-                <span>${category.name}</span>
-                <button type="button" onclick="this.parentElement.remove(); removeValues('categoriesInput', '${catId}')" class="text-red-600 hover:text-red-800 text-lg">×</button>
-            `;
-            selectedCategoriesContainer.appendChild(element);
+    // Clear tag error when tag is selected
+    document.getElementById('tagList').addEventListener('click', () => {
+        const tagsContainer = document.getElementById('selectedTags').parentElement;
+        const errorMsg = tagsContainer.querySelector('.text-red-500');
+        if (errorMsg) {
+            errorMsg.remove();
+            tagsContainer.classList.remove('border-red-500');
         }
     });
-});
+
+    // Clear category error when category is selected
+    document.getElementById('categoryList').addEventListener('click', () => {
+        const categoriesContainer = document.getElementById('selectedCategories').parentElement;
+        const errorMsg = categoriesContainer.querySelector('.text-red-500');
+        if (errorMsg) {
+            errorMsg.remove();
+            categoriesContainer.classList.remove('border-red-500');
+        }
+    });
 </script>
