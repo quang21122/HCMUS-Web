@@ -663,6 +663,10 @@ video {
   left: 0.75rem;
 }
 
+.left-\[90\%\]{
+  left: 90%;
+}
+
 .right-0{
   right: 0px;
 }
@@ -689,18 +693,6 @@ video {
 
 .top-2{
   top: 0.5rem;
-}
-
-.left-full{
-  left: 100%;
-}
-
-.right-2{
-  right: 0.5rem;
-}
-
-.left-\[90\%\]{
-  left: 90%;
 }
 
 .z-10{
@@ -785,6 +777,10 @@ video {
   margin-bottom: 2rem;
 }
 
+.ml-1{
+  margin-left: 0.25rem;
+}
+
 .ml-2{
   margin-left: 0.5rem;
 }
@@ -839,10 +835,6 @@ video {
 
 .mt-8{
   margin-top: 2rem;
-}
-
-.ml-1{
-  margin-left: 0.25rem;
 }
 
 .line-clamp-1{

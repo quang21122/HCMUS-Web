@@ -65,8 +65,6 @@ router.get("/categories/:category", async (req, res) => {
       return res.status(500).json({ error: articleResponse.error });
     }
 
-    console.log("articleResponse", articleResponse);
-
     const tagsResponse = await getTags();
 
     const userId = req.user?._id;
