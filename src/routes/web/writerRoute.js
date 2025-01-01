@@ -107,6 +107,7 @@ router.get("/create", async (req, res) => {
   try {
     const tagsResponse = await getTags();
     const categoriesResponse = await getCategories();
+    console.log("categoriesResponse: ", categoriesResponse);
 
     const userId = req.user?._id;
     const user = req.user || (userId && (await findUser(userId))) || null;

@@ -108,13 +108,27 @@
                         </button>
                     </div>
                     <div id="categoryList" class="hidden flex flex-wrap gap-2">
-                        <% categories.forEach(category=> { %>
-                            <button
-                                onclick="selectItem('categoriesInput', '<%= category._id %>', 'selectedCategories', '<%= category.name %>')"
-                                class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 text-sm">
-                                <%= category.name %>
-                            </button>
-                            <% }); %>
+                        <% categories.filter(category => !category.parent).forEach(parentCategory => { %>
+                            <div class="relative group">
+                                <!-- Parent Category -->
+                                <button
+                                    onclick="selectItem('categoriesInput', '<%= parentCategory._id %>', 'selectedCategories', '<%= parentCategory.name %>')"
+                                    class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 text-sm font-medium">
+                                    <%= parentCategory.name %>
+                                </button>
+                                
+                                <!-- Child Categories Dropdown -->
+                                <div class="invisible group-hover:visible absolute left-[90%] top-0 ml-1 bg-white rounded-lg shadow-lg min-w-max z-10">
+                                    <% categories.filter(child => child.parent === parentCategory._id).forEach(childCategory => { %>
+                                        <button
+                                            onclick="selectItem('categoriesInput', '<%= childCategory._id %>', 'selectedCategories', '<%= childCategory.name %>')"
+                                            class="block w-full px-3 py-1 text-left text-sm hover:bg-gray-100 whitespace-nowrap first:rounded-t-lg last:rounded-b-lg">
+                                            <%= childCategory.name %>
+                                        </button>
+                                    <% }); %>
+                                </div>
+                            </div>
+                        <% }); %>
                     </div>
                     <div id="selectedCategories" class="mt-4 flex flex-wrap gap-2">
                         <!-- Selected categories will be shown here -->
@@ -136,7 +150,7 @@
 
 <!-- TinyMCE CSS -->
 <script
-    src="https://cdn.tiny.cloud/1/fitaf2bz3rvadtw7hbv673d3l9xs64dlcith8cjds35dcufs/tinymce/5/tinymce.min.js"></script>
+    src="https://cdn.tiny.cloud/1/9sbwo81wdmk8i7n89zu9aubg5z3pq6tfog7yzzy2dwek0za9/tinymce/5/tinymce.min.js"></script>
 
 <script>
     document.querySelector('form').onsubmit = function () {
@@ -339,6 +353,10 @@
 
 </script>
 <script>
+    // Make categories available globally
+    window.categories = <%- JSON.stringify(categories) %>;
+</script>
+<script>
     // Function to toggle the visibility of tag or category list
     function toggleList(id) {
         const list = document.getElementById(id);
@@ -359,7 +377,18 @@
             container.classList.remove('border-red-500');
         }
 
-        // Continue with existing selection logic
+        if (inputId === 'categoriesInput') {
+            // Find if selected category is a child
+            const selectedCategory = window.categories.find(cat => cat._id === value);
+            if (selectedCategory && selectedCategory.parent) {
+                // Add parent ID if not already included
+                if (!currentValues.includes(selectedCategory.parent)) {
+                    currentValues.push(selectedCategory.parent);
+                }
+            }
+        }
+
+        // Add current value if not already included
         if (!currentValues.includes(value)) {
             currentValues.push(value);
             inputElement.value = currentValues.join(',');
