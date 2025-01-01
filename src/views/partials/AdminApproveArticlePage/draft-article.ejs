@@ -75,13 +75,29 @@
                             <span class="text-gray-600">+</span>
                         </button>
                     </div>
-                    <div id="categoryList" class="hidden flex flex-wrap gap-2">
-                        <% categories.forEach(category=> { %>
-                            <button
-                                onclick="selectItem('categoriesInput', '<%= category._id %>', 'selectedCategories', '<%= category.name %>')"
-                                class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 text-sm">
-                                <%= category.name %>
-                            </button>
+                    <div id="categoryList" class="hidden flex flex-wrap gap-2 mb-4">
+                        <% categories.filter(category=> !category.parent).forEach(parentCategory => { %>
+                            <div class="relative group">
+                                <!-- Parent Category -->
+                                <button
+                                    onclick="selectItem('categoriesInput', '<%= parentCategory._id %>', 'selectedCategories', '<%= parentCategory.name %>')"
+                                    class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 text-sm font-medium">
+                                    <%= parentCategory.name %>
+                                </button>
+
+                                <!-- Child Categories Dropdown -->
+                                <div
+                                    class="invisible group-hover:visible absolute left-[90%] top-0 ml-1 bg-white rounded-lg shadow-lg min-w-max z-10">
+                                    <% categories.filter(child=> child.parent ===
+                                        parentCategory._id).forEach(childCategory => { %>
+                                        <button
+                                            onclick="selectItem('categoriesInput', '<%= childCategory._id %>', 'selectedCategories', '<%= childCategory.name %>')"
+                                            class="block w-full px-3 py-1 text-left text-sm hover:bg-gray-100 whitespace-nowrap first:rounded-t-lg last:rounded-b-lg">
+                                            <%= childCategory.name %>
+                                        </button>
+                                        <% }); %>
+                                </div>
+                            </div>
                             <% }); %>
                     </div>
                     <div id="selectedCategories" class="flex flex-wrap gap-2">
@@ -90,7 +106,8 @@
                                 <div class="group relative px-2 py-1 bg-gray-200 rounded-full text-xs hover:bg-gray-300 transition-colors"
                                     data-category-id="<%= category._id %>">
                                     <%= category.name %>
-                                        <button onclick="removeItem('categoriesInput', '<%= category._id %>', this.parentElement)"
+                                        <button
+                                            onclick="removeItem('categoriesInput', '<%= category._id %>', this.parentElement)"
                                             class="hidden group-hover:block absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-3.5 h-3.5 text-xs">
                                             ×
                                         </button>
@@ -212,62 +229,62 @@
     }
 
     async function rejectArticle() {
-            const reason = document.getElementById('rejectReason').value.trim();
-            if (!reason) {
-                alert('Vui lòng nhập lý do từ chối');
-                return;
-            }
-
-            try {
-                const response = await fetch(`/admin-approve/reject/<%= article._id %>`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ reason: reason }) // Make sure reason is properly named in request body
-                });
-
-                if (response.ok) {
-                    window.location.href = '/admin-approve?status=rejected';
-                } else {
-                    throw new Error('Failed to reject article');
-                }
-            } catch (error) {
-                console.error('Error rejecting article:', error);
-                alert('Có lỗi xảy ra khi từ chối bài viết');
-            }
+        const reason = document.getElementById('rejectReason').value.trim();
+        if (!reason) {
+            alert('Vui lòng nhập lý do từ chối');
+            return;
         }
+
+        try {
+            const response = await fetch(`/admin-approve/reject/<%= article._id %>`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reason: reason }) // Make sure reason is properly named in request body
+            });
+
+            if (response.ok) {
+                window.location.href = '/admin-approve?status=rejected';
+            } else {
+                throw new Error('Failed to reject article');
+            }
+        } catch (error) {
+            console.error('Error rejecting article:', error);
+            alert('Có lỗi xảy ra khi từ chối bài viết');
+        }
+    }
 
     async function approveArticle() {
-            try {
-                // Get all selected tags and categories
-                const selectedTags = Array.from(document.querySelectorAll('#selectedTags [data-tag-id]'))
-                    .map(el => el.dataset.tagId);
+        try {
+            // Get all selected tags and categories
+            const selectedTags = Array.from(document.querySelectorAll('#selectedTags [data-tag-id]'))
+                .map(el => el.dataset.tagId);
 
-                const selectedCategories = Array.from(document.querySelectorAll('#selectedCategories [data-category-id]'))
-                    .map(el => el.dataset.categoryId);
+            const selectedCategories = Array.from(document.querySelectorAll('#selectedCategories [data-category-id]'))
+                .map(el => el.dataset.categoryId);
 
-                // Send approval request with metadata
-                const response = await fetch(`/admin-approve/approve/<%= article._id %>`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        tags: selectedTags,
-                        categories: selectedCategories,
-                        status: 'published'
-                    })
-                });
+            // Send approval request with metadata
+            const response = await fetch(`/admin-approve/approve/<%= article._id %>`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    tags: selectedTags,
+                    categories: selectedCategories,
+                    status: 'published'
+                })
+            });
 
-                if (!response.ok) {
-                    throw new Error('Failed to approve article');
-                }
-
-                // Redirect back to editor page
-                window.location.href = '/admin-approve?status=published';
-
-            } catch (error) {
-                console.error('Error approving article:', error);
-                alert('Có lỗi xảy ra khi duyệt bài viết');
+            if (!response.ok) {
+                throw new Error('Failed to approve article');
             }
+
+            // Redirect back to editor page
+            window.location.href = '/admin-approve?status=published';
+
+        } catch (error) {
+            console.error('Error approving article:', error);
+            alert('Có lỗi xảy ra khi duyệt bài viết');
         }
+    }
 </script>
 
 <script>
