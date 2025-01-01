@@ -14,7 +14,7 @@
 
 <body>
     <%- include('../partials/HomePage/navbar.ejs') %>
-        <% if (user && user.verified) { %>
+        <% if (user && user.role === 'editor' && user.verified) { %>
             <%- include('../partials/EditorPage/reject-article.ejs') %>
                 <% } else if(user && user.role==="admin" ){ %>
                     <%- include('../partials/AdminApprovePage/reject-article.ejs') %>

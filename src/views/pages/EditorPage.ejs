@@ -14,7 +14,7 @@
 
 <body>
     <%- include('../partials/HomePage/navbar.ejs') %>
-    <% if (user && user.verified) { %>
+    <% if (user && user.role === 'editor' && user.verified) { %>
         <%- include('../partials/EditorPage/editor-page.ejs') %>
             <% } else { %>
                 <div class="min-h-screen flex items-center justify-center mt-8">

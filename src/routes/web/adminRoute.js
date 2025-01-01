@@ -21,6 +21,8 @@ router.get("/manage-users/:currentTab/search", async (req, res) => {
             role = "editor";
         } else if (currentTab === "extend-subscription") {
             role = "subscriber";
+        } else if (currentTab === "verify-authors") {
+            role = "author";
         }
 
         // Create timeout promise
@@ -76,6 +78,8 @@ router.get("/manage-users/:currentTab", async (req, res) => {
             role = "editor";
         } else if (currentTab === "extend-subscription") {
             role = "subscriber";
+        } else if (currentTab === "verify-authors") {
+            role = "author";
         }
 
         // Create timeout promise
@@ -144,7 +148,7 @@ router.post('/extend-subscription/:userId', async (req, res) => {
     }
   });
 
-  router.post('/manage-users/verify/:userId', async (req, res) => {
+  router.post('/manage-users/verify-editor/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
         const { categoryId } = req.body; // Lấy id của category từ form
@@ -196,6 +200,31 @@ router.post("/ban-user/:id", async (req, res) => {
     } catch (error) {
         console.error("Ban user error:", error);
         res.status(500).json({ success: false, message: "Đã xảy ra lỗi." });
+    }
+});
+
+router.post('/manage-users/verify-author/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        // Cập nhật người dùng 
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { 
+                verified: true // Đặt verified thành true
+            },
+            { new: true } // Trả về người dùng đã được cập nhật
+        );
+
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+
+        // Redirect hoặc render lại trang
+        res.redirect('/manage-users/verify-authors'); // Hoặc redirect đến trang người dùng cụ thể
+    } catch (error) {
+        console.error('Error in verifying user:', error);
+        res.status(500).send('Internal Server Error');
     }
 });
 

@@ -165,6 +165,7 @@ const getUsersByPage = async (page = 1, role = null) => {
             ...(role ? { role } : {}), // Nếu role có giá trị, thêm điều kiện role
             role: { ...(role ? { $eq: role } : {}), $ne: 'admin' }, // Loại trừ admin
             ...(role === "editor" ? { verified: false } : {}), // Nếu role là editor, thêm điều kiện verified: false
+            ...(role === "author" ? { verified: false} : {}),
             ban: false,
         };
 
