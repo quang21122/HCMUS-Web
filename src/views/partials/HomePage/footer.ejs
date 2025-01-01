@@ -24,7 +24,7 @@
                 <h3 class="text-lg font-semibold mb-4">Danh mục</h3>
                 <ul class="space-y-2">
                     <% if (locals.categories && categories.length> 0) { %>
-                        <% categories.slice(0, 4).forEach(category=> { %>
+                        <% categories.filter(cat=> !cat.parent).slice(0, 4).forEach(category => { %>
                             <li>
                                 <a href="/categories/<%= category.name %>" class="text-gray-400 hover:text-white">
                                     <%= category.name %>
