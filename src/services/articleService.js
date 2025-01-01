@@ -200,7 +200,7 @@ export const getArticlesByCategory = async (
   category,
   page = 1,
   limit = 12,
-  status
+  status = "published"
 ) => {
   try {
     const skip = (page - 1) * limit;
