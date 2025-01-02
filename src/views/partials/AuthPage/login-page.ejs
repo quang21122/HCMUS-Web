@@ -173,6 +173,9 @@
 
       if (error === "invalid_credentials") {
         errorText.textContent = "Tài khoản hoặc mật khẩu không chính xác.";
+      } else if (error === "user_banned") {
+        errorText.textContent =
+          "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ với quản trị viên.";
       } else {
         errorText.textContent = "Đã xảy ra lỗi. Vui lòng thử lại.";
       }
