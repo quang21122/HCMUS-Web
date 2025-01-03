@@ -196,6 +196,7 @@ export const getArticlesSameCategory = async (category, currentArticleId) => {
           name: 1,
           image: 1,
           publishedAt: 1,
+          isPremium: 1,
         },
       },
     ]).exec();

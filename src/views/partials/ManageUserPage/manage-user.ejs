@@ -16,6 +16,10 @@
        class="<%= (currentTab === 'extend-subscription') ? 'font-semibold border-b-4 border-red-500 pb-2' : 'text-gray-500 hover:text-black' %>">
        Gia Hạn Độc Giả
     </a>
+    <a href="/manage-users/verify-subscribers" 
+       class="<%= (currentTab === 'verify-subscribers') ? 'font-semibold border-b-4 border-red-500 pb-2' : 'text-gray-500 hover:text-black' %>">
+       Duyệt Độc Giả
+    </a>
     <a href="/manage-users/verify-authors" 
        class="<%= (currentTab === 'verify-authors') ? 'font-semibold border-b-4 border-red-500 pb-2' : 'text-gray-500 hover:text-black' %>">
        Duyệt Phóng viên
@@ -46,6 +50,8 @@
 <%- include('./verify-editor-content.ejs') %>
 <% } else if (currentTab === 'verify-authors') { %>
 <%- include('./verify-author-content.ejs') %>
+<% } else if (currentTab === 'verify-subscribers') { %>
+<%- include('./verify-subscriber-content.ejs') %>
 <% } %>
 
      <!-- Pagination -->
