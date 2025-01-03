@@ -110,7 +110,6 @@ const updateUser = async (id, data) => {
         if (!data || Object.keys(data).length === 0) {
             return { error: "No data provided", status: 400 };
         }
-        console.log("Service's data : ", data);
         // Kiểm tra ID hợp lệ
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return { error: "Invalid ID format", status: 400 };
@@ -165,7 +164,8 @@ const getUsersByPage = async (page = 1, role = null) => {
             ...(role ? { role } : {}), // Nếu role có giá trị, thêm điều kiện role
             role: { ...(role ? { $eq: role } : {}), $ne: 'admin' }, // Loại trừ admin
             ...(role === "editor" ? { verified: false } : {}), // Nếu role là editor, thêm điều kiện verified: false
-            ...(role === "author" ? { verified: false} : {}),
+            ...(role === "author" ? { verified: false } : {}),
+            ...(role === "subscriber" ? { verified: false } : {}),
             ban: false,
         };
 
@@ -213,6 +213,8 @@ const searchUsersByPage = async (page = 1, query = "", role = null) => {
             ...(role ? { role } : {}), // Nếu role có giá trị, thêm điều kiện role
             role: { ...(role ? { $eq: role } : {}), $ne: 'admin' }, // Loại trừ admin
             ...(role === "editor" ? { verified: false } : {}), // Nếu role là editor, thêm điều kiện verified: false
+            ...(role === "author" ? { verified: false } : {}),
+            ...(role === "subscriber" ? { verified: false } : {}),
         };
 
         // Truy vấn tổng số người dùng và danh sách người dùng theo trang
@@ -245,4 +247,92 @@ const searchUsersByPage = async (page = 1, query = "", role = null) => {
 };
 
 
-export default { createUser, createMultipleUsers, importUsersFromLocal, findUser, updateUser, deleteUser, getUsersByPage, searchUsersByPage };
+const getSubscribersWithTrueVerifiedByPage = async (page = 1, role = null) => {
+    try {
+        const limit = 10;
+        // Tính toán số lượng bản ghi cần bỏ qua
+        const skip = (page - 1) * limit;
+
+        // Nếu role có giá trị, tìm người dùng có role đó nhưng không phải admin
+        const query = {
+            role: "subscriber", // Only consider subscribers
+            verified: true,     // Ensure verified is true
+            ban: false,
+        };
+
+        // Truy vấn tổng số người dùng và danh sách người dùng theo trang
+        const [total, users] = await Promise.all([
+            User.countDocuments(query),
+            User.find()
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit)
+                .lean()
+                .exec(),
+        ]);
+        return {
+            success: true,
+            data: users,
+            pagination: {
+                total, // Tổng số người dùng theo điều kiện role
+                currentPage: page, // Trang hiện tại
+                totalPages: Math.ceil(total / limit), // Tổng số trang
+            },
+        };
+    } catch (error) {
+        console.error("getUsersByPage error:", error);
+        return {
+            success: false,
+            error: error.message,
+        };
+    }
+};
+
+const searchSubscribersWithTrueVerifiedByPage = async (page = 1, query = "", role = null) => {
+    try {
+        const limit = 10;
+        // Tính toán số lượng bản ghi cần bỏ qua
+        const skip = (page - 1) * limit;
+
+        // Xây dựng query tìm kiếm
+        const searchQuery = {
+            $or: [
+                { name: { $regex: query, $options: 'i' } }, // Tìm kiếm theo tên (không phân biệt hoa thường)
+                { email: { $regex: query, $options: 'i' } }, // Tìm kiếm theo email (không phân biệt hoa thường)
+            ],
+            role: "subscriber", // Only consider subscribers
+            verified: true,     // Ensure verified is true
+            ban: false,
+        };
+
+        // Truy vấn tổng số người dùng và danh sách người dùng theo trang
+        const [total, users] = await Promise.all([
+            User.countDocuments(searchQuery),
+            User.find(searchQuery)
+                .sort({ createdAt: -1 })  // Sắp xếp theo ngày tạo mới nhất
+                .skip(skip)
+                .limit(limit)
+                .lean()  // Để trả về các đối tượng JavaScript thay vì đối tượng Mongoose
+                .exec(),
+        ]);
+
+        return {
+            success: true,
+            data: users,
+            pagination: {
+                total, // Tổng số người dùng theo điều kiện tìm kiếm và role
+                currentPage: page, // Trang hiện tại
+                totalPages: Math.ceil(total / limit), // Tổng số trang
+            },
+        };
+    } catch (error) {
+        console.error("searchUsersByPage error:", error);
+        return {
+            success: false,
+            error: error.message,
+        };
+    }
+};
+
+
+export default { createUser, createMultipleUsers, importUsersFromLocal, findUser, updateUser, deleteUser, getUsersByPage, searchUsersByPage, getSubscribersWithTrueVerifiedByPage, searchSubscribersWithTrueVerifiedByPage };

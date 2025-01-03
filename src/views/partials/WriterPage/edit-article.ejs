@@ -170,13 +170,10 @@
     document.querySelector('form').onsubmit = function () {
         // Get editor content
         let content = tinymce.get('editor').getContent();
-        console.log('Original content:', content);
-
         // Convert image URLs to <img> tags
         content = content.replace(
             /(?:https?:\/\/[^\s<>"']+?\.(?:jpg|jpeg|gif|png|bmp|svg))/gi,
             function (url) {
-                console.log('Converting image URL to <img>:', url);
                 return `<img src="${url}" alt="Image" style="width: 100% !important; height: auto;">`;
             }
         );
@@ -185,14 +182,12 @@
         content = content.replace(
             /(?:https?:\/\/(?:www\.)?youtube\.com\/watch\?v=|https?:\/\/youtu\.be\/)([a-zA-Z0-9_-]+)/gi,
             function (url, videoId) {
-                console.log('Converting YouTube URL to <iframe>:', url);
                 return `<iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
             }
         );
 
         // Set processed content
         document.querySelector('#content').value = content;
-        console.log('Processed content:', content);
 
         return true;
     };
@@ -213,7 +208,6 @@
             editor.on('paste', function (e) {
                 // Get pasted content
                 let content = e.clipboardData.getData('text');
-                console.log('Pasted raw content:', content);
 
                 if (content) {
                     // Check for YouTube URL
@@ -221,7 +215,6 @@
                     const match = content.match(youtubeRegex);
 
                     if (match) {
-                        console.log('Found YouTube URL, video ID:', match[1]);
                         // Prevent default paste
                         e.preventDefault();
 
@@ -271,7 +264,6 @@
         document.querySelector('form').onsubmit = function () {
             let processedContent = tinymce.get('editor').getContent();
             document.querySelector('#content').value = processedContent;
-            console.log('Submitting form with content:', processedContent);
             return true;
         };
 </script>
@@ -282,8 +274,6 @@
     const placeholder = document.getElementById('placeholder');
     const preview = document.getElementById('preview');
     let uploadedImageUrl = '';  // Variable to store the uploaded image URL
-
-    console.log('Preview:', preview.src);
 
     // Show default image if exists
     if (preview.src && preview.src !== window.location.href) {
@@ -350,7 +340,6 @@
             .then(data => {
                 if (data.success && data.imageUrl) {
                     uploadedImageUrl = data.imageUrl;  // Store the image URL returned from the server
-                    console.log('Image uploaded successfully:', uploadedImageUrl);
                 } else {
                     console.error('Image upload failed');
                 }
@@ -459,9 +448,6 @@
         itemElement.remove();
     }
     document.querySelector('form').onsubmit = function () {
-        // You can add other form validations or operations here if needed
-        console.log('Submitting form with tags:', document.getElementById('tagsInput').value);
-        console.log('Submitting form with categories:', document.getElementById('categoriesInput').value);
         return true;  // Proceed with form submission
     };
 
@@ -475,7 +461,6 @@
             values = JSON.parse(input.value);
             values = values.filter(v => v !== valueToRemove);
             input.value = JSON.stringify(values);
-            console.log(`Updated ${inputId}:`, input.value);
         } catch (e) {
             console.error('Error updating values:', e);
         }

@@ -1,0 +1,1321 @@
+commit 075acaa8de368b064eff60e5080ee93ce6c15de6
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Fri Jan 3 11:17:04 2025 +0700
+
+    fix: update package.json for easier use
+
+commit 1b246bed3e45f989ddebd49836f9563ee1ae4fc0
+Merge: d3c0285 ff3ea14
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Thu Jan 2 22:20:10 2025 +0700
+
+    Merge pull request #41 from howtobefun/feat/page-404
+    
+    Make 404 page
+
+commit ff3ea14946a485a69f393901cb4beeb85c63159d
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Thu Jan 2 22:18:20 2025 +0700
+
+    Make 404 page
+
+commit d3c02857048b3cbc9ebb8098e7a4b3ccc59d659f
+Merge: 37e2ce0 5739d87
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Thu Jan 2 22:09:12 2025 +0700
+
+    Merge pull request #40 from howtobefun/login-UI
+    
+    fix UI login ban user
+
+commit 5739d870560424a329f5e41116a21b0c1c5b6390
+Author: DucThien <thienbanho@gmail.com>
+Date:   Wed Jan 1 23:49:28 2025 +0700
+
+    fix UI login ban user
+
+commit 37e2ce08ff47856316ee4bfe26bfffab5949c401
+Merge: 54d2a32 b8c0691
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Wed Jan 1 22:29:58 2025 +0700
+
+    Merge pull request #39 from howtobefun/admin-manageTag-and-Cate
+    
+    Admin manage tag and cate and fix UI login page
+
+commit b8c069142bc44c1d0f9452161a764a3aa65f2080
+Merge: 6071ac2 54d2a32
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Wed Jan 1 22:29:31 2025 +0700
+
+    Merge branch 'main' into admin-manageTag-and-Cate
+
+commit 54d2a32619d2ae2a6d7a97f8091e371ab6ab2132
+Merge: ae1b07d a1abb9d
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Wed Jan 1 22:27:56 2025 +0700
+
+    Merge pull request #38 from howtobefun/fix-footer
+    
+    Fix side bar on article
+
+commit 6071ac2f64a18d46c42de7fe7afae05e58548a93
+Author: DucThien <thienbanho@gmail.com>
+Date:   Wed Jan 1 22:22:06 2025 +0700
+
+    fix UI login
+
+commit d16980aaa1a4349723624103b34a0e126f74dc71
+Author: DucThien <thienbanho@gmail.com>
+Date:   Wed Jan 1 22:09:14 2025 +0700
+
+    done edit name cate and subcate
+
+commit a1abb9deafd3ceb356a49dd861b172711fa0c98f
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Wed Jan 1 21:39:47 2025 +0700
+
+    Fix side bar on article
+
+commit ae1b07dc7a37b0940264806e728b17e95506ec25
+Merge: 01ec89a 4da415d
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Wed Jan 1 21:26:48 2025 +0700
+
+    Merge pull request #37 from howtobefun/fix-footer
+    
+    Fix link of category in footer
+
+commit 4da415df81086d5a13afd72e2fbfbb0b1d60464f
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Wed Jan 1 21:24:05 2025 +0700
+
+    Fix link of category in footer
+
+commit 01ec89a7860b9743e08ac1d933dbd696c59e1ae1
+Merge: f8f5ede 84d59d7
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Wed Jan 1 20:57:08 2025 +0700
+
+    Merge remote-tracking branch 'origin/admin/aprove-writer'
+
+commit f8f5eded673aeaef13dc4a7b338c1ccaa0b7407c
+Merge: f6cbcae 0c8e026
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Wed Jan 1 20:52:53 2025 +0700
+
+    Merge pull request #35 from howtobefun/feat/fix-editor
+    
+    Feat/fix editor
+
+commit 84d59d702da9c58f344361b890188d2bcdf8551f
+Author: MrTeeVee <thienvu0210@gmail.com>
+Date:   Wed Jan 1 19:50:25 2025 +0700
+
+    fix premium condition
+
+commit 7655c9c29cc1ab77db8e2bda310f2fac4dc7c49c
+Author: MrTeeVee <thienvu0210@gmail.com>
+Date:   Wed Jan 1 19:35:11 2025 +0700
+
+    verfiy writer
+
+commit 134c3372c2249d25eccb6e71de1ae3f8cd769f53
+Author: MrTeeVee <thienvu0210@gmail.com>
+Date:   Wed Jan 1 18:56:57 2025 +0700
+
+    fix admin approve article
+
+commit 39def30d19652e48bcc727cc85de69879958aa91
+Merge: f6cbcae 0c8e026
+Author: MrTeeVee <thienvu0210@gmail.com>
+Date:   Wed Jan 1 18:25:16 2025 +0700
+
+    Merge branch 'feat/fix-editor' into admin/aprove-writer
+
+commit 0c8e0265d125198e75a87b44713e71ec56f71a74
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Wed Jan 1 17:53:49 2025 +0700
+
+    fix ui for add category in draft article page
+
+commit a7558c2158db43dc2f9a57bed3f03e42c170225d
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Wed Jan 1 17:23:11 2025 +0700
+
+    Fix category logic for child category
+
+commit 01b8e2c446ca0df3da0042032f541a591ac163a8
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Wed Jan 1 16:42:54 2025 +0700
+
+    Hanlde display both of child and parent category in create and edit article page
+
+commit f6cbcae1945158cf8a913224d2ab019a67b8a0ec
+Merge: ce4a71d fe2d4dc
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Wed Jan 1 14:21:08 2025 +0700
+
+    Merge remote-tracking branch 'origin/admin/manage-article'
+
+commit 57960de7484b365e3a0710a0127f82b2834e3399
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Wed Jan 1 14:05:13 2025 +0700
+
+    Fix bug can not get articles in category page
+
+commit fe2d4dcdd4797fa1e0b9005854a7f06188f60fd1
+Author: MrTeeVee <thienvu0210@gmail.com>
+Date:   Wed Jan 1 13:51:13 2025 +0700
+
+    fix category slide
+
+commit 90fd81ce560830a66e2cd78edf5e022d985ac54c
+Author: MrTeeVee <thienvu0210@gmail.com>
+Date:   Wed Jan 1 10:51:50 2025 +0700
+
+    admin manage articles
+
+commit 05b08aae936b30415309070fd71dd269dad8fa8c
+Author: DucThien <thienbanho@gmail.com>
+Date:   Wed Jan 1 00:43:31 2025 +0700
+
+    done edit category name
+
+commit 1dfd872b0c80dee8b12725ea51a96198f5957676
+Author: DucThien <thienbanho@gmail.com>
+Date:   Tue Dec 31 23:37:50 2024 +0700
+
+     done captcha for register
+
+commit 0507bace631a0c131035fe1de469001bf64ce7f2
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Tue Dec 31 17:21:18 2024 +0700
+
+    Validate create and eidt article form
+
+commit f8a233e74a5ee0bdfdc78a8db1a0b4a2dd4fc2bf
+Author: MrTeeVee <thienvu0210@gmail.com>
+Date:   Tue Dec 31 16:21:20 2024 +0700
+
+    admin duyệt bài
+
+commit 492d415e4a0922bf089f0fc703680cbd3030c608
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Tue Dec 31 15:49:35 2024 +0700
+
+    Handle show weekly articles in main slider
+
+commit e697ff2873adc48a25f8e7930451ffd15d709650
+Author: MrTeeVee <thienvu0210@gmail.com>
+Date:   Tue Dec 31 13:38:06 2024 +0700
+
+    merge
+
+commit cdf01f6ba4a0e9b268911129f7903e0cff94dd4e
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Tue Dec 31 04:26:21 2024 +0700
+
+    Fix prev and next button of all sections in homepage
+
+commit c7ebc2c233a2654548f8367fed5edfd98c24d3e3
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Tue Dec 31 03:25:11 2024 +0700
+
+    Change limit articles of all sections in homepage
+
+commit e9c1c25a85ea413627014cedb1b10e6b71a7445e
+Author: DucThien <thienbanho@gmail.com>
+Date:   Tue Dec 31 00:13:36 2024 +0700
+
+    done tag and cate
+
+commit a435d38c90667906f44e1aaaf59c9118a17eeb02
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Mon Dec 30 22:52:42 2024 +0700
+
+    fix search logic and display for homepage
+
+commit ce4a71d87245e4910e29d260841c352c8eaa8ee1
+Merge: 737c106 5ab6acb
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Mon Dec 30 12:00:44 2024 +0700
+
+    Merge pull request #33 from howtobefun/fix-editor-ui
+    
+    Add pending articles for editor
+
+commit 737c1066e20f1e48f24015ea5375a0bbf2a37fe0
+Merge: d94894e 918139a
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Mon Dec 30 11:59:57 2024 +0700
+
+    Merge remote-tracking branch 'origin/feat/edit-article'
+
+commit d94894ebb73263551a3f9a2b36d44fdeac7098ca
+Merge: 28b2b4a 146a88a
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Mon Dec 30 11:43:48 2024 +0700
+
+    Merge remote-tracking branch 'origin/fix-logic'
+
+commit 918139ae1ba1d649a2cf79bcfb447389f2f6ba87
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Mon Dec 30 02:59:31 2024 +0700
+
+    Add pending articles in menu items for editor and writer
+
+commit 146a88a060480f7defaf0d32a4d0d1ad3feb7fc6
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Sun Dec 29 12:58:03 2024 +0700
+
+    fix some logic for gerArticles
+
+commit 5ab6acba55ed3980c14fa1b18b6136e4137788a6
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Sun Dec 29 09:41:03 2024 +0700
+
+    Add pending articles for editor
+
+commit f0e56c7bdeaaa232e9ca73c3b1c4e4890c531869
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Sat Dec 28 23:51:26 2024 +0700
+
+    Use SSR instead of CSR in writer page
+
+commit 28b2b4a9c925f8df4446aabd6b3a2342049d938f
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Sat Dec 28 23:24:34 2024 +0700
+
+    feat: make use of subscriptionExpiry
+
+commit a05aa2669d675e78fa093c45f9473cdcaa4ca8ee
+Merge: 4943a2e b2da7f2
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Sat Dec 28 23:05:24 2024 +0700
+
+    Merge pull request #31 from howtobefun/admin-manageUser
+    
+    Admin manage user
+
+commit 40e1d89b99504d75f4c2161e954b7a3dad9946ff
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Sat Dec 28 22:48:44 2024 +0700
+
+    feat: make use of subscriptionExpiry
+
+commit b2da7f2833c5b75c89dbd1f54506d1bdfcf1acaf
+Author: MrTeeVee <thienvu0210@gmail.com>
+Date:   Sat Dec 28 22:27:16 2024 +0700
+
+    add subscriptionExpiry in register process
+
+commit 913f779e82ffb1b98ca504b81515d18af1d15954
+Author: MrTeeVee <thienvu0210@gmail.com>
+Date:   Sat Dec 28 22:14:53 2024 +0700
+
+    ban user, verify editor, extend subscription
+
+commit d207934cd48b4534bd683e19d83527cbc920d295
+Author: MrTeeVee <thienvu0210@gmail.com>
+Date:   Sat Dec 28 20:33:00 2024 +0700
+
+    finish search user
+
+commit 5b1d8c46a5d5b4e844540856a3eb7217c47c9b14
+Author: MrTeeVee <thienvu0210@gmail.com>
+Date:   Sat Dec 28 18:05:03 2024 +0700
+
+    fix bug
+
+commit d9cbc0e00bd9a5f7f91d38d84853519816a5df59
+Author: MrTeeVee <thienvu0210@gmail.com>
+Date:   Sat Dec 28 17:53:45 2024 +0700
+
+    layout and simple manage user page
+
+commit 7dbb0fd9768b3fc1caec5f4ca7dc9d843870b98d
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Sat Dec 28 15:01:48 2024 +0700
+
+    Display reject reason of rejected article
+
+commit 835d04d59942229c042b2eead3f5676a44b5061f
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Sat Dec 28 12:59:56 2024 +0700
+
+    Fix logic for editor and homepage
+
+commit 4943a2e47c28a8acf501e4035efbcbbb39d447ef
+Merge: 3dd8dd4 b7d41e7
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Sat Dec 28 10:02:28 2024 +0700
+
+    Merge pull request #29 from howtobefun/fix-ui-article
+    
+    Fix UI article and comment bug
+
+commit 3dd8dd4324f3009c11756709efe3fa0e0742d4a0
+Merge: e031ad3 60f00fc
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Sat Dec 28 09:57:28 2024 +0700
+
+    Merge branch 'refactor/html-articles'
+
+commit e031ad3cb63b30fdc66d156dceb460d85af550ec
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Sat Dec 28 09:53:56 2024 +0700
+
+    fix: change article.content to article.abstract
+
+commit 60f00fcc23971de8f6b3ad2e1215a740e55500ff
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Sat Dec 28 09:53:56 2024 +0700
+
+    fix: change article.content to article.abstract
+
+commit a687736a2706a8027f219d5ac29388c0066f8a3a
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Sat Dec 28 02:42:35 2024 +0700
+
+    Handle edit article
+
+commit 9f4db91ce3ca4fd95db039db9f9608b5c07162ed
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Fri Dec 27 20:54:51 2024 +0700
+
+    Fix some bug with article service and update database
+
+commit b7d41e7e1d792d36671fe9cb941e268ee12b4221
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Fri Dec 27 18:17:57 2024 +0700
+
+    Fix comment bug
+
+commit 67a56008ef5c6544f20f27bcc5f8364259e60c2f
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Fri Dec 27 17:46:43 2024 +0700
+
+    Fix some UI for author in article page
+
+commit f52cfa2a9deaa7dfdfff100507cd7e94009ead95
+Merge: 208262d be19caa
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Fri Dec 27 14:36:21 2024 +0700
+
+    Merge remote-tracking branch 'origin/feat/comments'
+
+commit 208262df82e3fd6a04ed1592eba11e2004119a7d
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Fri Dec 27 14:08:51 2024 +0700
+
+    fix: fix some small bugs
+    - writerRoute: change name of function
+    - navbar: remove 2 spare anchor tags
+
+commit c7d7a9d6039686bb23e7c9b18eb9bd4e7216812f
+Merge: 477b7e7 344fa5d
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Fri Dec 27 14:07:58 2024 +0700
+
+    Merge remote-tracking branch 'origin/feat/my-articles'
+
+commit 477b7e79e4ed701b0ed372a14ba69e178e5ccf90
+Merge: ab57b07 1349b33
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Fri Dec 27 13:32:53 2024 +0700
+
+    Merge pull request #25 from howtobefun/trend-newest
+    
+    coding trend and newest page
+
+commit 1349b339bcfe69eb28d76b29e857f2e4af2af338
+Merge: ebb7775 ab57b07
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Fri Dec 27 13:32:46 2024 +0700
+
+    Merge branch 'main' into trend-newest
+
+commit ab57b077051afa435dfa658a3ec7a2a962f00802
+Merge: 0c4d176 cbc31c4
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Fri Dec 27 13:28:10 2024 +0700
+
+    Merge pull request #27 from howtobefun/feat/editor
+    
+    Feat/editor
+
+commit 344fa5d15e54422a79f74f5277de3a8ab2b22f3a
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Fri Dec 27 02:00:01 2024 +0700
+
+    Classify articles based on their status
+
+commit cbc31c4d7222a769b7a682ea2345a13f046f705b
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Fri Dec 27 00:29:43 2024 +0700
+
+    All feature for editor is done
+
+commit 05d3423ee23002902539fca04efa8000f6832231
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Thu Dec 26 21:33:02 2024 +0700
+
+    Handle detect youtube url link
+
+commit be19caa25af837f9f4ed70517c8befa920e07ecf
+Author: DucThien <thienbanho@gmail.com>
+Date:   Thu Dec 26 21:04:04 2024 +0700
+
+    comments but still lag
+
+commit d66bc766cf32457530e319f6157e0df27cb3542b
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Thu Dec 26 20:54:04 2024 +0700
+
+    UI for editor
+
+commit ed788691edc97a8e11f5c3e7f342ed28140ade58
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Thu Dec 26 17:39:13 2024 +0700
+
+    Handle dectect image url in Tiny editor
+
+commit 8490c58447333fc5887342c755e540ee26a751f9
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Thu Dec 26 14:36:30 2024 +0700
+
+    Add tag and category handling when creating a post
+
+commit 33a07411ee2673d1b38ad13fa3c5c425504ca909
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Thu Dec 26 08:42:39 2024 +0700
+
+    Fix avatae for user profile
+
+commit ebb777549bb69e80494d60244945c2c59788fb51
+Author: MrTeeVee <thienvu0210@gmail.com>
+Date:   Thu Dec 26 03:14:40 2024 +0700
+
+    coding trend and newest page
+
+commit 752a2315a9c2973a422af29a1c753f93b8abdf7e
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Thu Dec 26 01:40:36 2024 +0700
+
+    Fix some UI in create article page
+
+commit f461da90adf399c89baca3dc76f68fdbe5bf03fd
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Thu Dec 26 00:43:57 2024 +0700
+
+    Handle upload image with multer
+
+commit 3dcdcefd83131e4996c379da383fd45ffbb1ce8d
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Wed Dec 25 23:32:53 2024 +0700
+
+    Use the TinyMCE editor instead of Quill
+
+commit 0c4d176511629d4e3f903f42d75a0653f213d95b
+Merge: d092b6f 99200ec
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Wed Dec 25 22:35:04 2024 +0700
+
+    Merge pull request #24 from howtobefun/feat/footer
+    
+    Feat/footer
+
+commit d092b6f426355f63bff8bddf005d1505679463b3
+Merge: 69893f0 6101b39
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Wed Dec 25 22:34:53 2024 +0700
+
+    Merge pull request #23 from howtobefun/feat/download-articles
+    
+    Feat/download articles
+
+commit 69893f03cda53f148af83d6b3cafee75abd4a6b9
+Merge: 8e882e3 3304c58
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Wed Dec 25 22:34:41 2024 +0700
+
+    Merge pull request #22 from howtobefun/fix-change-profile
+    
+    Change pen-name for author
+
+commit 4973c5fe3c46f133b7c7d1ae79e8c80bb41a99f1
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Wed Dec 25 20:40:57 2024 +0700
+
+    My articles and create article page overview
+
+commit 99200ece3240e6c0f7c111674bce0e4b6ab55dc3
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Wed Dec 25 20:05:17 2024 +0700
+
+    Footer for all page
+
+commit 6101b39c5ae927eb28b2a874c6a0f2da60f2efca
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Wed Dec 25 17:52:40 2024 +0700
+
+    Fix UI on list articles
+
+commit e12b3b9a3b2b801fd92db67992fcd6da5ad08b1c
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Wed Dec 25 17:42:38 2024 +0700
+
+    Download premium article in pdf
+
+commit 3304c5819fb6c1eec9019dc81e5d1d1abe8664dd
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Wed Dec 25 16:19:54 2024 +0700
+
+    Fix get Articles and fix UI on homepage
+
+commit 3ae9991af171a4c66fa6584195f5036145673dc0
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Wed Dec 25 11:13:53 2024 +0700
+
+    Change pen-name for author
+
+commit 8e882e34293df93f578488dfb72457b461539262
+Merge: 94a6191 2a79d16
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Wed Dec 25 10:31:45 2024 +0700
+
+    Merge pull request #21 from howtobefun/refactor/writer-to-author
+    
+    Refactor/writer to author
+
+commit 2a79d16afa924f8bd224c22977cf54e427744816
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Wed Dec 25 10:31:15 2024 +0700
+
+    refactor: remove email from register form
+
+commit a594cb444c06e7a46c8e90da0d2cd817e1e95db5
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Wed Dec 25 10:27:31 2024 +0700
+
+    refactor: change writer to author
+
+commit 94a6191a1af70c002d03e5bbb556d090b0cfe368
+Merge: 42f7ae0 b7f807b
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Wed Dec 25 10:18:12 2024 +0700
+
+    Merge pull request #20 from howtobefun/fix-change-profile
+    
+    Fix navbar
+
+commit b7f807be34d73205a8ad1c6a2dfd556a847be0d6
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Wed Dec 25 10:15:13 2024 +0700
+
+    Fix navbar
+
+commit 42f7ae0ccabf6091f2219180e7f5460c4d94e7d0
+Merge: ddd0ae4 e231489
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Wed Dec 25 09:53:15 2024 +0700
+
+    Merge pull request #19 from howtobefun/feat/search
+    
+    Feat/search
+
+commit e23148963494157e41b3f93ac614c42432ffb906
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Wed Dec 25 08:53:14 2024 +0700
+
+    Search articles use full-text-search
+
+commit 7f3d6f4765715c2e9045805f28aad904b35cc87a
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Tue Dec 24 23:10:17 2024 +0700
+
+    Fix routes by adding user
+
+commit 9353374f2f93ffc50543ea99e1e000e95b07c7af
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Tue Dec 24 22:41:44 2024 +0700
+
+    Fix nav bar and make logout feature
+
+commit 2ebaade71b52a0b535adfeccbf956ad62e34f3e4
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Tue Dec 24 17:35:09 2024 +0700
+
+    Fix author page UI
+
+commit ddd0ae4471003128bd462475c14da90872558142
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Tue Dec 17 18:08:05 2024 +0700
+
+    fix: Hotfix variable names (authorNames -> author)
+
+commit 39b2e9bad5f668ff270bfba8edfef702d2576de5
+Merge: 437407a f651f01
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Tue Dec 17 17:52:54 2024 +0700
+
+    Merge branch 'feat/author'
+
+commit 437407abb08234517ff54a751d5bdc652b729e92
+Merge: 5b32bfd 41d57e7
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Tue Dec 17 17:48:03 2024 +0700
+
+    Merge pull request #18 from howtobefun/feat/my-post
+    
+    Feat/my post
+
+commit f651f01e09cdcfb7517b18f18fe81f9f1ad2ab75
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Tue Dec 17 11:06:10 2024 +0700
+
+    Add menu item for each role
+
+commit 41d57e7e41c54d53a26d40d8a09fb53327af55ad
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Tue Dec 17 09:48:17 2024 +0700
+
+    Fix download button just use for prenium articles
+
+commit f406d384a64be5627a96b4b9407034f8ab364f00
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Tue Dec 17 09:43:53 2024 +0700
+
+    fix display author in homepage
+
+commit b59afd3932eec3eb4b40ccd75c32c1042439a5e5
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Tue Dec 17 08:16:31 2024 +0700
+
+    Get user for homepage
+
+commit 5b32bfd077cb0a819aa125c5f930c6850ea0ce4f
+Merge: 149c8f5 ab13cbb
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Mon Dec 16 22:49:25 2024 +0700
+
+    Merge pull request #16 from howtobefun/mergeForgotpass/EditProfile
+    
+    Merge forgotpass/edit profile
+
+commit ab13cbb65c6c6ecb62bb234bfa1932de0daeb984
+Author: DucThien <thienbanho@gmail.com>
+Date:   Mon Dec 16 22:35:19 2024 +0700
+
+    change phone attribute
+
+commit 91505cb39d31d2024ba1371ec7395c9dc9cfe329
+Merge: 149c8f5 6793a1b
+Author: DucThien <thienbanho@gmail.com>
+Date:   Mon Dec 16 22:32:21 2024 +0700
+
+    Merge branch 'forgotpassword-and-update-profile' into mergeForgotpass/EditProfile
+
+commit 61d20c4ebaed04da2e27043dddd0126487125ff0
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Mon Dec 16 20:51:24 2024 +0700
+
+    Display author page when user click to author
+
+commit 3083c5a5d3027c329430d2feabdafa19a698060f
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Mon Dec 16 20:06:27 2024 +0700
+
+    Fix some ui in author page
+
+commit 999d666d801be14109cfbe448102ac2a3429db9c
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Mon Dec 16 19:44:16 2024 +0700
+
+    Fetch author and articles by author
+
+commit 6793a1b34e1301efc41f1a02ce82ae938723821c
+Author: DucThien <thienbanho@gmail.com>
+Date:   Mon Dec 16 17:04:03 2024 +0700
+
+    done edit profile
+
+commit b16530edea768fac3930a0a7d1f98b48e0f4bc8c
+Author: DucThien <thienbanho@gmail.com>
+Date:   Mon Dec 16 12:28:38 2024 +0700
+
+    forgotpassword done
+
+commit 149c8f542768e40d9f472e9f143dd08ebe43f9a2
+Merge: 06b2aa4 cb14f7e
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Mon Dec 16 11:15:17 2024 +0700
+
+    Merge pull request #15 from howtobefun/feat/article-views
+    
+    Feat/article views
+
+commit cb14f7e77b63361b568cfdc12757f563db07c60c
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Mon Dec 16 11:14:54 2024 +0700
+
+    fix: Adjust Article Schema
+
+commit 988d18ac9b55dab0c3f531b81b15196fb544357b
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Mon Dec 16 11:03:01 2024 +0700
+
+    feat: Article
+    - Add views
+    - Increment view when access through /article/:id
+
+commit 06b2aa49dc3c659ffcdb81e5d78664e85578ec64
+Merge: 5ba0440 5e60887
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Mon Dec 16 10:31:20 2024 +0700
+
+    Merge pull request #14 from howtobefun/feat/author
+    
+    feat: Authors and Articles
+
+commit 5e60887d1c43c88012eb46006b1cc92aff615be5
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Mon Dec 16 10:30:23 2024 +0700
+
+    feat: Authors and Articles
+    - Authors now added to users collection
+    - Articles' authors are now array of _id
+
+commit 5ba0440a90a7422076a1d5870a776066244e4fc6
+Merge: 93f9385 17d0744
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Mon Dec 16 09:18:00 2024 +0700
+
+    Merge pull request #13 from howtobefun/feat/category
+    
+    feat: Change categories in articles into id
+
+commit 93f9385546114bfc13151b4b7915a771e6a4091c
+Merge: 8d58788 16eba5c
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Sun Dec 15 08:47:24 2024 +0700
+
+    Merge pull request #12 from howtobefun/fix/refactor-file-structure
+    
+    Fix/refactor file structure
+
+commit 16eba5cb7ebc2699d68e3c4433b27be5cbddc853
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Sun Dec 15 08:46:28 2024 +0700
+
+    fix: profile changing api call
+
+commit 5ae1554ff4a5609e9a5e058a5550cef2b4ae0eb9
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Sat Dec 14 23:47:11 2024 +0700
+
+    Change logic for display profile
+
+commit 09eaaa8cac58fc36e61b5b7f308e90612da0e7a9
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Sat Dec 14 14:40:01 2024 +0700
+
+    refactor: changed file structure for better readability
+
+commit 8d587882e1cbd373c80e7ed3ef0e33727a563e45
+Merge: bd6eb4c 781b309
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Fri Dec 13 20:55:12 2024 +0700
+
+    Merge pull request #11 from howtobefun/bug/log-in
+    
+    Bug/log in
+
+commit 781b3092bd0fa374c54d5058e401e2e62e8cb64d
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Fri Dec 13 20:54:41 2024 +0700
+
+    fix: login bug
+    - change user.id to user._id in serialize and deserialize
+
+commit a665247959e723d1809db3dfedc5bc6e7d9de48f
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Fri Dec 13 20:14:01 2024 +0700
+
+    fix: auth
+    - different user id in a document left
+
+commit cc4ac7fca19ca7f185ec91f7da33db15b09958a9
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Fri Dec 13 19:19:31 2024 +0700
+
+    merge into right branch
+
+commit 11700fbef256b487d3c0e458189e0f604b0335a1
+Merge: 1797a64 f4bcbd7
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Fri Dec 13 19:17:29 2024 +0700
+
+    On main: gg
+
+commit f4bcbd7ca0f53b12de6ad999f278680db71e3976
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Fri Dec 13 19:17:29 2024 +0700
+
+    index on main: 1797a64 Merge pull request #9 from howtobefun/feat/change-password
+
+commit 3bb66686de182451a644811c47ab455f02585c15
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Fri Dec 13 17:27:01 2024 +0700
+
+    bug: log-in cannot save user to session
+    - Check deserializeUser
+
+commit bd6eb4cb45e795e6c50f1fe36e5923cbb43720c2
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Fri Dec 13 12:39:36 2024 +0700
+
+    fix: hotfix server.js app.get("/profile"...)
+
+commit 1368a3d27d65463025b824b6293f3f3e20e67994
+Merge: 1797a64 2fb0a1c
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Fri Dec 13 11:23:34 2024 +0700
+
+    Merge pull request #10 from howtobefun/change-forget-password
+    
+    Change forget password
+
+commit 2fb0a1c32349c4030cfcd860a0efa1698ed48556
+Merge: 18acc51 1797a64
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Fri Dec 13 11:23:20 2024 +0700
+
+    Merge branch 'main' into change-forget-password
+
+commit 18acc51410268c0a6bfb3755542581750346248e
+Author: DucThien <thienbanho@gmail.com>
+Date:   Thu Dec 12 19:22:28 2024 +0700
+
+    update User, fix profile-page UI
+
+commit 1797a6403220b1e382f22070f89817332c933f90
+Merge: 349b090 22e5761
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Thu Dec 12 10:02:38 2024 +0700
+
+    Merge pull request #9 from howtobefun/feat/change-password
+    
+    Display change password form
+
+commit 349b0904103e33637020d528d809699965e830f3
+Merge: 2040354 3c712b6
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Thu Dec 12 10:02:05 2024 +0700
+
+    Merge pull request #8 from howtobefun/feat/fix-register-form
+    
+    Fix/ register form
+
+commit 3c712b64bb139bcf37cfdc8360f5f8826cddc31d
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Thu Dec 12 10:00:26 2024 +0700
+
+    fix: 3-page register-form
+
+commit 4a4959b0da2dea1977c757acff629951d4dc9824
+Author: DucThien <thienbanho@gmail.com>
+Date:   Wed Dec 11 22:38:49 2024 +0700
+
+    add change password, navigate from login to profile
+
+commit 498449f761b8b07ac22d1982a5fa404e4f19f017
+Author: DucThien <thienbanho@gmail.com>
+Date:   Wed Dec 11 17:10:34 2024 +0700
+
+    i cant solve this bug
+
+commit 7e5855f2f43a7d4aedd2819278c9d538c99e23ce
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Wed Dec 11 11:45:37 2024 +0700
+
+    Display forget password page
+
+commit 22e5761dba6a2e834032aa187a9c44bcb25ad344
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Tue Dec 10 23:32:49 2024 +0700
+
+    Display change password form
+
+commit 092d980d1495c1c7c3878eaab75ec8bdfc18dd35
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Mon Dec 9 20:54:45 2024 +0700
+
+    fix param for register form
+
+commit 20403540860966995899871ad1abc9efe13b549d
+Merge: 771ee6d b7d4d86
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Mon Dec 9 18:39:22 2024 +0700
+
+    Merge pull request #7 from howtobefun/feat/register-form
+    
+    Feat/register form
+
+commit b7d4d868b12b9f052004af2083c95f404616a7cd
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Mon Dec 9 18:05:56 2024 +0700
+
+    Display profile page
+
+commit d3a9d2e92947bdd8bc7adaedc997d7b23a4db93e
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Sat Dec 7 14:01:16 2024 +0700
+
+    fix input for register form
+
+commit 2094ff948aad6e51e9c18033fd3d90e5f1ea3b59
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Sat Dec 7 13:45:42 2024 +0700
+
+    Display register form
+
+commit f400c70cc812c21bdaa180465df3427fedd2876d
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Fri Dec 6 23:32:45 2024 +0700
+
+    fix register page
+
+commit ec197389756a549da690b8e9771ef87cfe5f341f
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Fri Dec 6 22:54:01 2024 +0700
+
+    Filter article by tag and category
+
+commit 052c320554cc96165b40d3bdac30b36d25032211
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Fri Dec 6 13:55:57 2024 +0700
+
+    Display all tag on search bar
+
+commit 7a402aa31aed27d28f6ae74c3b23979ec821c401
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Fri Dec 6 13:35:55 2024 +0700
+
+    Import tag data
+
+commit b970ab2f9af785a6e5a30b4e1be849c4f8cc262c
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Fri Dec 6 01:53:52 2024 +0700
+
+    Fix for changing data
+
+commit 17d0744645ab589cc324291fcf3f6aa5dd62a5c5
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Fri Dec 6 00:08:57 2024 +0700
+
+    feat: Change categories in articles into id
+
+commit 771ee6d72851d73b065cad81e7f7e1ce464a470b
+Merge: 2d8daa2 58a5202
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Thu Dec 5 23:30:54 2024 +0700
+
+    Merge pull request #6 from howtobefun/feat/login&register
+    
+    Feat/login&register
+
+commit 58a5202c6b6529e12374528eaa5f3216c2925b0a
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Thu Dec 5 22:41:41 2024 +0700
+
+    Fix some data
+
+commit 3309f3b3eb4a0d441b54ef1ade0d835509cc7e3f
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Thu Dec 5 20:05:24 2024 +0700
+
+    Display register page
+
+commit 2d8daa27018bc2a81b98edce9aa770101641f2a4
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Thu Dec 5 17:17:18 2024 +0700
+
+    fix: categories.json to desired format
+
+commit de3d85596199c5690c888ad22af7fd19234cc45c
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Thu Dec 5 16:23:05 2024 +0700
+
+    files:
+    - Added categories.json in crawler folder
+    - Fix crawler-1.json
+    feat: Fix articles:
+    - Article.js: change category schema to [string]
+    - articleService: read crawler-1.json instead of crawler.json
+
+commit 6be7b541e72c89a0aad3edbcf522c61263195d51
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Thu Dec 5 12:34:06 2024 +0700
+
+    Display register page
+
+commit 33b28474879411dfbb9377376199f659a5ef626a
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Thu Dec 5 11:08:53 2024 +0700
+
+    Display login page
+
+commit 3a51f76ef5000a1de02d9e62aed23da77ef3515d
+Merge: 1297576 f087bd4
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Thu Dec 5 08:38:12 2024 +0700
+
+    Merge branch 'login/register/google'
+
+commit 1297576adee097b7838603b3997082bd6bdea17b
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Thu Dec 5 08:20:34 2024 +0700
+
+    fix: Hotfix server.js and config/db.js
+
+commit 211044a1ae06931067468a3088afe9f6c9500d99
+Merge: 6545a28 8ddc6f3
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Thu Dec 5 08:16:18 2024 +0700
+
+    Merge branch 'feat/articlePage'
+
+commit f087bd4b1b2e5783f047d1ada198f45defa52525
+Author: DucThien <thienbanho@gmail.com>
+Date:   Wed Dec 4 23:56:49 2024 +0700
+
+    Add login,register function and call API from Google, fix navbar links
+
+commit 8ddc6f32c0a04df34492848fed4ee3a37f2d434c
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Wed Dec 4 21:05:03 2024 +0700
+
+    Display categories page
+
+commit 6c59964c98ed04b9fd25cb2b396e27ded290cba9
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Wed Dec 4 20:32:23 2024 +0700
+
+    .
+
+commit 5eb4b2b74a61c68bb011fc4f0bf3eea78e1e2f82
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Wed Dec 4 15:36:24 2024 +0700
+
+    Handle navigate to article details page
+
+commit 88b502e0d2fa2040eea2cae3446b6c8e1450e24d
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Wed Dec 4 13:52:47 2024 +0700
+
+    Display article page and add database for homepage
+
+commit 6545a281b94b8c027be3da96671b4115422c61d1
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Wed Dec 4 13:25:29 2024 +0700
+
+    fix: Hot fix server.js problems caused by merging
+
+commit 46619cd54d3ef911341b801d1ce7d35bb54767e1
+Merge: 34877f0 56ddeda
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Wed Dec 4 13:18:08 2024 +0700
+
+    Merge pull request #4 from howtobefun/feat/articlePage
+    
+    Connect server to database and make content for article page
+
+commit 56ddeda0f8e0d8e35668988ae9d5bbbadf6fcfba
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Tue Dec 3 23:03:13 2024 +0700
+
+    Connect server to database and make content for article page
+
+commit 34877f0172673b5fc613aee502ed739465994c15
+Merge: 6e380c9 c31e253
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Tue Dec 3 15:02:49 2024 +0700
+
+    Merge pull request #2 from howtobefun/feat/homepage
+    
+    Complete home page
+
+commit c31e2539dc15e210b9fba17bb277cb3c7c193244
+Merge: 28f3eac 6e380c9
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Tue Dec 3 15:02:25 2024 +0700
+
+    Merge branch 'main' into feat/homepage
+
+commit 6e380c9862e3f6be34849813e769cbd3a64ea24c
+Merge: 2236378 4cc76da
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Tue Dec 3 14:59:57 2024 +0700
+
+    Merge pull request #3 from howtobefun/feat/article+userServiceRouteController
+    
+    Feat/article+user service route controller
+
+commit 28f3eac5c751d59a5659700be36457cd3d767f2c
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Tue Dec 3 11:32:07 2024 +0700
+
+    Display tag list and fix nav bar
+
+commit 58111c61304058a0fd501a28a54a6d5a1f421670
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Tue Dec 3 09:00:33 2024 +0700
+
+    Fix to resemble design
+
+commit 2f225616e10cdf51c9c01cd67bb57e27e4c65554
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Tue Dec 3 08:33:20 2024 +0700
+
+    Fix crawler data
+
+commit cf60477bed26c61a9fef85ef3037d277fdaf6a53
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Mon Dec 2 21:59:35 2024 +0700
+
+    Fix to resemble the design
+
+commit ed1c3f3a489eb2d196fa324c46181700b5df1e64
+Author: Quang Nguyen Huynh Minh <124662156+quang21122@users.noreply.github.com>
+Date:   Mon Dec 2 20:09:13 2024 +0700
+
+    Fix max-w
+
+commit 05858277d7975955d32c4a7de629108953bc70bf
+Author: MrTeeVee <thienvu0210@gmail.com>
+Date:   Mon Dec 2 16:11:00 2024 +0700
+
+    fix max size
+
+commit 4cc76daf14f5a69730608397b5e42593f2518aed
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Sat Nov 30 23:07:48 2024 +0700
+
+    fix: articleController
+
+commit 89021622c78ffa18d1224bf7ef4ca5f8d5f14631
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Sat Nov 30 21:21:54 2024 +0700
+
+    fix: updateArticle in:
+    - articleController
+    - articleService
+
+commit 0dc8d2018ae99c06574805c7e693da014eb59986
+Author: DucThien <thienbanho@gmail.com>
+Date:   Sat Nov 30 14:37:22 2024 +0700
+
+    add User Route-Controller-Service and small database, update Article Route-Controller-Service
+
+commit a6bf807b4f1310f3cfb9cf3693a520914e2d7ac3
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Thu Nov 28 09:46:39 2024 +0700
+
+    Test handle new file data
+
+commit cc92632d34a673bc9f5c1b1c502fe19cb0b625b5
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Thu Nov 28 08:57:29 2024 +0700
+
+    feat: Finish CRUD for Article
+
+commit a8df98d2e3dfd686b0a14902896764ecbc6456a2
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Wed Nov 27 23:55:37 2024 +0700
+
+    Display latest articles with pagination
+
+commit be27744963111a4e9cf49d71d7bf6675635ed07d
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Wed Nov 27 21:43:54 2024 +0700
+
+    Implement top category slider with navigation
+
+commit 6408958e949c181f0f67126d1eb7694929cfd1c5
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Wed Nov 27 19:32:50 2024 +0700
+
+    feat: createArticle and importArticlesFromLocal in articleServices
+
+commit eea0cdc5c53782fa97720d36ca6aac7671b362db
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Wed Nov 27 01:34:32 2024 +0700
+
+    Setup top category slider layout
+
+commit c884541e5440c8a3be4b2dbd0ec576d80bc99ea4
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Wed Nov 27 00:00:40 2024 +0700
+
+    Display most viewed articles slider
+
+commit 54079651cb3ce0f071fdd4a89d0dd4ca4007eb73
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Tue Nov 26 11:09:02 2024 +0700
+
+    Display main slider with articles dataa
+
+commit d418d400c584430253673acea4f34d1c5e45a43c
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Mon Nov 25 23:48:02 2024 +0700
+
+    Retrieve all article data and restructure home page
+
+commit 3b153ed491d07f3b6eca90f27c824f3a54ca077b
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Mon Nov 25 21:44:13 2024 +0700
+
+    Restructure views folder to improve layout rendering
+
+commit 07c484877a42e3c2b65e3c0c6e0074557e1d3d7b
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Mon Nov 25 16:03:27 2024 +0700
+
+    Test display navbar with categories data
+
+commit 0dc0c918bf21767322ee2666d4419872e1428d63
+Author: ntpd164 <duongngo1616@gmail.com>
+Date:   Mon Nov 25 15:02:36 2024 +0700
+
+    Config tailwind css and live reload
+
+commit 22363782057e95f714d026c595fbdc51ffc6461f
+Merge: 38b0f0d e0953e5
+Author: howtobefun <109527111+howtobefun@users.noreply.github.com>
+Date:   Mon Nov 25 13:53:13 2024 +0700
+
+    Merge pull request #1 from howtobefun/feat/model
+    
+    Feat/model with some directory changes
+
+commit e0953e583303bba269221e173f3f74bdcff182e9
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Mon Nov 25 13:51:22 2024 +0700
+
+    reorganize project directory structure
+    - Add crawler folder (including the crawled data)
+    - Crawler folder next to src folder, which is the running code
+
+commit f9d09d0a4d17f45ca44aaec663a69396ed26e388
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Mon Nov 25 10:47:05 2024 +0700
+
+    feat: added models with Schemas for User, Comment, Article, Category and Tag
+
+commit 38b0f0d28cd3a04b7838bd1498065c8b8f805a99
+Author: howtobefun <duytdn2806@gmail.com>
+Date:   Mon Nov 18 22:22:31 2024 +0700
+
+    First commit

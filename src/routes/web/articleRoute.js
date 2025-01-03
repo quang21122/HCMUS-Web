@@ -50,10 +50,16 @@ router.get("/article/:id", async (req, res) => {
         });
       }
     }
+    
+    const userId = req.user?._id;
+    const user = req.user || (userId && (await findUser(userId))) || null;
 
-    if (article.isPremium && req.user.role === "subscriber") {
+    if (article.isPremium && user && user.role === "subscriber") {
       const minute = req.user.subscriptionExpiry;
       const subscriptionExpiry = new Date(req.user.createdAt).getTime() + minute * 60 * 1000;
+      if (!user.verified) {
+        return res.status(403).json({ success: false, error: "Cần admin duyệt" });
+      }
       if (subscriptionExpiry < Date.now()) {
         return res.status(403).json({ success: false, error: "Hết hạn gói" });
       }
@@ -61,7 +67,8 @@ router.get("/article/:id", async (req, res) => {
 
     if (article.isPremium && req.user.role === "subscriber") {
       const minute = req.user.subscriptionExpiry;
-      const subscriptionExpiry = new Date(req.user.createdAt).getTime() + minute * 60 * 1000;
+      const subscriptionExpiry =
+        new Date(req.user.createdAt).getTime() + minute * 60 * 1000;
       if (subscriptionExpiry < Date.now()) {
         return res.status(403).json({ success: false, error: "Hết hạn gói" });
       }
@@ -99,9 +106,6 @@ router.get("/article/:id", async (req, res) => {
       article.author.map((authorId) => getArticleCountByAuthor(authorId))
     );
 
-    const userId = req.user?._id;
-    const user = req.user || (userId && (await findUser(userId))) || null;
-
     const categories = await getCategories();
     const categoryData = await Promise.all(
       article.category.map(async (catId) => {
@@ -127,7 +131,6 @@ router.get("/article/:id", async (req, res) => {
 
     // Lấy danh sách comments bằng service
     const comments = await getCommentsByArticleId(articleId);
-    console.log(comments)
 
     const articleData = {
       title: article.name,
@@ -164,6 +167,14 @@ router.get("/article/:id/download", async (req, res) => {
       return res.status(404).send("Article not found");
     }
 
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+
+    // Fix image paths in content
+    let processedContent = article.data.content.replace(
+      /src="\/uploads\//g,
+      `src="${baseUrl}/uploads/`
+    );
+
     browser = await puppeteer.launch({
       headless: "new",
       args: ["--no-sandbox"],
@@ -172,44 +183,55 @@ router.get("/article/:id/download", async (req, res) => {
     const page = await browser.newPage();
     await page.setViewport({ width: 1200, height: 800 });
 
-    // Set content with image handling
+    // Set content with proper image paths
     await page.setContent(`
-            <!DOCTYPE html>
-            <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <style>
-                        body { 
-                            font-family: Arial, sans-serif; 
-                            padding: 20px;
-                        }
-                        img {
-                            max-width: 100%;
-                            height: auto;
-                            display: block;
-                            margin: 10px auto;
-                        }
-                    </style>
-                </head>
-                <body>  
-                    <h1>${article.data.name}</h1>
-                    <img src="${article.data.image}" alt="${article.data.name}">
-                    ${article.data.content}
-                </body>
-            </html>
-        `);
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="UTF-8">
+          <style>
+            body { 
+              font-family: Arial, sans-serif; 
+              padding: 20px;
+            }
+            img {
+              max-width: 100%;
+              height: auto;
+              display: block;
+              margin: 10px auto;
+            }
+          </style>
+        </head>
+        <body>  
+          <h1>${article.data.name}</h1>
+          ${
+            article.data.image
+              ? `<img src="${
+                  article.data.image.startsWith("/")
+                    ? baseUrl + article.data.image
+                    : article.data.image
+                }" 
+                  alt="${article.data.name}">`
+              : ""
+          }
+          ${processedContent}
+        </body>
+      </html>
+    `);
 
-    // Wait for all images to load
+    // Wait for images with timeout
     await page.evaluate(async () => {
-      const images = document.getElementsByTagName("img");
-      const promises = Array.from(images).map((img) => {
-        if (img.complete) return;
-        return new Promise((resolve, reject) => {
-          img.addEventListener("load", resolve);
-          img.addEventListener("error", reject);
-        });
-      });
-      await Promise.all(promises);
+      const images = Array.from(document.getElementsByTagName("img"));
+      await Promise.all(
+        images.map((img) => {
+          if (img.complete) return;
+          return new Promise((resolve) => {
+            img.addEventListener("load", resolve);
+            img.addEventListener("error", resolve); // Don't fail on image error
+            setTimeout(resolve, 5000); // Timeout after 5s
+          });
+        })
+      );
     });
 
     const buffer = await page.pdf({
@@ -218,9 +240,10 @@ router.get("/article/:id/download", async (req, res) => {
       margin: { top: "20mm", right: "20mm", bottom: "20mm", left: "20mm" },
     });
 
-    const safeFilename = encodeURIComponent(
-      article.data.name.replace(/[^a-z0-9]/gi, "_")
-    );
+    const safeFilename = article.data.name
+      .replace(/[^a-z0-9]/gi, "_")
+      .toLowerCase()
+      .substring(0, 50);
 
     res.writeHead(200, {
       "Content-Type": "application/pdf",

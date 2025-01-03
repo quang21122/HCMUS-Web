@@ -23,10 +23,6 @@ router.get("/", async (req, res) => {
       timeout,
     ]);
 
-    if (!req.isAuthenticated()) {
-      console.log("User not authenticated");
-    }
-
     const cacheKey = "homepage";
 
     const userId = req.user?._id;

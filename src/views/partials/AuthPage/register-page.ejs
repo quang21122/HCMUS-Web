@@ -163,7 +163,6 @@
     // Callback when reCAPTCHA is successful
     window.onCaptchaSuccess = function (token) {
         document.getElementById("captchaResponse").value = token;
-        console.log(token);
         isCaptchaVerified = true;
         validateForm();
       };

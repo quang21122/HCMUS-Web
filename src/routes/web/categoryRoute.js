@@ -125,12 +125,11 @@ router.get('/manage-categories', async (req, res) => {
 
     // Add subcategories
     categories.forEach(category => {
-      if (category.parent && category.parent.length > 0) {
-        category.parent.forEach(parentId => {
-          if (groupedCategories[parentId]) {
-            groupedCategories[parentId].subCategories.push(category);
-          }
-        });
+      if (category.parent) {
+        const parentId = category.parent; // `parent` là chuỗi
+        if (groupedCategories[parentId]) {
+          groupedCategories[parentId].subCategories.push(category);
+        }
       }
     });
 
@@ -174,11 +173,11 @@ router.post('/api/categories/:id/subcategories', async (req, res) => {
   try {
     const { id } = req.params;
     const { name } = req.body;
-
+    console.log("ID:", id);
     const newSubCategory = new Category({
       _id: uuidv4(), // Sử dụng UUID để tạo _id dạng string
       name,
-      parent: [id]
+      parent: id
     });
 
     await newSubCategory.save();
