@@ -50,8 +50,11 @@ router.get("/article/:id", async (req, res) => {
         });
       }
     }
+    
+    const userId = req.user?._id;
+    const user = req.user || (userId && (await findUser(userId))) || null;
 
-    if (article.isPremium && req.user.role === "subscriber") {
+    if (article.isPremium && user && user.role === "subscriber" && user.verified) {
       const minute = req.user.subscriptionExpiry;
       const subscriptionExpiry = new Date(req.user.createdAt).getTime() + minute * 60 * 1000;
       if (subscriptionExpiry < Date.now()) {
@@ -98,9 +101,6 @@ router.get("/article/:id", async (req, res) => {
     const articleCount = await Promise.all(
       article.author.map((authorId) => getArticleCountByAuthor(authorId))
     );
-
-    const userId = req.user?._id;
-    const user = req.user || (userId && (await findUser(userId))) || null;
 
     const categories = await getCategories();
     const categoryData = await Promise.all(
