@@ -54,9 +54,12 @@ router.get("/article/:id", async (req, res) => {
     const userId = req.user?._id;
     const user = req.user || (userId && (await findUser(userId))) || null;
 
-    if (article.isPremium && user && user.role === "subscriber" && user.verified) {
+    if (article.isPremium && user && user.role === "subscriber") {
       const minute = req.user.subscriptionExpiry;
       const subscriptionExpiry = new Date(req.user.createdAt).getTime() + minute * 60 * 1000;
+      if (!user.verified) {
+        return res.status(403).json({ success: false, error: "Cần admin duyệt" });
+      }
       if (subscriptionExpiry < Date.now()) {
         return res.status(403).json({ success: false, error: "Hết hạn gói" });
       }
