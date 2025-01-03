@@ -1,5 +1,5 @@
 import express from "express";
-import { getArticlesByPageWithSort} from "../../services/articleService.js";
+import { getArticlesByPageWithSort } from "../../services/articleService.js";
 import { getCategories } from "../../services/categoryService.js";
 import { getTags } from "../../services/tagService.js";
 import { findUser } from "../../services/userService.js";
@@ -16,13 +16,13 @@ router.get("/trend", async (req, res) => {
 
     // Run queries in parallel with timeout
     const result = await Promise.race([
-      Promise.all([getArticlesByPageWithSort(page, 12, "views", -1), getCategories(), getTags()]),
+      Promise.all([
+        getArticlesByPageWithSort(page, 12, "views", -1),
+        getCategories(),
+        getTags(),
+      ]),
       timeout,
     ]);
-
-    if (!req.isAuthenticated()) {
-      console.log("User not authenticated");
-    }
 
     const userId = req.user?._id;
     const user = req.user || (userId && (await findUser(userId))) || null;

@@ -9,8 +9,7 @@ import { Strategy as LocalStrategy } from "passport-local";
 import User from "../models/User.js";
 import UserVerification from "../models/UserVerification.js";
 import PasswordReset from "../models/PasswordReset.js";
-import axios from 'axios';
-
+import axios from "axios";
 
 dotenv.config();
 const resetTokens = new Map();
@@ -71,14 +70,12 @@ passport.deserializeUser(async (_id, done) => {
   }
 });
 
-
 // Hàm xác minh CAPTCHA
 const verifyCaptcha = async (captchaResponse) => {
   const secretKey = "6LfyvaoqAAAAAPi5zzSUmgOOqyfOrBAaQpmS8iZb"; // Thay bằng secret key của bạn
-  console.log(captchaResponse);
   try {
     const response = await axios.post(
-      'https://www.google.com/recaptcha/api/siteverify',
+      "https://www.google.com/recaptcha/api/siteverify",
       null,
       {
         params: {
@@ -87,38 +84,37 @@ const verifyCaptcha = async (captchaResponse) => {
         },
       }
     );
-    console.log('CAPTCHA verification response:', response.data);
     return response.data.success;
   } catch (error) {
-    console.error('Error verifying CAPTCHA:', error);
-    throw new Error('CAPTCHA verification service unavailable');
+    console.error("Error verifying CAPTCHA:", error);
+    throw new Error("CAPTCHA verification service unavailable");
   }
 };
 
-router.post('/register', async (req, res) => {
+router.post("/register", async (req, res) => {
   const { email, password, confirmPassword, name, captchaResponse } = req.body;
 
   // Kiểm tra các trường bắt buộc
   if (!email || !password || !confirmPassword || !name || !captchaResponse) {
-    return res.status(400).json({ message: 'Missing required fields' });
+    return res.status(400).json({ message: "Missing required fields" });
   }
 
   // Kiểm tra mật khẩu khớp
   if (password !== confirmPassword) {
-    return res.status(400).json({ message: 'Passwords do not match' });
+    return res.status(400).json({ message: "Passwords do not match" });
   }
 
   try {
     // Xác minh CAPTCHA
     const isCaptchaValid = await verifyCaptcha(captchaResponse);
     if (!isCaptchaValid) {
-      return res.status(400).json({ message: 'CAPTCHA verification failed' });
+      return res.status(400).json({ message: "CAPTCHA verification failed" });
     }
 
     // Kiểm tra email đã tồn tại chưa
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(409).json({ message: 'Email already registered' }); // 409: Conflict
+      return res.status(409).json({ message: "Email already registered" }); // 409: Conflict
     }
 
     // Mã hóa mật khẩu
@@ -140,8 +136,10 @@ router.post('/register', async (req, res) => {
     // Phản hồi thành công
     res.redirect("/register-form");
   } catch (error) {
-    console.error('Error registering user:', error);
-    res.status(500).json({ message: 'Error registering user', error: error.message });
+    console.error("Error registering user:", error);
+    res
+      .status(500)
+      .json({ message: "Error registering user", error: error.message });
   }
 });
 
@@ -158,7 +156,8 @@ router.post("/login", (req, res, next) => {
     try {
       // Kiểm tra xem người dùng có bị ban không
       const userInDb = await User.findById(user._id); // Thay User bằng model tương ứng của bạn
-      if (userInDb && userInDb.ban) {  // Kiểm tra trường isBanned
+      if (userInDb && userInDb.ban) {
+        // Kiểm tra trường isBanned
         return res.redirect("/auth/login?error=user_banned");
       }
 
@@ -180,7 +179,6 @@ router.post("/login", (req, res, next) => {
     }
   })(req, res, next);
 });
-
 
 //Logout
 router.post("/logout", async (req, res, next) => {
@@ -222,9 +220,6 @@ router.post("/requestPasswordReset", (req, res) => {
   User.find({ email })
     .then((data) => {
       if (data.length) {
-        //user exists
-        console.log(data[0]);
-
         //check if user is verified
         if (data[0].verified) {
           res.json({
@@ -298,7 +293,6 @@ const sendResetEmail = ({ _id, email }, res) => {
                   });
                 })
                 .catch((error) => {
-                  console.log(error);
                   res.json({
                     status: "FAILED",
                     message: "Password reset email failed ",
@@ -306,7 +300,6 @@ const sendResetEmail = ({ _id, email }, res) => {
                 })
             )
             .catch((error) => {
-              console.log(error);
               res.json({
                 status: "FAILED",
                 message: "Couldn't save password reset data ",
@@ -314,7 +307,6 @@ const sendResetEmail = ({ _id, email }, res) => {
             });
         })
         .catch((error) => {
-          console.log(error);
           res.json({
             status: "FAILED",
             message:
@@ -323,7 +315,6 @@ const sendResetEmail = ({ _id, email }, res) => {
         });
     })
     .catch((error) => {
-      console.log(error);
       res.json({
         status: "FAILED",
         message: "Clearing existing password reset records failed",
@@ -334,69 +325,72 @@ const sendResetEmail = ({ _id, email }, res) => {
 // Xác nhận mã và đặt lại mật khẩu
 router.post("/resetPassword", async (req, res) => {
   try {
-      let { email, resetString, newPassword } = req.body;
+    let { email, resetString, newPassword } = req.body;
 
-      // Tìm người dùng theo email
-      const user = await User.findOne({ email });
-      if (!user) {
-          return res.status(404).json({
-              status: "FAILED",
-              message: "Người dùng với email này không tồn tại",
-          });
-      }
-
-      const userId = user._id; // Lấy userId từ kết quả truy vấn
-
-      // Tìm trong PasswordReset bằng userId
-      const resetRecords = await PasswordReset.find({ userId });
-      if (resetRecords.length === 0) {
-          return res.status(404).json({
-              status: "FAILED",
-              message: "Yêu cầu đặt lại mật khẩu không tồn tại",
-          });
-      }
-
-      const { expireAt, resetString: hashedResetString } = resetRecords[0];
-
-      // Kiểm tra xem link đặt lại mật khẩu đã hết hạn chưa
-      if (expireAt < Date.now()) {
-          await PasswordReset.deleteOne({ userId }); // Xóa record đã hết hạn
-          return res.status(400).json({
-              status: "FAILED",
-              message: "Link đặt lại mật khẩu đã hết hạn",
-          });
-      }
-
-      // Kiểm tra resetString
-      const isResetStringValid = await bcrypt.compare(resetString, hashedResetString);
-      if (!isResetStringValid) {
-          return res.status(400).json({
-              status: "FAILED",
-              message: "Mã xác nhận không hợp lệ",
-          });
-      }
-
-      // Hash mật khẩu mới
-      const saltRounds = 10;
-      const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
-
-      // Cập nhật mật khẩu người dùng
-      await User.updateOne({ _id: userId }, { password: hashedNewPassword });
-
-      // Xóa record đặt lại mật khẩu
-      await PasswordReset.deleteOne({ userId });
-
-      // Trả về thành công
-      return res.status(200).json({
-          status: "SUCCESS",
-          message: "Đặt lại mật khẩu thành công",
+    // Tìm người dùng theo email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({
+        status: "FAILED",
+        message: "Người dùng với email này không tồn tại",
       });
+    }
+
+    const userId = user._id; // Lấy userId từ kết quả truy vấn
+
+    // Tìm trong PasswordReset bằng userId
+    const resetRecords = await PasswordReset.find({ userId });
+    if (resetRecords.length === 0) {
+      return res.status(404).json({
+        status: "FAILED",
+        message: "Yêu cầu đặt lại mật khẩu không tồn tại",
+      });
+    }
+
+    const { expireAt, resetString: hashedResetString } = resetRecords[0];
+
+    // Kiểm tra xem link đặt lại mật khẩu đã hết hạn chưa
+    if (expireAt < Date.now()) {
+      await PasswordReset.deleteOne({ userId }); // Xóa record đã hết hạn
+      return res.status(400).json({
+        status: "FAILED",
+        message: "Link đặt lại mật khẩu đã hết hạn",
+      });
+    }
+
+    // Kiểm tra resetString
+    const isResetStringValid = await bcrypt.compare(
+      resetString,
+      hashedResetString
+    );
+    if (!isResetStringValid) {
+      return res.status(400).json({
+        status: "FAILED",
+        message: "Mã xác nhận không hợp lệ",
+      });
+    }
+
+    // Hash mật khẩu mới
+    const saltRounds = 10;
+    const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    // Cập nhật mật khẩu người dùng
+    await User.updateOne({ _id: userId }, { password: hashedNewPassword });
+
+    // Xóa record đặt lại mật khẩu
+    await PasswordReset.deleteOne({ userId });
+
+    // Trả về thành công
+    return res.status(200).json({
+      status: "SUCCESS",
+      message: "Đặt lại mật khẩu thành công",
+    });
   } catch (error) {
-      console.error(error);
-      return res.status(500).json({
-          status: "FAILED",
-          message: "Đã xảy ra lỗi khi xử lý yêu cầu",
-      });
+    console.error(error);
+    return res.status(500).json({
+      status: "FAILED",
+      message: "Đã xảy ra lỗi khi xử lý yêu cầu",
+    });
   }
 });
 

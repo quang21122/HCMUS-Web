@@ -110,7 +110,6 @@ const updateUser = async (id, data) => {
         if (!data || Object.keys(data).length === 0) {
             return { error: "No data provided", status: 400 };
         }
-        console.log("Service's data : ", data);
         // Kiểm tra ID hợp lệ
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return { error: "Invalid ID format", status: 400 };

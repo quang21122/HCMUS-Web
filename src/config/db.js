@@ -8,7 +8,6 @@ const createIndexes = async () => {
     await mongoose.connection
       .collection("articles")
       .createIndex({ category: 1 });
-    console.log("Indexes created successfully");
   } catch (error) {
     console.error("Error creating indexes:", error);
   }

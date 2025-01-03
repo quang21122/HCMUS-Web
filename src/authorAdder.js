@@ -21,15 +21,6 @@ const userData = {
 };
 var authorNames = [];
 
-// connectDB().then(() => {
-//     addAuthorToArray().then(() => {
-//         console.log(authorNames.length)
-//         addAuthorsToArticles().then(() => {
-//             console.log('Authors added to articles successfully');
-//         })
-//     });
-// });
-
 async function addAuthorToArray() {
     try {
         // Get all articles
