@@ -1,6 +1,6 @@
-import { connectDB } from './config/db.js';
-import Article from './models/Article.js';
-import User from './models/User.js';
+import { connectDB } from '../src/config/db.js';
+import Article from '../src/models/Article.js';
+import User from '../src/models/User.js';
 
 const userData = {
     name: "",
