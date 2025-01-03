@@ -15,7 +15,7 @@ router.get("/", async (req, res) => {
     }
 
     const page = parseInt(req.query.page) || 1;
-    
+
     // Create timeout promise
     const timeout = new Promise((_, reject) =>
       setTimeout(() => reject(new Error("Request timeout")), 5000)
@@ -26,10 +26,6 @@ router.get("/", async (req, res) => {
       Promise.all([getAllArticlesByPage(page, 12), getCategories(), getTags()]),
       timeout,
     ]);
-
-    if (!req.isAuthenticated()) {
-      console.log("User not authenticated");
-    }
 
     const [articlesResponse, categoriesResponse, tagsResponse] = result;
 

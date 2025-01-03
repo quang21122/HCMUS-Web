@@ -107,7 +107,6 @@ router.get("/create", async (req, res) => {
   try {
     const tagsResponse = await getTags();
     const categoriesResponse = await getCategories();
-    console.log("categoriesResponse: ", categoriesResponse);
 
     const userId = req.user?._id;
     const user = req.user || (userId && (await findUser(userId))) || null;
@@ -168,7 +167,6 @@ router.post("/create", upload.single("image"), async (req, res) => {
 
     // Check if required fields are present
     if (!name || !content || !abstract || !category || !tags) {
-      console.log("Vui lòng điền đầy đủ thông tin");
       return res.status(400).render("pages/CreateArticlePage", {
         title: "Create New Article",
         errorMessage: "Vui lòng điền đầy đủ thông tin",
@@ -191,7 +189,6 @@ router.post("/create", upload.single("image"), async (req, res) => {
     const categoryArray = category.split(",");
 
     // Handle image upload if present
-    // console.log("file: ", req.file);
     const image = req.file ? `/uploads/${req.file.filename}` : null;
 
     // Prepare article data
@@ -212,7 +209,6 @@ router.post("/create", upload.single("image"), async (req, res) => {
     const articleResponse = await createArticle(articleData);
 
     if (!articleResponse.success) {
-      console.log("Có lỗi xảy ra. Vui lòng thử lại sau.");
       return res.status(500).render("pages/CreateArticlePage", {
         title: "Create New Article",
         errorMessage: articleResponse.error,
@@ -293,7 +289,6 @@ router.post("/edit", upload.single("image"), async (req, res) => {
       publishedAt,
       rejectReason,
     } = req.body;
-    console.log("req.body: ", req.body);
 
     const articleId = req.query.id;
 
@@ -377,13 +372,9 @@ router.post("/edit", upload.single("image"), async (req, res) => {
       publishedAt,
       rejectReason: status === "rejected" ? rejectReason : "",
     };
-    console.log("articleData: ", articleData);
 
     const updateResponse = await updateArticle(articleId, articleData);
-    console.log("updateResponse: ", updateResponse);
-
     if (!updateResponse.matchedCount) {
-      console.log("Có lỗi xảy ra. Vui lòng thử lại sau.");
       return res.status(500).render("pages/EditArticlePage", {
         title: "Edit Article",
         errorMessage: updateResponse.error,

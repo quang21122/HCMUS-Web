@@ -23,7 +23,6 @@ export const getCategoryName = async (id) => {
     const category = await Category.collection.findOne({ _id: id });
 
     if (!category) {
-      console.log(`No category found with ID: ${id}`);
       return "Unknown Category";
     }
 
