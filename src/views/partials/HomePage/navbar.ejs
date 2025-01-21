@@ -1,5 +1,5 @@
 <nav class="bg-white border-b">
-    <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-[40rem] md:max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 items-center">
             <div class="flex items-center">
                 <a href="/" class="text-xl font-bold text-[#FC4308]">
@@ -36,7 +36,7 @@
                     <div class="group">
                             <form action="/search" method="GET" class="relative">
                                 <input type="text" name="q"
-                                    class="block xl:w-96 lg:w-80 pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm"
+                                    class="block w-40 sm:w-52 md:w-60 xl:w-96 lg:w-80 pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm"
                                     placeholder="Tìm kiếm" required>
                                 <button type="submit" class="absolute inset-y-0 left-3 flex items-center">
                                     <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -101,6 +101,8 @@
                         <!-- End -->
                     </div>
                 </div>
+                
+
                 <div class="lg:space-x-2">
                     <% if (locals.user) { %>
                         <div class="relative" x-data="{ open: false }">
@@ -124,8 +126,30 @@
                             </div>
                         </div>
                         <% } else { %>
-                            <a href="/auth/login" class="text-gray-600 hover:text-gray-900">Đăng nhập</a>
-                            <a href="/auth/register" class="text-gray-600 hover:text-gray-900">Đăng ký</a>
+                            <div class="flex md:hidden relative">
+                                <button onclick="toggleMobileMenu()" class="text-gray-600 hover:text-gray-900">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 6h16M4 12h16m-7 6h7"></path>
+                                    </svg>
+                                </button>
+                                
+                                <div id="mobileMenu" class="hidden absolute right-0 top-full z-[100] mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                                    <div class="py-1" role="menu" aria-orientation="vertical">
+                                        <a href="/auth/login" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+                                            Đăng nhập
+                                        </a>
+                                        <a href="/auth/register" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+                                            Đăng ký
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="hidden md:flex items-center space-x-4">
+                                <a href="/auth/login" class="text-gray-600 hover:text-gray-900">Đăng nhập</a>
+                                <a href="/auth/register" class="text-gray-600 hover:text-gray-900">Đăng ký</a>
+                            </div>
                             <% } %>
                 </div>
             </div>
@@ -189,4 +213,10 @@
         // Initialize button states
         updateButtons();
     });
+</script>
+<script>
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.toggle('hidden');
+}
 </script>

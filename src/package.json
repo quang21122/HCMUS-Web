@@ -30,7 +30,7 @@
   "scripts": {
     "start": "npm install && npm run build:css && node server.js",
     "dev": "nodemon --watch config --watch controllers --watch middleware --watch models --watch profile --watch public --watch routes --watch services --watch strategies --watch views --watch ./server.js --ext js,ejs,css server.js",
-    "build:css": "npx tailwindcss -i ./public/css/styles.css -o ./public/css/tailwind.css"
+    "build:css": "npx tailwindcss -i ./public/css/styles.css -o ./public/css/tailwind.css --watch"
   },
   "type": "module"
 }
