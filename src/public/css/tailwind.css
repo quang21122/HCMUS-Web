@@ -723,10 +723,6 @@ video {
   grid-column: span 5 / span 5;
 }
 
-.row-span-5{
-  grid-row: span 5 / span 5;
-}
-
 .m-0{
   margin: 0px;
 }
@@ -759,6 +755,11 @@ video {
 .my-auto{
   margin-top: auto;
   margin-bottom: auto;
+}
+
+.my-6{
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .-mb-px{
@@ -1142,6 +1143,11 @@ video {
   max-width: 93%;
 }
 
+.max-w-fit{
+  max-width: -moz-fit-content;
+  max-width: fit-content;
+}
+
 .max-w-full{
   max-width: 100%;
 }
@@ -1156,11 +1162,6 @@ video {
 
 .max-w-xl{
   max-width: 36rem;
-}
-
-.max-w-fit{
-  max-width: -moz-fit-content;
-  max-width: fit-content;
 }
 
 .flex-1{
@@ -2749,6 +2750,10 @@ ul {
     -webkit-line-clamp: 3;
   }
 
+  .sm\:hidden{
+    display: none;
+  }
+
   .sm\:h-10{
     height: 2.5rem;
   }
@@ -2900,6 +2905,10 @@ ul {
     max-width: 97%;
   }
 
+  .md\:grid-cols-10{
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+  }
+
   .md\:grid-cols-2{
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -2910,22 +2919,6 @@ ul {
 
   .md\:grid-cols-4{
     grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .md\:grid-cols-10{
-    grid-template-columns: repeat(10, minmax(0, 1fr));
-  }
-
-  .md\:flex-row{
-    flex-direction: row;
-  }
-
-  .md\:items-center{
-    align-items: center;
-  }
-
-  .md\:justify-center{
-    justify-content: center;
   }
 
   .md\:p-4{
@@ -2941,23 +2934,19 @@ ul {
     padding-bottom: 56.25%;
   }
 
-  .md\:pt-0{
-    padding-top: 0px;
-  }
-
   .md\:text-lg{
     font-size: 1.125rem;
-    line-height: 1.75rem;
-  }
-
-  .md\:text-xl{
-    font-size: 1.25rem;
     line-height: 1.75rem;
   }
 
   .md\:text-sm{
     font-size: 0.875rem;
     line-height: 1.25rem;
+  }
+
+  .md\:text-xl{
+    font-size: 1.25rem;
+    line-height: 1.75rem;
   }
 
   .md\:hover\:scale-\[1\.02\]:hover{
@@ -2975,6 +2964,22 @@ ul {
     -webkit-line-clamp: 4;
   }
 
+  .lg\:block{
+    display: block;
+  }
+
+  .lg\:flex{
+    display: flex;
+  }
+
+  .lg\:grid{
+    display: grid;
+  }
+
+  .lg\:hidden{
+    display: none;
+  }
+
   .lg\:w-80{
     width: 20rem;
   }
@@ -2989,6 +2994,10 @@ ul {
 
   .lg\:grid-cols-6{
     grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .lg\:grid-cols-\[7fr_3fr\]{
+    grid-template-columns: 7fr 3fr;
   }
 
   .lg\:gap-4{
