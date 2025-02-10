@@ -686,11 +686,7 @@ export const getArticlesByPageWithSort = async (
   }
 };
 
-export const getArticlesByStatus = async (
-  page = 1,
-  limit = 12,
-  status
-) => {
+export const getArticlesByStatus = async (page = 1, limit = 12, status) => {
   try {
     const skip = (page - 1) * limit;
     const filter = {
@@ -766,10 +762,7 @@ export const getArticlesByStatus = async (
   }
 };
 
-export const getPendingArticles = async (
-  page = 1,
-  limit = 12
-) => {
+export const getPendingArticles = async (page = 1, limit = 12) => {
   try {
     const currentDate = new Date();
     const skip = (page - 1) * limit;
@@ -806,10 +799,7 @@ export const getPendingArticles = async (
   }
 };
 
-export const getAllArticlesByPage = async (
-  page = 1,
-  limit = 12,
-) => {
+export const getAllArticlesByPage = async (page = 1, limit = 12) => {
   try {
     // Tính toán skip dựa trên số trang và số bài viết mỗi trang
     const skip = (page - 1) * limit;
@@ -842,7 +832,6 @@ export const getAllArticlesByPage = async (
     };
   }
 };
-
 
 export default {
   incrementArticleViews,

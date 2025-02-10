@@ -1,7 +1,7 @@
 <div class="top-category-slider-container max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
     <div class="flex justify-between items-center mb-4">
         <h2 class="text-2xl font-semibold text-gray-800 border-l-4 pl-4 border-red-500">Top chuyên mục</h2>
-        <div class="space-x-2 z-10">
+        <div class="space-x-2 z-10 mr-2">
             <button class="top-category-prev bg-gray-300 text-white p-1 rounded-xl cursor-default">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor">
@@ -23,25 +23,26 @@
             <!-- First Article: 50% width -->
             <% if (mostViewedCategoryArticles && mostViewedCategoryArticles.length> 0) { %>
                 <% const firstArticle=mostViewedCategoryArticles[0]; %>
-                    <a href="/article/<%= firstArticle._id %>" class="col-span-1">
-                        <div class="relative rounded-lg w-full h-full flex">
+                    <a href="/article/<%= firstArticle._id %>" class="col-span-1 hidden md:block">
+                        <div class="hidden md:flex relative rounded-lg w-full h-full">
                             <div class="relative w-full flex-grow">
                                 <img src="<%= firstArticle.image || '/path/to/default-image.jpg' %>"
                                     alt="<%= firstArticle.name || 'No title available' %>"
-                                    class="object-cover w-full h-full rounded-lg">
+                                    class="object-cover w-full h-full rounded-lg transition-transform duration-300 hover:scale-[1.02]">
                                 <!-- Categories -->
-                                <div class="absolute top-0 left-0 p-2">
-                                    <div class="flex flex-wrap gap-2 justify-start items-center">
+                                <div class="absolute top-0 left-0 p-1 sm:p-2">
+                                    <div class="flex flex-wrap gap-1 sm:gap-2 justify-start items-center">
                                         <% if (firstArticle.category && firstArticle.category.length> 0) { %>
                                             <% const parentCategory=categories.find(cat=> cat._id ===
                                                 firstArticle.category[0]); %>
                                                 <span
-                                                    class="bg-white opacity-70 px-2 py-1 rounded-md cursor-pointer text-sm text-black">
+                                                    class="bg-white opacity-70 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-xs sm:text-sm text-black">
                                                     <%= parentCategory ? parentCategory.name : 'Unknown Category' %>
                                                 </span>
                                                 <% } %>
                                                     <% if (firstArticle.isPremium) { %>
-                                                        <svg class="w-8 h-8 text-yellow-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-yellow-400"
+                                                            aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                                             fill="currentColor" viewBox="0 0 24 24">
                                                             <path d="M11 9a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z" />
                                                             <path fill-rule="evenodd"
@@ -54,19 +55,19 @@
                                     </div>
                                 </div>
                                 <!-- Title and Content -->
-                                <div
-                                    class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-[calc(100%-1rem)] bg-white opacity-70 rounded-lg mb-2">
-                                    <div class="px-4 py-2 bg-white opacity-90 rounded-lg space-y-3">
-                                        <h3
-                                            class="font-semibold flex justify-start text-lg text-center text-black line-clamp-1">
+                                <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-[calc(100%-0.5rem)] sm:w-[calc(100%-1rem)] 
+                bg-white opacity-70 rounded-lg mb-1 sm:mb-2">
+                                    <div
+                                        class="px-2 sm:px-4 py-1 sm:py-2 bg-white opacity-90 rounded-lg space-y-1 sm:space-y-3">
+                                        <h3 class="font-semibold text-sm sm:text-lg text-black line-clamp-1">
                                             <%= firstArticle.name || 'No title available' %>
                                         </h3>
-                                        <p class="text-sm text-black line-clamp-2">
+                                        <p class="text-xs sm:text-sm text-black line-clamp-2">
                                             <%= firstArticle.abstract || 'No content available' %>
                                         </p>
-                                        <p class="text-sm text-black">
-                                            <%= firstArticle.authorNames.map((author)=> author) %> | <%=
-                                                    firstArticle.publishedAt ?
+                                        <p class="text-xs sm:text-sm text-black">
+                                            <%= firstArticle.authorNames.map((author)=> author) %> |
+                                                <%= firstArticle.publishedAt ?
                                                     firstArticle.publishedAt.split(',')[1]?.trim() ||
                                                     firstArticle.publishedAt : 'No date' %>
                                         </p>
@@ -84,7 +85,7 @@
 
                             <!-- Remaining Articles: 50% width grid -->
                             <% if (mostViewedCategoryArticles && mostViewedCategoryArticles.length> 1) { %>
-                                <div class="col-span-1 my-auto overflow-hidden">
+                                <div class="col-span-2 md:col-span-1 my-auto overflow-hidden">
                                     <div
                                         class="absolute top-0 right-0 h-full w-48 bg-gradient-to-l from-white/80 to-transparent pointer-events-none blur-overlay">
                                     </div>
@@ -118,9 +119,14 @@
                                                                                 </span>
                                                                                 <% } %>
                                                                                     <% if (article.isPremium) { %>
-                                                                                        <svg class="w-6 h-6 text-yellow-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                                                            fill="currentColor" viewBox="0 0 24 24">
-                                                                                            <path d="M11 9a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z" />
+                                                                                        <svg class="w-6 h-6 text-yellow-400"
+                                                                                            aria-hidden="true"
+                                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                                            width="24" height="24"
+                                                                                            fill="currentColor"
+                                                                                            viewBox="0 0 24 24">
+                                                                                            <path
+                                                                                                d="M11 9a1 1 0 1 1 2 0 1 1 0 0 1-2 0Z" />
                                                                                             <path fill-rule="evenodd"
                                                                                                 d="M9.896 3.051a2.681 2.681 0 0 1 4.208 0c.147.186.38.282.615.255a2.681 2.681 0 0 1 2.976 2.975.681.681 0 0 0 .254.615 2.681 2.681 0 0 1 0 4.208.682.682 0 0 0-.254.615 2.681 2.681 0 0 1-2.976 2.976.681.681 0 0 0-.615.254 2.682 2.682 0 0 1-4.208 0 .681.681 0 0 0-.614-.255 2.681 2.681 0 0 1-2.976-2.975.681.681 0 0 0-.255-.615 2.681 2.681 0 0 1 0-4.208.681.681 0 0 0 .255-.615 2.681 2.681 0 0 1 2.976-2.975.681.681 0 0 0 .614-.255ZM12 6a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"
                                                                                                 clip-rule="evenodd" />

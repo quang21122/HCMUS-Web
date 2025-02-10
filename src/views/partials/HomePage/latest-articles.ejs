@@ -9,7 +9,7 @@
                         <a href="/article/<%= article._id %>"
                             class="block hover:shadow-xl transition-shadow duration-300">
                             <div class="article-item bg-white shadow-lg rounded-lg border-gray-100 border">
-                                <div class="grid grid-cols-10 gap-2 w-full h-full p-4">
+                                <div class="flex flex-col md:grid md:grid-cols-10 gap-2 w-full h-full p-4">
                                     <!-- Image -->
                                     <div class="col-span-5 relative flex flex-col justify-between">
                                         <div class="relative w-full h-48 overflow-hidden">
@@ -33,7 +33,7 @@
                                     </div>
                                     <!-- Title and Content -->
                                     <div class="col-span-5 flex flex-col justify-around space-y-4">
-                                        <h3 class="font-semibold text-lg text-black line-clamp-1">
+                                        <h3 class="font-semibold text-sm md:text-lg text-black line-clamp-1">
                                             <%= article.name %>
                                         </h3>
                                         <div class="flex flex-row space-x-2">
@@ -41,8 +41,7 @@
                                             <% if (article.category && article.category.length> 0) { %>
                                                 <% const parentCategory=categories.find(cat=> cat._id ===
                                                     article.category[0]); %>
-                                                    <div
-                                                        class="p-1 flex text-sm justify-center border border-black rounded-xl w-[32%]">
+                                                    <div class="py-1 px-3 inline-flex text-xs md:text-sm justify-center border border-black rounded-xl max-w-fit">
                                                         <%= parentCategory ? parentCategory.name : 'Unknown Category' %>
                                                     </div>
                                                     <% } %>
@@ -54,7 +53,7 @@
                                                                 childId);
                                                                 %>
                                                                 <span
-                                                                    class="text-sm text-cyan-500 flex justify-center items-center">
+                                                                    class="text-xs md:text-sm text-cyan-500 flex justify-center items-center">
                                                                     #<%= childCategory ? childCategory.name : 'Unknown'
                                                                         %>
                                                                 </span>
